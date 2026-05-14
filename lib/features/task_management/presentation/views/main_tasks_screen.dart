@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_text.dart';
+import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
-import 'package:s/core/theme/app_colors.dart';
-import 'package:s/core/theme/app_text_style.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 import 'package:s/features/task_management/presentation/views/widgets/add_task_bottom_sheet.dart';
@@ -25,14 +26,14 @@ class MainTasksScreen extends StatelessWidget {
 
           body: BlocBuilder<TasksCubit, TasksState>(
             builder: (context, state) {
-              var screenTitle = 'جارِ التحميل...';
+              var screenTitle = AppTexts.loading;
               var currentTasks = <TaskEntity>[];
 
               if (state is TasksLoaded) {
                 screenTitle = state.title;
                 currentTasks = state.tasks;
               } else if (state is TasksError) {
-                screenTitle = 'خطأ';
+                screenTitle = AppTexts.thereIsAnError;
               }
 
               final mainContent = CustomScrollView(
@@ -135,7 +136,7 @@ class MainTasksScreen extends StatelessWidget {
           height: 300.h,
           child: Center(
             child: Text(
-              'لا توجد مهام في هذه القائمة',
+              AppTexts.noTasksInThisList,
               style: AppTextStyle.style9W300,
             ),
           ),
@@ -178,7 +179,7 @@ class MainTasksScreen extends StatelessWidget {
                 iconColor: AppColors.secondaryColor,
                 collapsedIconColor: AppColors.secondaryColor,
                 title: Text(
-                  'Completed  ${completedTasks.length}',
+                  '${AppTexts.completed}  ${completedTasks.length}',
                   style: AppTextStyle.style9W300.copyWith(
                     fontSize: 14.sp,
                     color: AppColors.secondaryColor,

@@ -8,13 +8,10 @@ import 'package:s/features/task_management/data/repo/tasks_repository_impl.dart'
 import 'package:s/features/task_management/domain/repo/tasks_repository.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
-import '../features/my_app/controller/localization_cubit/localization_cubit.dart';
-
 final GetIt getIt = GetIt.instance;
 
 Future<void> setupGetIt() async {
   getIt
-    ..registerLazySingleton<LocalizationCubit>(LocalizationCubit.new)
     /// ------------------ < Tasks Feature > ------------------
     ..registerLazySingleton<TasksLocalDataSource>(TasksLocalDataSourceImpl.new)
     ..registerLazySingleton<TasksRepository>(

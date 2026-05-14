@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_text.dart';
+import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
-import 'package:s/core/theme/app_colors.dart';
-import 'package:s/core/theme/app_text_style.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
@@ -17,9 +18,9 @@ class TaskItemWidget extends StatelessWidget {
     final taskDate = DateTime(date.year, date.month, date.day);
     final diff = taskDate.difference(today).inDays;
 
-    if (diff == 0) return 'Today';
-    if (diff == 1) return 'Tomorrow';
-    if (diff == -1) return 'Yesterday';
+    if (diff == 0) return AppTexts.today;
+    if (diff == 1) return AppTexts.tomorrow;
+    if (diff == -1) return AppTexts.yesterday;
     return '${date.day}/${date.month}/${date.year}';
   }
 
@@ -32,10 +33,10 @@ class TaskItemWidget extends StatelessWidget {
         final count = parts[1];
         final unit = parts[2];
         var unitAr = '';
-        if (unit == 'days') unitAr = 'أيام';
-        if (unit == 'weeks') unitAr = 'أسابيع';
-        if (unit == 'months') unitAr = 'شهور';
-        if (unit == 'years') unitAr = 'سنين';
+        if (unit == 'days') unitAr = AppTexts.days;
+        if (unit == 'weeks') unitAr = AppTexts.weeks;
+        if (unit == 'months') unitAr = AppTexts.months;
+        if (unit == 'years') unitAr = AppTexts.years;
 
         return 'كل $count $unitAr';
       }
@@ -43,15 +44,15 @@ class TaskItemWidget extends StatelessWidget {
 
     switch (mode) {
       case 'daily':
-        return 'يومي';
+        return AppTexts.daily;
       case 'weekdays':
-        return 'أيام العمل';
+        return AppTexts.weekdays;
       case 'weekly':
-        return 'أسبوعي';
+        return AppTexts.weekly;
       case 'monthly':
-        return 'شهري';
+        return AppTexts.monthly;
       case 'yearly':
-        return 'سنوي';
+        return AppTexts.yearly;
       default:
         return '';
     }
@@ -62,7 +63,6 @@ class TaskItemWidget extends StatelessWidget {
     final dateText = _getRelativeDate(task.dueDate);
     final repeatText = _getRepeatText(task.repeatMode);
 
-    // --- التعديل هنا: تحديد متى يظهر التكرار ---
     final showRepeat = repeatText.isNotEmpty && !task.isCompleted;
     final hasSubtitle = dateText.isNotEmpty || showRepeat;
 
@@ -76,7 +76,6 @@ class TaskItemWidget extends StatelessWidget {
           ),
         );
 
-    // 1. قراءة الحالة لمعرفة الشاشة الحالية
     final currentState = context.read<TasksCubit>().state;
     var isMyDayView = false;
     if (currentState is TasksLoaded) {
@@ -87,7 +86,6 @@ class TaskItemWidget extends StatelessWidget {
       key: ValueKey('${task.id}_dismissible'),
       direction: DismissDirection.horizontal,
 
-      // --- خلفية السحب لليمين (تأجيل في يومي / إضافة ليومي في باقي الشاشات) ---
       background: Container(
         color: isMyDayView ? AppColors.primaryColor : Colors.orangeAccent,
         alignment: Alignment.centerLeft,
@@ -98,7 +96,6 @@ class TaskItemWidget extends StatelessWidget {
         ),
       ),
 
-      // --- خلفية السحب لليسار (إزالة من يومي / حذف نهائي في باقي الشاشات) ---
       secondaryBackground: Container(
         color: Colors.redAccent,
         alignment: Alignment.centerRight,
@@ -109,57 +106,46 @@ class TaskItemWidget extends StatelessWidget {
         ),
       ),
 
-      // --- دالة التحكم في اختفاء الكارت ---
       confirmDismiss: (direction) async {
         final cubit = context.read<TasksCubit>();
 
-        // السحب لليمين (startToEnd)
         if (direction == DismissDirection.startToEnd) {
           if (isMyDayView) {
-            // نحن في يومي -> الكارت سيتأجل ويجب أن يختفي من يومي
             return true;
           } else {
-            // نحن في القوائم الأخرى -> نضيفه ليومي، لكن الكارت لا يجب أن يختفي من قائمته!
             await cubit.addToMyDay(task);
 
-            // إظهار رسالة صغيرة لتأكيد الإضافة
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'تم الإضافة إلى My Day',
+                  AppTexts.taskAddedToMyDay,
                   style: AppTextStyle.style9W300.copyWith(color: Colors.white),
                 ),
                 backgroundColor: Colors.orangeAccent,
                 duration: const Duration(seconds: 1),
               ),
             );
-            return false; // نرجع false ليعود الكارت لمكانه
+            return false;
           }
-        }
-        // السحب لليسار (endToStart)
-        else {
-          // سواء كان إزالة من يومي أو حذف نهائي، الكارت يجب أن يختفي
+        } else {
           return true;
         }
       },
 
-      // --- التنفيذ الفعلي عند اختفاء الكارت (يعمل فقط إذا أرجعت confirmDismiss true) ---
       onDismissed: (direction) async {
         final cubit = context.read<TasksCubit>();
 
         if (direction == DismissDirection.startToEnd) {
-          // لن يصل هنا إلا لو كانت isMyDayView = true
           await cubit.postponeToTomorrow(task);
         } else {
-          // السحب لليسار
           if (isMyDayView) {
             await cubit.removeFromMyDay(task);
           } else {
-            await cubit.deleteTask(task.id); // حذف نهائي من التطبيق
+            await cubit.deleteTask(task.id);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'تم حذف المهمة',
+                  AppTexts.taskDeleted,
                   style: AppTextStyle.style9W300.copyWith(color: Colors.white),
                 ),
                 backgroundColor: Colors.redAccent,
@@ -189,7 +175,7 @@ class TaskItemWidget extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Text(
-                      'Tasks',
+                      AppTexts.tasks,
                       style: AppTextStyle.style9W300.copyWith(
                         fontSize: 11.sp,
                         color: AppColors.secondaryColor,
@@ -208,7 +194,6 @@ class TaskItemWidget extends StatelessWidget {
                       ),
                     ],
 
-                    // --- التعديل هنا: نستخدم showRepeat بدلاً من repeatText.isNotEmpty ---
                     if (showRepeat) ...[
                       Text(
                         ' • ',

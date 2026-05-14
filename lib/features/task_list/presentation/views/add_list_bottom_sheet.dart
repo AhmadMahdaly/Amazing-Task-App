@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_text.dart';
+import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
-import 'package:s/core/theme/app_colors.dart';
-import 'package:s/core/theme/app_text_style.dart';
 
 class AddListBottomSheet extends StatefulWidget {
   const AddListBottomSheet({super.key});
@@ -39,7 +40,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'قائمة جديدة',
+            AppTexts.newList,
             style: AppTextStyle.style9W300.copyWith(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
@@ -52,7 +53,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
             controller: _listController,
             autofocus: true,
             decoration: InputDecoration(
-              hintText: 'أدخل اسم القائمة',
+              hintText: AppTexts.enterListName,
               hintStyle: AppTextStyle.style9W300.copyWith(
                 fontSize: 14.sp,
                 color: AppColors.secondaryColor,
@@ -84,7 +85,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  'إلغاء',
+                  AppTexts.cancel,
                   style: AppTextStyle.style9W300.copyWith(
                     fontSize: 14.sp,
                     color: AppColors.secondaryColor,
@@ -109,7 +110,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
                   Navigator.pop(context);
                 },
                 child: Text(
-                  'إنشاء',
+                  AppTexts.createList,
                   style: AppTextStyle.style9W300.copyWith(
                     fontSize: 14.sp,
                     color: Colors.white,

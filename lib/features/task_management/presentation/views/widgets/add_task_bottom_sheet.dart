@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_text.dart';
+import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
-import 'package:s/core/theme/app_colors.dart';
-import 'package:s/core/theme/app_text_style.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
@@ -23,7 +24,6 @@ class AddTaskBottomSheet extends StatefulWidget {
 class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   final TextEditingController _taskController = TextEditingController();
 
-  // المتغيرات الجديدة لحفظ الاختيارات
   DateTime? _selectedDueDate;
   String? _selectedRepeatMode;
 
@@ -33,18 +33,16 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     super.dispose();
   }
 
-  // حساب تاريخ بداية الأسبوع القادم (بافتراض أن الأسبوع يبدأ الأحد)
   DateTime _getNextWeekDate() {
     final now = DateTime.now();
-    // Dart يعتبر الأحد = 7، الإثنين = 1
+
     var daysToNextSunday = DateTime.sunday - now.weekday;
     if (daysToNextSunday <= 0) {
-      daysToNextSunday += 7; // إذا كنا في يوم الأحد، الأسبوع القادم بعد 7 أيام
+      daysToNextSunday += 7;
     }
     return now.add(Duration(days: daysToNextSunday));
   }
 
-  // --- نافذة اختيار تاريخ الاستحقاق ---
   Future<void> _showDueDateOptions() async {
     await showModalBottomSheet<void>(
       context: context,
@@ -60,7 +58,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 child: Text(
-                  'تاريخ الاستحقاق',
+                  AppTexts.dueDate,
                   style: AppTextStyle.style9W300.copyWith(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
@@ -73,7 +71,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ),
               ListTile(
                 leading: const Icon(Icons.today, color: AppColors.primaryColor),
-                title: Text('اليوم', style: AppTextStyle.style9W300),
+                title: Text(AppTexts.today, style: AppTextStyle.style9W300),
                 onTap: () {
                   setState(() => _selectedDueDate = now);
                   Navigator.pop(context);
@@ -81,7 +79,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ),
               ListTile(
                 leading: const Icon(Icons.event, color: AppColors.primaryColor),
-                title: Text('الغد', style: AppTextStyle.style9W300),
+                title: Text(AppTexts.tomorrow, style: AppTextStyle.style9W300),
                 onTap: () {
                   setState(
                     () => _selectedDueDate = now.add(const Duration(days: 1)),
@@ -94,7 +92,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   Icons.next_plan_outlined,
                   color: AppColors.primaryColor,
                 ),
-                title: Text('الأسبوع القادم', style: AppTextStyle.style9W300),
+                title: Text(AppTexts.nextWeek, style: AppTextStyle.style9W300),
                 onTap: () {
                   setState(() => _selectedDueDate = _getNextWeekDate());
                   Navigator.pop(context);
@@ -106,11 +104,11 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   color: AppColors.primaryColor,
                 ),
                 title: Text(
-                  'اختيار تاريخ (Pick a date)',
+                  AppTexts.pickADate,
                   style: AppTextStyle.style9W300,
                 ),
                 onTap: () async {
-                  Navigator.pop(context); // إغلاق القائمة أولاً
+                  Navigator.pop(context);
                   final pickedDate = await showDatePicker(
                     context: context,
                     initialDate: now,
@@ -132,12 +130,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   }
                 },
               ),
-              // خيار لإزالة التاريخ إذا كان محددًا
+
               if (_selectedDueDate != null)
                 ListTile(
                   leading: const Icon(Icons.delete_outline, color: Colors.red),
                   title: Text(
-                    'إزالة تاريخ الاستحقاق',
+                    AppTexts.removeDueDate,
                     style: AppTextStyle.style9W300.copyWith(color: Colors.red),
                   ),
                   onTap: () {
@@ -152,7 +150,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     );
   }
 
-  // --- نافذة اختيار التكرار ---
   Future<void> _showRepeatOptions() async {
     await showModalBottomSheet<void>(
       context: context,
@@ -167,7 +164,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 child: Text(
-                  'تكرار',
+                  AppTexts.repeat,
                   style: AppTextStyle.style9W300.copyWith(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
@@ -178,25 +175,25 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 height: 1,
                 color: AppColors.secondaryColor.withAlpha(77),
               ),
-              _buildRepeatOptionTile('يومي (Daily)', 'daily'),
-              _buildRepeatOptionTile('أيام الأسبوع (Weekdays)', 'weekdays'),
-              _buildRepeatOptionTile('أسبوعي (Weekly)', 'weekly'),
-              _buildRepeatOptionTile('شهري (Monthly)', 'monthly'),
-              _buildRepeatOptionTile('سنوي (Yearly)', 'yearly'),
-              // داخل دالة _showRepeatOptions
+              _buildRepeatOptionTile(AppTexts.daily, 'daily'),
+              _buildRepeatOptionTile(AppTexts.weekdays, 'weekdays'),
+              _buildRepeatOptionTile(AppTexts.weekly, 'weekly'),
+              _buildRepeatOptionTile(AppTexts.monthly, 'monthly'),
+              _buildRepeatOptionTile(AppTexts.yearly, 'yearly'),
+
               ListTile(
                 leading: const Icon(
                   Icons.dashboard_customize,
                   color: AppColors.secondaryColor,
                 ),
-                title: Text('مخصص (Custom)', style: AppTextStyle.style9W300),
+                title: Text(AppTexts.custom, style: AppTextStyle.style9W300),
                 onTap: _showCustomRepeatDialog,
               ),
               if (_selectedRepeatMode != null)
                 ListTile(
                   leading: const Icon(Icons.delete_outline, color: Colors.red),
                   title: Text(
-                    'إزالة التكرار',
+                    AppTexts.removeRepeat,
                     style: AppTextStyle.style9W300.copyWith(color: Colors.red),
                   ),
                   onTap: () {
@@ -258,7 +255,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
             controller: _taskController,
             autofocus: true,
             decoration: InputDecoration(
-              hintText: 'إضافة مهمة',
+              hintText: AppTexts.addTask,
               border: InputBorder.none,
               hintStyle: AppTextStyle.style9W300.copyWith(
                 fontSize: 16.sp,
@@ -271,7 +268,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
           SizedBox(height: 16.h),
           Row(
             children: [
-              // زر تاريخ الاستحقاق
               _buildActionIcon(
                 icon: Icons.calendar_today,
                 isActive: _selectedDueDate != null,
@@ -279,7 +275,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ),
               SizedBox(width: 16.w),
 
-              // زر التذكير (متروك لتطويره لاحقاً)
               _buildActionIcon(
                 icon: Icons.notifications_none,
                 isActive: false,
@@ -287,7 +282,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ),
               SizedBox(width: 16.w),
 
-              // زر التكرار
               _buildActionIcon(
                 icon: Icons.repeat,
                 isActive: _selectedRepeatMode != null,
@@ -307,11 +301,11 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     title: _taskController.text.trim(),
                     listId: widget.currentListId,
-                    // حفظ تاريخ اليوم في myDayDate إذا كنا في شاشة "يومي"
+
                     myDayDate: widget.isMyDayView
                         ? DateTime.now().toIso8601String().split('T')[0]
                         : null,
-                    // إضافة البيانات الجديدة
+
                     dueDate: _selectedDueDate,
                     repeatMode: _selectedRepeatMode,
                     position: 0,
@@ -330,7 +324,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     );
   }
 
-  // دالة مخصصة للأيقونات تتغير لونها بناءً على الـ isActive
   Widget _buildActionIcon({
     required IconData icon,
     required bool isActive,
@@ -350,13 +343,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     );
   }
 
-  // --- دالة إظهار نافذة التكرار المخصص ---
   Future<void> _showCustomRepeatDialog() async {
     var count = 1;
-    var unit = 'weeks'; // 'days', 'weeks', 'months', 'years'
+    var unit = 'weeks';
     final selectedDays = <int>[
       DateTime.now().weekday,
-    ]; // افتراضياً نحدد يوم المهمة
+    ];
 
     await showDialog<void>(
       context: context,
@@ -369,7 +361,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 borderRadius: BorderRadius.circular(16.r),
               ),
               title: Text(
-                'تكرار مخصص',
+                AppTexts.customRepeat,
                 style: AppTextStyle.style9W300.copyWith(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
@@ -379,11 +371,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // --- الصف الأول: اختيار الرقم والوحدة ---
                   Row(
                     children: [
                       Text(
-                        'تكرار كل',
+                        AppTexts.repeatEvery,
                         style: AppTextStyle.style9W300.copyWith(
                           fontSize: 14.sp,
                         ),
@@ -420,22 +411,22 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                             fontSize: 14.sp,
                             color: AppColors.forthColor,
                           ),
-                          items: const [
+                          items: [
                             DropdownMenuItem(
                               value: 'days',
-                              child: Text('أيام'),
+                              child: Text(AppTexts.days),
                             ),
                             DropdownMenuItem(
                               value: 'weeks',
-                              child: Text('أسابيع'),
+                              child: Text(AppTexts.weeks),
                             ),
                             DropdownMenuItem(
                               value: 'months',
-                              child: Text('شهور'),
+                              child: Text(AppTexts.months),
                             ),
                             DropdownMenuItem(
                               value: 'years',
-                              child: Text('سنين'),
+                              child: Text(AppTexts.years),
                             ),
                           ],
                           onChanged: (val) {
@@ -446,13 +437,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     ],
                   ),
 
-                  // --- الصف الثاني: اختيار الأيام (يظهر فقط إذا كانت الوحدة أسابيع) ---
                   if (unit == 'weeks') ...[
                     SizedBox(height: 20.h),
                     Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        'في هذه الأيام:',
+                        AppTexts.inTheseDays,
                         style: AppTextStyle.style9W300.copyWith(
                           fontSize: 14.sp,
                         ),
@@ -466,43 +456,43 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       children: [
                         _buildDayToggle(
                           DateTime.sunday,
-                          'ح',
+                          AppTexts.sunday,
                           selectedDays,
                           setStateDialog,
                         ),
                         _buildDayToggle(
                           DateTime.monday,
-                          'ن',
+                          AppTexts.monday,
                           selectedDays,
                           setStateDialog,
                         ),
                         _buildDayToggle(
                           DateTime.tuesday,
-                          'ث',
+                          AppTexts.tuesday,
                           selectedDays,
                           setStateDialog,
                         ),
                         _buildDayToggle(
                           DateTime.wednesday,
-                          'ر',
+                          AppTexts.wednesday,
                           selectedDays,
                           setStateDialog,
                         ),
                         _buildDayToggle(
                           DateTime.thursday,
-                          'خ',
+                          AppTexts.thursday,
                           selectedDays,
                           setStateDialog,
                         ),
                         _buildDayToggle(
                           DateTime.friday,
-                          'ج',
+                          AppTexts.friday,
                           selectedDays,
                           setStateDialog,
                         ),
                         _buildDayToggle(
                           DateTime.saturday,
-                          'س',
+                          AppTexts.saturday,
                           selectedDays,
                           setStateDialog,
                         ),
@@ -515,7 +505,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    'إلغاء',
+                    AppTexts.cancel,
                     style: AppTextStyle.style9W300.copyWith(
                       color: AppColors.secondaryColor,
                     ),
@@ -526,19 +516,17 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     backgroundColor: AppColors.primaryColor,
                   ),
                   onPressed: () {
-                    // حفظ الصيغة المنظمة
                     final daysStr = selectedDays.join(',');
                     final customMode = 'custom:$count:$unit:$daysStr';
 
-                    // تحديث الواجهة الرئيسية
                     setState(() => _selectedRepeatMode = customMode);
-                    Navigator.pop(context); // إغلاق الديالوج
+                    Navigator.pop(context);
                     Navigator.pop(
                       context,
-                    ); // إغلاق نافذة خيارات التكرار الأساسية
+                    );
                   },
                   child: Text(
-                    'حفظ',
+                    AppTexts.save,
                     style: AppTextStyle.style9W300.copyWith(
                       color: Colors.white,
                     ),
@@ -552,7 +540,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     );
   }
 
-  // دالة مساعدة لرسم دوائر الأيام
   Widget _buildDayToggle(
     int dayValue,
     String label,

@@ -2,16 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:s/core/resources/app_text.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
 import '/../core/di.dart';
-import '/../core/localization/s.dart';
 import '/../core/responsive/responsive_config.dart';
 import '/../core/routing/router_generation_config.dart';
-import '/../core/theme/app_themes.dart';
-import '../my_app/controller/localization_cubit/localization_cubit.dart';
+import '../../core/resources/app_themes.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -20,9 +18,6 @@ class MyApp extends StatelessWidget {
     SizeConfig.init(context);
     return MultiBlocProvider(
       providers: [
-        BlocProvider<LocalizationCubit>(
-          create: (context) => getIt<LocalizationCubit>(),
-        ),
         BlocProvider(
           create: (_) => getIt<TasksCubit>()..loadTasks(),
         ),
@@ -30,26 +25,14 @@ class MyApp extends StatelessWidget {
           create: (_) => getIt<ListsCubit>()..loadLists(),
         ),
       ],
-      child: BlocBuilder<LocalizationCubit, LocalizationState>(
-        builder: (context, localeState) {
-          return GestureDetector(
-            onTap: () => unfocusScope(context),
-            child: MaterialApp.router(
-              title: 'My Tasks',
-              debugShowCheckedModeBanner: false,
-              routerConfig: appRouter,
-              theme: Appthemes.lightTheme(),
-              locale: localeState.locale,
-              supportedLocales: S.supportedLocales,
-              localizationsDelegates: const [
-                S.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-            ),
-          );
-        },
+      child: GestureDetector(
+        onTap: () => unfocusScope(context),
+        child: MaterialApp.router(
+          title: AppTexts.appTitle,
+          debugShowCheckedModeBanner: false,
+          routerConfig: appRouter,
+          theme: Appthemes.lightTheme(),
+        ),
       ),
     );
   }

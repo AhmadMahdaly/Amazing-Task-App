@@ -1,6 +1,7 @@
 // ignore_for_file: parameter_assignments
 
 import 'package:bloc/bloc.dart';
+import 'package:s/core/resources/app_text.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/repo/tasks_repository.dart';
 
@@ -11,7 +12,7 @@ class TasksCubit extends Cubit<TasksState> {
   final TasksRepository tasksRepository;
 
   TaskFilter _currentFilter = TaskFilter.myDay;
-  String _currentTitle = 'My Day';
+  String _currentTitle = AppTexts.myDay;
   String? _currentListId;
   double get todayProgress {
     if (state is! TasksLoaded) return 0;

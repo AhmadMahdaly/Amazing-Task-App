@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import '../resources/app_colors.dart';
 import '../responsive/responsive_config.dart';
-import '../theme/app_colors.dart';
 
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({super.key, this.size = 50, this.color});

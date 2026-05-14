@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/features/task_management/data/models/task_model.dart';
 
 abstract class TasksLocalDataSource {
@@ -11,7 +12,7 @@ abstract class TasksLocalDataSource {
 }
 
 class TasksLocalDataSourceImpl implements TasksLocalDataSource {
-  static const String _tasksCacheKey = 'CACHED_TASKS';
+  static const String _tasksCacheKey = CacheKeys.cachedTasks;
 
   @override
   Future<List<TaskModel>> fetchTasks() async {

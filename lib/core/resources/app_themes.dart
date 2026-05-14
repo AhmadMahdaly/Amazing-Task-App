@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../constants.dart';
 import '../responsive/responsive_config.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_style.dart';
+import 'app_colors.dart';
+import 'app_text_style.dart';
 
 class Appthemes {
   static ThemeData lightTheme() {
@@ -12,7 +12,7 @@ class Appthemes {
       useMaterial3: true,
       primaryColor: AppColors.primaryColor,
       scaffoldBackgroundColor: AppColors.scaffoldBackgroundLightColor,
-      fontFamily: latinLang ? kPrimaryEnFont : kPrimaryArFont,
+      fontFamily: kPrimaryEnFont,
 
       textTheme: TextTheme(
         titleLarge: AppTextStyle.style18W800,
@@ -25,7 +25,7 @@ class Appthemes {
         toolbarHeight: 100.h,
         titleTextStyle: AppTextStyle.style18Bold.copyWith(
           color: AppColors.scaffoldBackgroundLightColor,
-          fontFamily: latinLang ? kPrimaryEnFont : kPrimaryArFont,
+          fontFamily: kPrimaryEnFont,
         ),
         backgroundColor: AppColors.primaryColor,
         surfaceTintColor: AppColors.scaffoldBackgroundLightColor,
@@ -49,7 +49,7 @@ class Appthemes {
         ),
         elevation: 5,
         titleTextStyle: AppTextStyle.style20Bold.copyWith(
-          fontFamily: latinLang ? kPrimaryEnFont : kPrimaryArFont,
+          fontFamily: kPrimaryEnFont,
         ),
       ),
 
@@ -64,7 +64,7 @@ class Appthemes {
           ),
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
           textStyle: AppTextStyle.style12W500.copyWith(
-            fontFamily: latinLang ? kPrimaryEnFont : kPrimaryArFont,
+            fontFamily: kPrimaryEnFont,
           ),
         ),
       ),
@@ -78,7 +78,7 @@ class Appthemes {
           ),
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
           textStyle: AppTextStyle.style14W500.copyWith(
-            fontFamily: latinLang ? kPrimaryEnFont : kPrimaryArFont,
+            fontFamily: kPrimaryEnFont,
           ),
         ),
       ),

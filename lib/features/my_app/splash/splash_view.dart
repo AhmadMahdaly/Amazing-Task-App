@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '/../core/resources/assets/app_images.dart';
 import '/../core/responsive/responsive_config.dart';
 import '/../core/routing/app_routes.dart';
+import '../../../core/resources/app_images.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -25,15 +25,9 @@ class _SplashViewState extends State<SplashView> {
   Future<void> _redirect() async {
     if (_hasRedirected || !mounted) return;
     _hasRedirected = true;
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
     context.go(AppRoutes.mainTasksScreen);
-    // final hasSeenOnboarding = CacheHelper.getData(CacheKeys.isFirstOpen);
-    // if (hasSeenOnboarding == null) {
-    //   context.go(AppRoutes.onBoardingScreen);
-    // } else {
-    //   context.go(AppRoutes.loginScreen);
-    // }
   }
 
   @override
@@ -46,7 +40,7 @@ class _SplashViewState extends State<SplashView> {
             child: Image.asset(
               AppImages.appLogo,
               fit: BoxFit.cover,
-              width: SizeConfig.screenWidth * 0.8,
+              width: SizeConfig.screenWidth * 0.35,
             ),
           ),
         ],

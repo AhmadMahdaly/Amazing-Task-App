@@ -12,7 +12,7 @@ class ListsCubit extends Cubit<ListsState> {
     emit(ListsLoading());
     try {
       final lists = await listsRepository.getLists();
-      // الترتيب حسب الـ position
+
       lists.sort((a, b) => a.position.compareTo(b.position));
       emit(ListsLoaded(lists));
     } catch (e) {

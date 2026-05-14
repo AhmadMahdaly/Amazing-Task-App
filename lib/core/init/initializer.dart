@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:s/core/bloc_observer.dart';
 
 import '/../core/di.dart';
 import '../../core/routing/router_generation_config.dart';
@@ -14,5 +16,5 @@ Future<void> initializeApp() async {
   await CacheHelper.init();
   initRouter();
   await setupGetIt();
-  // Bloc.observer = MyBlocObserver();
+  Bloc.observer = MyBlocObserver();
 }

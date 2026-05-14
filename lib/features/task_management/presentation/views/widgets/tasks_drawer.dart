@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_text.dart';
+import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
-import 'package:s/core/theme/app_colors.dart';
-import 'package:s/core/theme/app_text_style.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_list/presentation/views/add_list_bottom_sheet.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
@@ -32,11 +33,9 @@ class TasksDrawer extends StatelessWidget {
                   final now = DateTime.now();
                   final todayStr = now.toIso8601String().split('T')[0];
 
-                  // فلترة دقيقة لمهام اليوم
                   final todayTasks = state.allTasks.where((t) {
-                    // 1. هل أضيفت ليومي؟
                     final inMyDay = t.myDayDate == todayStr;
-                    // 2. أو هل تاريخ استحقاقها هو اليوم؟
+
                     final dueToday =
                         t.dueDate != null &&
                         t.dueDate!.year == now.year &&
@@ -73,7 +72,7 @@ class TasksDrawer extends StatelessWidget {
                               value: progress,
                               strokeWidth: 4.r,
                               backgroundColor: AppColors.secondaryColor
-                                  .withOpacity(0.2),
+                                  .withAlpha(33),
                               color: Colors.white,
                             ),
                             Center(
@@ -92,7 +91,7 @@ class TasksDrawer extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'إنجاز اليوم',
+                              AppTexts.todayProgress,
                               style: AppTextStyle.style9W300.copyWith(
                                 fontSize: 16.sp,
                                 color: Colors.white,
@@ -102,8 +101,8 @@ class TasksDrawer extends StatelessWidget {
                             SizedBox(height: 4.h),
                             Text(
                               totalToday == 0
-                                  ? 'لا توجد مهام اليوم'
-                                  : '$completedToday من $totalToday مهام مكتملة',
+                                  ? AppTexts.noTasksToday
+                                  : '${AppTexts.completedTasks} $completedToday ${AppTexts.of} $totalToday',
                               style: AppTextStyle.style9W300.copyWith(
                                 fontSize: 11.sp,
                                 color: Colors.white,
@@ -121,56 +120,56 @@ class TasksDrawer extends StatelessWidget {
 
             _buildDrawerItem(
               icon: Icons.wb_sunny_outlined,
-              title: 'My Day',
+              title: AppTexts.myDay,
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
                   filter: TaskFilter.myDay,
-                  title: 'My Day',
+                  title: AppTexts.myDay,
                 );
               },
             ),
             _buildDrawerItem(
               icon: Icons.star_border,
-              title: 'Important',
+              title: AppTexts.important,
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
                   filter: TaskFilter.important,
-                  title: 'Important',
+                  title: AppTexts.important,
                 );
               },
             ),
             _buildDrawerItem(
               icon: Icons.calendar_today,
-              title: 'Planned',
+              title: AppTexts.planned,
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
                   filter: TaskFilter.planned,
-                  title: 'Planned',
+                  title: AppTexts.planned,
                 );
               },
             ),
             _buildDrawerItem(
               icon: Icons.task_alt,
-              title: 'Completed',
+              title: AppTexts.completed,
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
                   filter: TaskFilter.completed,
-                  title: 'Completed',
+                  title: AppTexts.completed,
                 );
               },
             ),
             _buildDrawerItem(
               icon: Icons.home_outlined,
-              title: 'Tasks',
+              title: AppTexts.tasks,
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
                   filter: TaskFilter.allTasks,
-                  title: 'Tasks',
+                  title: AppTexts.tasks,
                 );
               },
             ),
@@ -190,7 +189,7 @@ class TasksDrawer extends StatelessWidget {
                           vertical: 10.h,
                         ),
                         child: Text(
-                          'لا توجد قوائم مخصصة بعد',
+                          AppTexts.noCustomListsYet,
                           style: AppTextStyle.style9W300.copyWith(
                             fontSize: 12.sp,
                             color: Colors.white.withAlpha(128),
@@ -228,7 +227,7 @@ class TasksDrawer extends StatelessWidget {
 
             _buildDrawerItem(
               icon: Icons.add,
-              title: 'New list',
+              title: AppTexts.newList,
               iconColor: Colors.white,
               textColor: Colors.white,
               isBold: true,
@@ -283,12 +282,10 @@ class TasksDrawer extends StatelessWidget {
             )
           : null,
       onTap: () {
-        // إذا لم تكن القائمة ثابتة (أي في الموبايل)، نقوم بإغلاقها أولاً
         if (!isPermanent) {
           Navigator.pop(context);
         }
 
-        // ثم ننفذ الوظيفة الخاصة بالعنصر (مثل استدعاء الكيوبت)
         onTap();
       },
     );
