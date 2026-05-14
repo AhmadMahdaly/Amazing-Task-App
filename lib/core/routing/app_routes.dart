@@ -1,0 +1,12 @@
+class AppRoutes {
+  static const String splashScreen = '/splashScreen';
+  static const String mainTasksScreen = '/mainTasksScreen';
+  // static const String settingsAndStatsScreen = '/settingsAndStatsScreen';
+  // static const String forgotPasswordScreen = '/forgotPasswordScreen';
+  // static const String verificationScreen = '/verificationScreen';
+  // static const String resetPasswordScreen = '/resetPasswordScreen';
+  // static const String mainLayoutScreen = '/mainLayoutscreen';
+  // static const String onBoardingScreen = '/onBoardingScreen';
+  // static const String maintenanceScreen = '/maintenanceScreen';
+  // static const String errorScreen = '/errorScreen';
+}
