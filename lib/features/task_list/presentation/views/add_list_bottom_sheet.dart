@@ -30,21 +30,52 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
 
     setState(() => _isSaving = true);
 
-    final listsCubit = context.read<ListsCubit>();
-    final currentState = listsCubit.state;
-    final position =
-        currentState is ListsLoaded ? currentState.lists.length : 0;
+    try {
+      final listsCubit = context.read<ListsCubit>();
+      final currentState = listsCubit.state;
+      final position =
+          currentState is ListsLoaded ? currentState.lists.length : 0;
 
-    await listsCubit.addList(
-      TaskListEntity(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: title,
-        position: position,
-      ),
-    );
+      await listsCubit.addList(
+        TaskListEntity(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: title,
+          position: position,
+        ),
+      );
 
-    if (mounted) {
-      Navigator.pop(context);
+      if (!mounted) return;
+
+      final stateAfterSave = listsCubit.state;
+      if (stateAfterSave is ListsLoaded) {
+        Navigator.pop(context);
+      } else if (stateAfterSave is ListsError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              stateAfterSave.message,
+              style: AppTextStyle.style9W300.copyWith(color: Colors.white),
+            ),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.toString(),
+              style: AppTextStyle.style9W300.copyWith(color: Colors.white),
+            ),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
