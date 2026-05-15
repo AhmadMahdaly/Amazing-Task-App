@@ -9,6 +9,8 @@ import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/entities/task_step.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
+import 'package:s/features/task_management/domain/utils/repeat_format_utils.dart';
+import 'package:s/features/task_management/presentation/views/widgets/custom_repeat_dialog.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_steps_utils.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
@@ -279,6 +281,46 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     selected,
                     (v) => setSheetState(() => selected = v),
                   ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.dashboard_customize,
+                      color: isCustomRepeatMode(selected)
+                          ? AppColors.primaryColor
+                          : AppColors.secondaryColor,
+                    ),
+                    title: Text(
+                      AppTexts.custom,
+                      style: AppTextStyle.style12W300.copyWith(
+                        color: isCustomRepeatMode(selected)
+                            ? AppColors.primaryColor
+                            : null,
+                        fontWeight: isCustomRepeatMode(selected)
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    subtitle: isCustomRepeatMode(selected)
+                        ? Text(
+                            formatRepeatMode(selected),
+                            style: AppTextStyle.style9W300.copyWith(
+                              fontSize: 11.sp,
+                              color: AppColors.secondaryColor,
+                            ),
+                          )
+                        : null,
+                    onTap: () async {
+                      Navigator.pop(sheetContext);
+                      final result = await showCustomRepeatDialog(
+                        context,
+                        initialMode: isCustomRepeatMode(task.repeatMode)
+                            ? task.repeatMode
+                            : selected,
+                      );
+                      if (result != null && mounted) {
+                        await _persist(task.copyWith(repeatMode: result));
+                      }
+                    },
+                  ),
                   if (selected != null)
                     ListTile(
                       leading: const Icon(
@@ -437,20 +479,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   String _repeatLabel(String? mode) {
     if (mode == null) return AppTexts.removeRepeat;
-    switch (mode) {
-      case 'daily':
-        return AppTexts.daily;
-      case 'weekdays':
-        return AppTexts.weekdays;
-      case 'weekly':
-        return AppTexts.weekly;
-      case 'monthly':
-        return AppTexts.monthly;
-      case 'yearly':
-        return AppTexts.yearly;
-      default:
-        return mode;
-    }
+    return formatRepeatMode(mode);
   }
 
   @override
@@ -463,7 +492,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             appBar: AppBar(
               backgroundColor: AppColors.primaryColor,
               foregroundColor: Colors.white,
-              title: Text(AppTexts.taskDetails, style: AppTextStyle.style9W300),
+              title: Text(
+                AppTexts.taskDetails,
+                style: AppTextStyle.style16Bold,
+              ),
             ),
             body: Center(
               child: Text(
@@ -796,8 +828,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                 if (!context.mounted || blocked == null) {
                                   return;
                                 }
-                                await NotificationPermissionHelper
-                                    .showPermissionDialog(
+                                await NotificationPermissionHelper.showPermissionDialog(
                                   context,
                                   blocked,
                                 );

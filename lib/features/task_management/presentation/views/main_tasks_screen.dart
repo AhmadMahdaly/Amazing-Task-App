@@ -5,6 +5,7 @@ import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
+import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 import 'package:s/features/task_management/presentation/views/widgets/add_task_bottom_sheet.dart';
 import 'package:s/features/task_management/presentation/views/widgets/completed_tasks_section.dart';
@@ -45,14 +46,38 @@ class MainTasksScreen extends StatelessWidget {
                     pinned: true,
                     backgroundColor: AppColors.primaryColor,
                     flexibleSpace: FlexibleSpaceBar(
-                      title: Text(
-                        screenTitle,
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 22.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      title: state is TasksLoaded &&
+                              state.currentFilter == TaskFilter.myDay
+                          ? Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  screenTitle,
+                                  style: AppTextStyle.style9W300.copyWith(
+                                    fontSize: 22.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  formatFullDate(DateTime.now()),
+                                  style: AppTextStyle.style9W300.copyWith(
+                                    fontSize: 13.sp,
+                                    color: Colors.white.withAlpha(200),
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Text(
+                              screenTitle,
+                              style: AppTextStyle.style9W300.copyWith(
+                                fontSize: 22.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                       background: Container(
                         decoration: const BoxDecoration(
                           gradient: LinearGradient(

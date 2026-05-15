@@ -2,6 +2,7 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:s/core/resources/app_text.dart';
+import 'package:s/core/services/notification_action_handler.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/core/services/task_notification_service.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
@@ -36,26 +37,7 @@ class TasksCubit extends Cubit<TasksState> {
     String taskId,
     String? actionId,
   ) async {
-    final tasks = await tasksRepository.getTasks();
-    TaskEntity? task;
-    for (final t in tasks) {
-      if (t.id == taskId) {
-        task = t;
-        break;
-      }
-    }
-    if (task == null) return;
-
-    if (actionId == actionDelete) {
-      await notificationService.cancelPinned(taskId);
-      await tasksRepository.deleteTask(taskId);
-    } else if (actionId == actionUnpin) {
-      await notificationService.cancelPinned(taskId);
-      await tasksRepository.updateTask(
-        task.copyWith(clearPin: true),
-      );
-    }
-
+    await NotificationActionHandler.handleAction(taskId, actionId);
     await loadTasks();
   }
 

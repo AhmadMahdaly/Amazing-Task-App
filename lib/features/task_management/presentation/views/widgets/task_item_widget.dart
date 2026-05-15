@@ -9,6 +9,7 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/shared_widgets/directional_text.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
+import 'package:s/features/task_management/domain/utils/repeat_format_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
@@ -22,40 +23,6 @@ class TaskItemWidget extends StatelessWidget {
   final TaskEntity task;
   final bool showCompletedDate;
 
-  String _getRepeatText(String? mode) {
-    if (mode == null) return '';
-
-    if (mode.startsWith('custom:')) {
-      final parts = mode.split(':');
-      if (parts.length >= 3) {
-        final count = parts[1];
-        final unit = parts[2];
-        var unitAr = '';
-        if (unit == 'days') unitAr = AppTexts.days;
-        if (unit == 'weeks') unitAr = AppTexts.weeks;
-        if (unit == 'months') unitAr = AppTexts.months;
-        if (unit == 'years') unitAr = AppTexts.years;
-
-        return 'كل $count $unitAr';
-      }
-    }
-
-    switch (mode) {
-      case 'daily':
-        return AppTexts.daily;
-      case 'weekdays':
-        return AppTexts.weekdays;
-      case 'weekly':
-        return AppTexts.weekly;
-      case 'monthly':
-        return AppTexts.monthly;
-      case 'yearly':
-        return AppTexts.yearly;
-      default:
-        return '';
-    }
-  }
-
   void _openDetail(BuildContext context) {
     unawaited(context.push('/task/${task.id}'));
   }
@@ -67,7 +34,7 @@ class TaskItemWidget extends StatelessWidget {
               ? formatCompletedDate(task.completedAt)
               : '')
         : formatTaskDate(task.dueDate);
-    final repeatText = _getRepeatText(task.repeatMode);
+    final repeatText = formatRepeatMode(task.repeatMode);
     final stepsText = task.hasSteps
         ? '${task.completedSteps}/${task.totalSteps} ${AppTexts.stepsProgress}'
         : '';
@@ -179,6 +146,7 @@ class TaskItemWidget extends StatelessWidget {
           child: Container(
             margin: EdgeInsets.only(bottom: 8.h),
             decoration: BoxDecoration(
+              color: AppColors.scaffoldBackgroundLightColor,
               borderRadius: BorderRadius.circular(8.r),
               boxShadow: [
                 BoxShadow(

@@ -20,6 +20,10 @@ String formatCompletedDate(DateTime? date) {
       '${date.minute.toString().padLeft(2, '0')}';
 }
 
+String formatFullDate(DateTime date) {
+  return '${date.day}/${date.month}/${date.year}';
+}
+
 String formatDateHeader(DateTime date) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);

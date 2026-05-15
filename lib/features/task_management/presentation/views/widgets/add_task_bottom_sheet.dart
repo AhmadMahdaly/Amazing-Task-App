@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/di.dart';
 import 'package:s/core/resources/app_colors.dart';
-import 'package:s/core/services/notification_permission_helper.dart';
-import 'package:s/core/services/task_notification_service.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/services/notification_permission_helper.dart';
+import 'package:s/core/services/task_notification_service.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
+import 'package:s/features/task_management/domain/utils/repeat_format_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
+import 'package:s/features/task_management/presentation/views/widgets/custom_repeat_dialog.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
   const AddTaskBottomSheet({
@@ -141,7 +143,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ),
               ListTile(
                 leading: const Icon(Icons.today, color: AppColors.primaryColor),
-                title: Text(AppTexts.today, style: AppTextStyle.style9W300),
+                title: Text(AppTexts.today, style: AppTextStyle.style12W300),
                 onTap: () {
                   setState(() => _selectedDueDate = now);
                   Navigator.pop(context);
@@ -251,12 +253,36 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               _buildRepeatOptionTile(AppTexts.yearly, 'yearly'),
 
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.dashboard_customize,
-                  color: AppColors.secondaryColor,
+                  color: isCustomRepeatMode(_selectedRepeatMode)
+                      ? AppColors.primaryColor
+                      : AppColors.secondaryColor,
                 ),
-                title: Text(AppTexts.custom, style: AppTextStyle.style9W300),
-                onTap: _showCustomRepeatDialog,
+                title: Text(
+                  AppTexts.custom,
+                  style: AppTextStyle.style12W300.copyWith(
+                    color: isCustomRepeatMode(_selectedRepeatMode)
+                        ? AppColors.primaryColor
+                        : null,
+                    fontWeight: isCustomRepeatMode(_selectedRepeatMode)
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                ),
+                subtitle: isCustomRepeatMode(_selectedRepeatMode)
+                    ? Text(
+                        formatRepeatMode(_selectedRepeatMode),
+                        style: AppTextStyle.style9W300.copyWith(
+                          fontSize: 11.sp,
+                          color: AppColors.secondaryColor,
+                        ),
+                      )
+                    : null,
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _showCustomRepeatDialog();
+                },
               ),
               if (_selectedRepeatMode != null)
                 ListTile(
@@ -338,7 +364,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
           Row(
             children: [
               _buildActionIcon(
-                icon: Icons.calendar_today,
+                icon: _selectedDueDate != null
+                    ? Icons.event
+                    : Icons.calendar_today,
                 isActive: _selectedDueDate != null,
                 onTap: _showDueDateOptions,
               ),
@@ -354,7 +382,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               SizedBox(width: 16.w),
 
               _buildActionIcon(
-                icon: Icons.repeat,
+                icon: _selectedRepeatMode != null
+                    ? Icons.repeat_on
+                    : Icons.repeat,
                 isActive: _selectedRepeatMode != null,
                 onTap: _showRepeatOptions,
               ),
@@ -363,7 +393,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
-                  minimumSize: Size(40.w, 40.h),
+                  minimumSize: Size(60.w, 60.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(320.r),
                   ),
@@ -436,233 +466,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   }
 
   Future<void> _showCustomRepeatDialog() async {
-    var count = 1;
-    var unit = 'weeks';
-    final selectedDays = <int>[
-      DateTime.now().weekday,
-    ];
-
-    await showDialog<void>(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return AlertDialog(
-              backgroundColor: AppColors.scaffoldBackgroundLightColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.r),
-              ),
-              title: Text(
-                AppTexts.customRepeat,
-                style: AppTextStyle.style9W300.copyWith(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primaryColor,
-                ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        AppTexts.repeatEvery,
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                      SizedBox(width: 10.w),
-                      SizedBox(
-                        width: 50.w,
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyle.style9W300.copyWith(
-                            fontSize: 14.sp,
-                          ),
-                          controller:
-                              TextEditingController(text: count.toString())
-                                ..selection = TextSelection.collapsed(
-                                  offset: count.toString().length,
-                                ),
-                          onChanged: (val) {
-                            count = int.tryParse(val) ?? 1;
-                          },
-                        ),
-                      ),
-                      SizedBox(width: 10.w),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: unit,
-                          dropdownColor: AppColors.scaffoldBackgroundLightColor,
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            border: InputBorder.none,
-                          ),
-                          style: AppTextStyle.style9W300.copyWith(
-                            fontSize: 14.sp,
-                            color: AppColors.forthColor,
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                              value: 'days',
-                              child: Text(AppTexts.days),
-                            ),
-                            DropdownMenuItem(
-                              value: 'weeks',
-                              child: Text(AppTexts.weeks),
-                            ),
-                            DropdownMenuItem(
-                              value: 'months',
-                              child: Text(AppTexts.months),
-                            ),
-                            DropdownMenuItem(
-                              value: 'years',
-                              child: Text(AppTexts.years),
-                            ),
-                          ],
-                          onChanged: (val) {
-                            setStateDialog(() => unit = val!);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  if (unit == 'weeks') ...[
-                    SizedBox(height: 20.h),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        AppTexts.inTheseDays,
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                    Wrap(
-                      spacing: 8.w,
-                      runSpacing: 8.h,
-                      alignment: WrapAlignment.center,
-                      children: [
-                        _buildDayToggle(
-                          DateTime.sunday,
-                          AppTexts.sunday,
-                          selectedDays,
-                          setStateDialog,
-                        ),
-                        _buildDayToggle(
-                          DateTime.monday,
-                          AppTexts.monday,
-                          selectedDays,
-                          setStateDialog,
-                        ),
-                        _buildDayToggle(
-                          DateTime.tuesday,
-                          AppTexts.tuesday,
-                          selectedDays,
-                          setStateDialog,
-                        ),
-                        _buildDayToggle(
-                          DateTime.wednesday,
-                          AppTexts.wednesday,
-                          selectedDays,
-                          setStateDialog,
-                        ),
-                        _buildDayToggle(
-                          DateTime.thursday,
-                          AppTexts.thursday,
-                          selectedDays,
-                          setStateDialog,
-                        ),
-                        _buildDayToggle(
-                          DateTime.friday,
-                          AppTexts.friday,
-                          selectedDays,
-                          setStateDialog,
-                        ),
-                        _buildDayToggle(
-                          DateTime.saturday,
-                          AppTexts.saturday,
-                          selectedDays,
-                          setStateDialog,
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    AppTexts.cancel,
-                    style: AppTextStyle.style9W300.copyWith(
-                      color: AppColors.secondaryColor,
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                  ),
-                  onPressed: () {
-                    final daysStr = selectedDays.join(',');
-                    final customMode = 'custom:$count:$unit:$daysStr';
-
-                    setState(() => _selectedRepeatMode = customMode);
-                    Navigator.pop(context);
-                    Navigator.pop(
-                      context,
-                    );
-                  },
-                  child: Text(
-                    AppTexts.save,
-                    style: AppTextStyle.style9W300.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
+    final result = await showCustomRepeatDialog(
+      context,
+      initialMode: _selectedRepeatMode,
     );
-  }
-
-  Widget _buildDayToggle(
-    int dayValue,
-    String label,
-    List<int> selectedDays,
-    StateSetter setStateDialog,
-  ) {
-    final isSelected = selectedDays.contains(dayValue);
-    return InkWell(
-      onTap: () {
-        setStateDialog(() {
-          if (isSelected && selectedDays.length > 1) {
-            selectedDays.remove(dayValue);
-          } else if (!isSelected) {
-            selectedDays.add(dayValue);
-          }
-        });
-      },
-      child: CircleAvatar(
-        radius: 16.r,
-        backgroundColor: isSelected
-            ? AppColors.primaryColor
-            : AppColors.secondaryColor.withAlpha(51),
-        child: Text(
-          label,
-          style: AppTextStyle.style9W300.copyWith(
-            fontSize: 14.sp,
-            color: isSelected ? Colors.white : AppColors.forthColor,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
-      ),
-    );
+    if (result != null && mounted) {
+      setState(() => _selectedRepeatMode = result);
+    }
   }
 }

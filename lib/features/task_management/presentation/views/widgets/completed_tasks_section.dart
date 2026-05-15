@@ -62,21 +62,20 @@ class CompletedTasksSection extends StatelessWidget {
           childrenPadding: EdgeInsets.only(bottom: 8.h),
           title: Text(
             '${AppTexts.completed}  ${tasks.length}',
-            style: AppTextStyle.style9W300.copyWith(
-              fontSize: 14.sp,
-              color: AppColors.secondaryColor,
+            style: AppTextStyle.style12W300.copyWith(
+              color: AppColors.secondaryColor.withAlpha(160),
               fontWeight: FontWeight.w600,
             ),
           ),
-          subtitle: sorted.first.completedAt != null
-              ? Text(
-                  formatCompletedDate(sorted.first.completedAt),
-                  style: AppTextStyle.style9W300.copyWith(
-                    fontSize: 11.sp,
-                    color: AppColors.secondaryColor.withAlpha(160),
-                  ),
-                )
-              : null,
+          // subtitle: sorted.first.completedAt != null
+          //     ? Text(
+          //         formatCompletedDate(sorted.first.completedAt),
+          //         style: AppTextStyle.style9W300.copyWith(
+          //           fontSize: 11.sp,
+          //           color: AppColors.secondaryColor.withAlpha(160),
+          //         ),
+          //       )
+          //     : null,
           children: [
             for (final entry in grouped.entries) ...[
               _DateHeader(label: entry.key),

@@ -158,17 +158,17 @@ class TasksDrawer extends StatelessWidget {
                 );
               },
             ),
-            _buildDrawerItem(
-              icon: Icons.task_alt,
-              title: AppTexts.completed,
-              context: context,
-              onTap: () async {
-                await context.read<TasksCubit>().loadTasks(
-                  filter: TaskFilter.completed,
-                  title: AppTexts.completed,
-                );
-              },
-            ),
+            // _buildDrawerItem(
+            //   icon: Icons.task_alt,
+            //   title: AppTexts.completed,
+            //   context: context,
+            //   onTap: () async {
+            //     await context.read<TasksCubit>().loadTasks(
+            //       filter: TaskFilter.completed,
+            //       title: AppTexts.completed,
+            //     );
+            //   },
+            // ),
             _buildDrawerItem(
               icon: Icons.home_outlined,
               title: AppTexts.tasks,
@@ -180,15 +180,15 @@ class TasksDrawer extends StatelessWidget {
                 );
               },
             ),
-            _buildDrawerItem(
-              icon: Icons.bar_chart,
-              title: AppTexts.analytics,
-              context: context,
-              onTap: () {
-                unawaited(context.push(AppRoutes.analyticsScreen));
-              },
-            ),
 
+            // _buildDrawerItem(
+            //   icon: Icons.bar_chart,
+            //   title: AppTexts.analytics,
+            //   context: context,
+            //   onTap: () {
+            //     unawaited(context.push(AppRoutes.analyticsScreen));
+            //   },
+            // ),
             Divider(color: AppColors.secondaryColor.withAlpha(77)),
 
             Expanded(

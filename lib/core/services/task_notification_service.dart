@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:s/core/resources/app_text.dart';
+import 'package:s/core/services/notification_action_handler.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
@@ -10,8 +11,10 @@ const String actionUnpin = 'unpin';
 const String actionDelete = 'delete';
 
 @pragma('vm:entry-point')
-void onBackgroundNotificationResponse(NotificationResponse response) {
-  TaskNotificationService.handleBackgroundResponse(response);
+Future<void> onBackgroundNotificationResponse(
+  NotificationResponse response,
+) async {
+  await NotificationActionHandler.handle(response);
 }
 
 typedef TaskNotificationActionHandler = Future<void> Function(
@@ -36,14 +39,6 @@ class TaskNotificationService {
 
   static TaskNotificationService get instance {
     return _instance ??= TaskNotificationService();
-  }
-
-  static void handleBackgroundResponse(NotificationResponse response) {
-    final taskId = response.payload;
-    if (taskId == null || taskId.isEmpty) return;
-    unawaited(
-      instance._dispatchAction(taskId, response.actionId),
-    );
   }
 
   void registerActionHandler(TaskNotificationActionHandler handler) {
@@ -101,15 +96,20 @@ class TaskNotificationService {
   Future<bool> hasPermission() => NotificationPermissionHelper.isGranted();
 
   void _onNotificationResponse(NotificationResponse response) {
-    final taskId = response.payload;
-    if (taskId == null || taskId.isEmpty) return;
-    unawaited(_dispatchAction(taskId, response.actionId));
+    unawaited(_handleResponse(response));
   }
 
-  Future<void> _dispatchAction(String taskId, String? actionId) async {
+  Future<void> _handleResponse(NotificationResponse response) async {
+    final taskId = response.payload;
+    if (taskId == null || taskId.isEmpty) return;
+
     final handler = _actionHandler;
-    if (handler == null) return;
-    await handler(taskId, actionId);
+    if (handler != null) {
+      await handler(taskId, response.actionId);
+      return;
+    }
+
+    await NotificationActionHandler.handle(response);
   }
 
   int notificationIdFor(String taskId) => taskId.hashCode.abs() % 2147483646 + 1;
@@ -165,7 +165,7 @@ class TaskNotificationService {
         AndroidNotificationAction(
           actionDelete,
           AppTexts.delete,
-          showsUserInterface: false,
+          showsUserInterface: true,
           cancelNotification: true,
         ),
       ],
