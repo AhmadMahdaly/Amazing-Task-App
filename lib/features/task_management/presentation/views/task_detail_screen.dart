@@ -11,6 +11,7 @@ import 'package:s/features/task_management/domain/entities/task_step.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_steps_utils.dart';
+import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/core/shared_widgets/directional_text.dart';
 import 'package:s/core/utils/text_direction_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
@@ -786,12 +787,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         onChanged: task.isCompleted
                             ? null
                             : (v) async {
-                                await context
+                                final blocked = await context
                                     .read<TasksCubit>()
                                     .setPinnedToNotification(
                                       task,
                                       pinned: v,
                                     );
+                                if (!context.mounted || blocked == null) {
+                                  return;
+                                }
+                                await NotificationPermissionHelper
+                                    .showPermissionDialog(
+                                  context,
+                                  blocked,
+                                );
                               },
                       ),
                     ),

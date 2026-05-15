@@ -116,4 +116,10 @@ class AppTexts {
   static String unpin = 'Unpin';
   static String pinnedTaskLabel = 'Pinned task';
   static String pinnedTasksChannelDesc = 'Tasks pinned to the notification shade';
+  static String notificationPermissionRequired = 'Notification permission required';
+  static String notificationPermissionDenied =
+      'Allow notifications to pin tasks. You can enable them when prompted.';
+  static String notificationPermissionDeniedSettings =
+      'Notifications are disabled. Open app settings and enable notifications to pin tasks.';
+  static String openSettings = 'Open settings';
 }

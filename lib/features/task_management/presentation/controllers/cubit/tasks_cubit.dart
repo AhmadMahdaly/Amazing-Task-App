@@ -2,6 +2,7 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:s/core/resources/app_text.dart';
+import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/core/services/task_notification_service.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/repo/tasks_repository.dart';
@@ -300,13 +301,22 @@ class TasksCubit extends Cubit<TasksState> {
     }
   }
 
-  Future<void> setPinnedToNotification(
+  /// Returns a permission result when pinning was blocked; `null` on success.
+  Future<NotificationPermissionResult?> setPinnedToNotification(
     TaskEntity task, {
     required bool pinned,
   }) async {
+    if (pinned) {
+      final permission = await notificationService.ensurePermission();
+      if (permission != NotificationPermissionResult.granted) {
+        return permission;
+      }
+    }
+
     final updated = pinned
         ? task.copyWith(isPinnedToNotification: true)
         : task.copyWith(clearPin: true);
     await updateTask(updated);
+    return null;
   }
 }

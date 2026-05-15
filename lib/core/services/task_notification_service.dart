@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:s/core/resources/app_text.dart';
+import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 
@@ -26,6 +27,7 @@ class TaskNotificationService {
 
   TaskNotificationActionHandler? _actionHandler;
   final Set<int> _activeNotificationIds = {};
+  var _initialized = false;
 
   static const _channelId = 'pinned_tasks';
   static const _channelName = 'Pinned Tasks';
@@ -48,12 +50,15 @@ class TaskNotificationService {
     _actionHandler = handler;
   }
 
+  /// Initializes the plugin and notification channel (no permission dialog).
   Future<void> initialize() async {
+    if (_initialized) return;
+
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const darwinSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
     );
 
     await _plugin.initialize(
@@ -67,11 +72,33 @@ class TaskNotificationService {
           onBackgroundNotificationResponse,
     );
 
+    await _createAndroidChannel();
+    _initialized = true;
+  }
+
+  Future<void> _createAndroidChannel() async {
     final androidPlugin =
         _plugin.resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
-    await androidPlugin?.requestNotificationsPermission();
+
+    if (androidPlugin == null) return;
+
+    final channel = AndroidNotificationChannel(
+      _channelId,
+      _channelName,
+      description: AppTexts.pinnedTasksChannelDesc,
+      importance: Importance.defaultImportance,
+    );
+
+    await androidPlugin.createNotificationChannel(channel);
   }
+
+  /// Requests notification permission when the user opts in to pin a task.
+  Future<NotificationPermissionResult> ensurePermission() {
+    return NotificationPermissionHelper.ensureGranted();
+  }
+
+  Future<bool> hasPermission() => NotificationPermissionHelper.isGranted();
 
   void _onNotificationResponse(NotificationResponse response) {
     final taskId = response.payload;
@@ -88,6 +115,8 @@ class TaskNotificationService {
   int notificationIdFor(String taskId) => taskId.hashCode.abs() % 2147483646 + 1;
 
   Future<void> syncAll(List<TaskEntity> tasks) async {
+    if (!await hasPermission()) return;
+
     final pinnedActive = tasks
         .where((t) => t.isPinnedToNotification && !t.isCompleted)
         .toList();
@@ -112,7 +141,9 @@ class TaskNotificationService {
     }
   }
 
-  Future<void> showPinned(TaskEntity task) async {
+  Future<bool> showPinned(TaskEntity task) async {
+    if (!await hasPermission()) return false;
+
     final id = notificationIdFor(task.id);
     final body = _buildBody(task);
 
@@ -158,6 +189,7 @@ class TaskNotificationService {
       payload: task.id,
     );
     _activeNotificationIds.add(id);
+    return true;
   }
 
   Future<void> cancelPinned(String taskId) async {

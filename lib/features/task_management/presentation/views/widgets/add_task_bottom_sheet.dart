@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:s/core/di.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/services/notification_permission_helper.dart';
+import 'package:s/core/services/task_notification_service.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
@@ -87,9 +90,21 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 ),
                 value: _pinToNotification,
                 activeThumbColor: AppColors.primaryColor,
-                onChanged: (value) {
+                onChanged: (value) async {
+                  if (value) {
+                    final result = await getIt<TaskNotificationService>()
+                        .ensurePermission();
+                    if (!context.mounted) return;
+                    if (result != NotificationPermissionResult.granted) {
+                      await NotificationPermissionHelper.showPermissionDialog(
+                        context,
+                        result,
+                      );
+                      return;
+                    }
+                  }
                   setState(() => _pinToNotification = value);
-                  Navigator.pop(context);
+                  if (context.mounted) Navigator.pop(context);
                 },
               ),
             ],
@@ -355,6 +370,19 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 ),
                 onPressed: () async {
                   if (_taskController.text.trim().isEmpty) return;
+
+                  if (_pinToNotification) {
+                    final result = await getIt<TaskNotificationService>()
+                        .ensurePermission();
+                    if (!context.mounted) return;
+                    if (result != NotificationPermissionResult.granted) {
+                      await NotificationPermissionHelper.showPermissionDialog(
+                        context,
+                        result,
+                      );
+                      return;
+                    }
+                  }
 
                   final now = DateTime.now();
                   final hasRepeat = _selectedRepeatMode != null;
