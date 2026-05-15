@@ -22,11 +22,29 @@ class ListsCubit extends Cubit<ListsState> {
 
   Future<void> addList(TaskListEntity list) async {
     try {
-      await listsRepository.addList(list);
+      final existing = await listsRepository.getLists();
+      final listWithPosition = TaskListEntity(
+        id: list.id,
+        title: list.title,
+        position: _nextListPosition(existing),
+      );
+      await listsRepository.addList(listWithPosition);
       await loadLists();
     } catch (e) {
       emit(ListsError(e.toString()));
     }
+  }
+
+  /// Next position from persisted lists, not UI cubit state (avoids 0 while loading).
+  int _nextListPosition(List<TaskListEntity> existing) {
+    if (existing.isEmpty) return 0;
+    var maxPosition = existing.first.position;
+    for (final item in existing) {
+      if (item.position > maxPosition) {
+        maxPosition = item.position;
+      }
+    }
+    return maxPosition + 1;
   }
 
   Future<void> deleteList(String id) async {

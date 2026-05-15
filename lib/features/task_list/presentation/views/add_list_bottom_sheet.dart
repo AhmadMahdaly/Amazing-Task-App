@@ -32,15 +32,11 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
 
     try {
       final listsCubit = context.read<ListsCubit>();
-      final currentState = listsCubit.state;
-      final position =
-          currentState is ListsLoaded ? currentState.lists.length : 0;
 
       await listsCubit.addList(
         TaskListEntity(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           title: title,
-          position: position,
         ),
       );
 
