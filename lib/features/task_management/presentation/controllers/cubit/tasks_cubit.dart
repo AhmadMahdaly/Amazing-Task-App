@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/repo/tasks_repository.dart';
+import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 
 part 'tasks_state.dart';
 
@@ -17,10 +18,7 @@ class TasksCubit extends Cubit<TasksState> {
   double get todayProgress {
     if (state is! TasksLoaded) return 0;
     final allTasks = (state as TasksLoaded).allTasks;
-    final todayStr = DateTime.now().toIso8601String().split('T')[0];
-    final todayTasks = allTasks
-        .where((task) => task.myDayDate == todayStr)
-        .toList();
+    final todayTasks = allTasks.where(isTaskInMyDay).toList();
     if (todayTasks.isEmpty) return 0;
     final completedCount = todayTasks.where((task) => task.isCompleted).length;
     return completedCount / todayTasks.length;
@@ -33,7 +31,12 @@ class TasksCubit extends Cubit<TasksState> {
   }) async {
     emit(TasksLoading());
     try {
-      if (filter != null) _currentFilter = filter;
+      if (filter != null) {
+        _currentFilter = filter;
+        if (filter != TaskFilter.customList) {
+          _currentListId = null;
+        }
+      }
       if (title != null) _currentTitle = title;
       if (customListId != null) _currentListId = customListId;
 
@@ -52,10 +55,7 @@ class TasksCubit extends Cubit<TasksState> {
               .where((task) => task.listId == _currentListId)
               .toList();
         case TaskFilter.myDay:
-          final todayStr = DateTime.now().toIso8601String().split('T')[0];
-          filteredTasks = allTasks
-              .where((task) => task.myDayDate == todayStr)
-              .toList();
+          filteredTasks = allTasks.where(isTaskInMyDay).toList();
         case TaskFilter.completed:
           filteredTasks = allTasks.where((task) => task.isCompleted).toList();
         case TaskFilter.important:
@@ -87,42 +87,34 @@ class TasksCubit extends Cubit<TasksState> {
         task.repeatMode!,
       );
 
+      final wasInMyDay = isTaskInMyDay(task);
       final nextTask = TaskEntity(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: task.title,
         listId: task.listId,
         dueDate: nextDueDate,
         repeatMode: task.repeatMode,
-        myDayDate: null,
+        myDayDate: wasInMyDay ? formatMyDayDate(nextDueDate) : null,
         position: task.position,
+        isImportant: task.isImportant,
       );
 
       await tasksRepository.addTask(nextTask);
 
-      final currentTaskUpdated = TaskEntity(
-        id: task.id,
-        title: task.title,
-        listId: task.listId,
-        dueDate: task.dueDate,
-        repeatMode: task.repeatMode,
-        isCompleted: true,
-        myDayDate: task.myDayDate,
-        position: task.position,
+      await tasksRepository.updateTask(
+        task.copyWith(
+          isCompleted: true,
+          completedAt: DateTime.now(),
+        ),
       );
-      await tasksRepository.updateTask(currentTaskUpdated);
-      await tasksRepository.updateTask(currentTaskUpdated);
     } else {
-      final updatedTask = TaskEntity(
-        id: task.id,
-        title: task.title,
-        listId: task.listId,
-        dueDate: task.dueDate,
-        repeatMode: task.repeatMode,
-        isCompleted: isNowCompleted,
-        myDayDate: task.myDayDate,
-        position: task.position,
+      await tasksRepository.updateTask(
+        task.copyWith(
+          isCompleted: isNowCompleted,
+          completedAt: isNowCompleted ? DateTime.now() : null,
+          clearCompletedAt: !isNowCompleted,
+        ),
       );
-      await tasksRepository.updateTask(updatedTask);
     }
 
     await loadTasks();
@@ -193,46 +185,23 @@ class TasksCubit extends Cubit<TasksState> {
   }
 
   Future<void> addToMyDay(TaskEntity task) async {
-    final updatedTask = TaskEntity(
-      id: task.id,
-      title: task.title,
-      listId: task.listId,
-      dueDate: task.dueDate,
-      repeatMode: task.repeatMode,
-      isCompleted: task.isCompleted,
-      position: task.position,
-      myDayDate: DateTime.now().toIso8601String().split(
-        'T',
-      )[0],
+    await updateTask(
+      task.copyWith(myDayDate: formatMyDayDate(DateTime.now())),
     );
-    await updateTask(updatedTask);
   }
 
   Future<void> postponeToTomorrow(TaskEntity task) async {
     final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final updatedTask = TaskEntity(
-      id: task.id,
-      title: task.title,
-      listId: task.listId,
-      myDayDate: null,
-      dueDate: tomorrow,
-      isCompleted: task.isCompleted,
-      position: task.position,
+    await updateTask(
+      task.copyWith(
+        clearMyDayDate: true,
+        dueDate: tomorrow,
+      ),
     );
-    await updateTask(updatedTask);
   }
 
   Future<void> removeFromMyDay(TaskEntity task) async {
-    final updatedTask = TaskEntity(
-      id: task.id,
-      title: task.title,
-      listId: task.listId,
-      myDayDate: null,
-      dueDate: task.dueDate,
-      isCompleted: task.isCompleted,
-      position: task.position,
-    );
-    await updateTask(updatedTask);
+    await updateTask(task.copyWith(clearMyDayDate: true));
   }
 
   Future<void> reorderTasks(
@@ -248,16 +217,9 @@ class TasksCubit extends Cubit<TasksState> {
     currentTasks.insert(newIndex, task);
 
     for (var i = 0; i < currentTasks.length; i++) {
-      final updatedTask = TaskEntity(
-        id: currentTasks[i].id,
-        title: currentTasks[i].title,
-        listId: currentTasks[i].listId,
-        myDayDate: currentTasks[i].myDayDate,
-        position: i,
-        isCompleted: currentTasks[i].isCompleted,
+      await tasksRepository.updateTask(
+        currentTasks[i].copyWith(position: i),
       );
-
-      await tasksRepository.updateTask(updatedTask);
     }
 
     emit(

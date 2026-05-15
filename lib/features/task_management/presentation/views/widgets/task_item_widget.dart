@@ -1,28 +1,25 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
+import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
 class TaskItemWidget extends StatelessWidget {
-  const TaskItemWidget({required this.task, super.key});
+  const TaskItemWidget({
+    required this.task,
+    this.showCompletedDate = false,
+    super.key,
+  });
+
   final TaskEntity task;
-
-  String _getRelativeDate(DateTime? date) {
-    if (date == null) return '';
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final taskDate = DateTime(date.year, date.month, date.day);
-    final diff = taskDate.difference(today).inDays;
-
-    if (diff == 0) return AppTexts.today;
-    if (diff == 1) return AppTexts.tomorrow;
-    if (diff == -1) return AppTexts.yesterday;
-    return '${date.day}/${date.month}/${date.year}';
-  }
+  final bool showCompletedDate;
 
   String _getRepeatText(String? mode) {
     if (mode == null) return '';
@@ -58,15 +55,28 @@ class TaskItemWidget extends StatelessWidget {
     }
   }
 
+  void _openDetail(BuildContext context) {
+    unawaited(context.push('/task/${task.id}'));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final dateText = _getRelativeDate(task.dueDate);
+    final dateText = task.isCompleted
+        ? (showCompletedDate || task.completedAt != null
+            ? formatCompletedDate(task.completedAt)
+            : '')
+        : formatTaskDate(task.dueDate);
     final repeatText = _getRepeatText(task.repeatMode);
+    final stepsText = task.hasSteps
+        ? '${task.completedSteps}/${task.totalSteps} ${AppTexts.stepsProgress}'
+        : '';
 
     final showRepeat = repeatText.isNotEmpty && !task.isCompleted;
-    final hasSubtitle = dateText.isNotEmpty || showRepeat;
+    final hasSubtitle =
+        dateText.isNotEmpty || showRepeat || stepsText.isNotEmpty;
 
     final isOverdue =
+        !task.isCompleted &&
         task.dueDate != null &&
         task.dueDate!.isBefore(
           DateTime(
@@ -85,7 +95,6 @@ class TaskItemWidget extends StatelessWidget {
     return Dismissible(
       key: ValueKey('${task.id}_dismissible'),
       direction: DismissDirection.horizontal,
-
       background: Container(
         color: isMyDayView ? AppColors.primaryColor : Colors.orangeAccent,
         alignment: Alignment.centerLeft,
@@ -95,7 +104,6 @@ class TaskItemWidget extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-
       secondaryBackground: Container(
         color: Colors.redAccent,
         alignment: Alignment.centerRight,
@@ -105,7 +113,6 @@ class TaskItemWidget extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-
       confirmDismiss: (direction) async {
         final cubit = context.read<TasksCubit>();
 
@@ -115,23 +122,25 @@ class TaskItemWidget extends StatelessWidget {
           } else {
             await cubit.addToMyDay(task);
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppTexts.taskAddedToMyDay,
-                  style: AppTextStyle.style9W300.copyWith(color: Colors.white),
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    AppTexts.taskAddedToMyDay,
+                    style:
+                        AppTextStyle.style9W300.copyWith(color: Colors.white),
+                  ),
+                  backgroundColor: Colors.orangeAccent,
+                  duration: const Duration(seconds: 1),
                 ),
-                backgroundColor: Colors.orangeAccent,
-                duration: const Duration(seconds: 1),
-              ),
-            );
+              );
+            }
             return false;
           }
         } else {
           return true;
         }
       },
-
       onDismissed: (direction) async {
         final cubit = context.read<TasksCubit>();
 
@@ -142,20 +151,22 @@ class TaskItemWidget extends StatelessWidget {
             await cubit.removeFromMyDay(task);
           } else {
             await cubit.deleteTask(task.id);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppTexts.taskDeleted,
-                  style: AppTextStyle.style9W300.copyWith(color: Colors.white),
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    AppTexts.taskDeleted,
+                    style:
+                        AppTextStyle.style9W300.copyWith(color: Colors.white),
+                  ),
+                  backgroundColor: Colors.redAccent,
+                  duration: const Duration(seconds: 1),
                 ),
-                backgroundColor: Colors.redAccent,
-                duration: const Duration(seconds: 1),
-              ),
-            );
+              );
+            }
           }
         }
       },
-
       child: Container(
         margin: EdgeInsets.only(bottom: 8.h),
         decoration: BoxDecoration(
@@ -170,56 +181,102 @@ class TaskItemWidget extends StatelessWidget {
           ],
         ),
         child: ListTile(
+          onTap: () => _openDetail(context),
           subtitle: hasSubtitle
-              ? Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      AppTexts.tasks,
-                      style: AppTextStyle.style9W300.copyWith(
-                        fontSize: 11.sp,
-                        color: AppColors.secondaryColor,
+                    if (dateText.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(
+                            task.isCompleted
+                                ? Icons.event_available
+                                : Icons.schedule,
+                            size: 12.r,
+                            color: task.isCompleted
+                                ? AppColors.thirdColor
+                                : (isOverdue
+                                    ? Colors.red
+                                    : AppColors.secondaryColor),
+                          ),
+                          SizedBox(width: 4.w),
+                          Expanded(
+                            child: Text(
+                              dateText,
+                              style: AppTextStyle.style9W300.copyWith(
+                                fontSize: 11.sp,
+                                color: task.isCompleted
+                                    ? AppColors.thirdColor
+                                    : (isOverdue
+                                        ? Colors.red
+                                        : AppColors.secondaryColor),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-
-                    if (dateText.isNotEmpty) ...[
-                      Text(
-                        ' • $dateText',
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 11.sp,
-                          color: isOverdue && !task.isCompleted
-                              ? Colors.red
-                              : AppColors.secondaryColor,
-                        ),
+                    if (stepsText.isNotEmpty) ...[
+                      SizedBox(height: 2.h),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.checklist,
+                            size: 12.r,
+                            color: AppColors.secondaryColor,
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            stepsText,
+                            style: AppTextStyle.style9W300.copyWith(
+                              fontSize: 11.sp,
+                              color: AppColors.secondaryColor,
+                            ),
+                          ),
+                          if (task.hasSteps) ...[
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(2.r),
+                                child: LinearProgressIndicator(
+                                  value: task.totalSteps > 0
+                                      ? task.completedSteps / task.totalSteps
+                                      : 0,
+                                  minHeight: 4.h,
+                                  backgroundColor:
+                                      AppColors.secondaryColor.withAlpha(40),
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ],
-
-                    if (showRepeat) ...[
-                      Text(
-                        ' • ',
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 11.sp,
-                          color: AppColors.secondaryColor,
+                    if (showRepeat)
+                      Padding(
+                        padding: EdgeInsets.only(top: 2.h),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.repeat,
+                              size: 12.r,
+                              color: AppColors.secondaryColor,
+                            ),
+                            SizedBox(width: 4.w),
+                            Text(
+                              repeatText,
+                              style: AppTextStyle.style9W300.copyWith(
+                                fontSize: 11.sp,
+                                color: AppColors.secondaryColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Icon(
-                        Icons.repeat,
-                        size: 12.r,
-                        color: AppColors.secondaryColor,
-                      ),
-                      SizedBox(width: 2.w),
-                      Text(
-                        repeatText,
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 11.sp,
-                          color: AppColors.secondaryColor,
-                        ),
-                      ),
-                    ],
                   ],
                 )
               : null,
-
           contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
           leading: InkWell(
             onTap: () async {
@@ -243,31 +300,17 @@ class TaskItemWidget extends StatelessWidget {
               decoration: task.isCompleted ? TextDecoration.lineThrough : null,
             ),
           ),
-          trailing: IconButton(
-            icon: Icon(
-              task.isImportant ? Icons.star : Icons.star_border,
-              color: task.isImportant
-                  ? AppColors.primaryColor
-                  : AppColors.secondaryColor,
-              size: 24.r,
-            ),
-            onPressed: () async {
-              final updatedTask = TaskEntity(
-                id: task.id,
-                title: task.title,
-                isCompleted: task.isCompleted,
-                dueDate: task.dueDate,
-                reminderDate: task.reminderDate,
-                repeatMode: task.repeatMode,
-                completedSteps: task.completedSteps,
-                totalSteps: task.totalSteps,
-                isImportant: !task.isImportant,
-                myDayDate: task.myDayDate,
-                position: task.position,
-                listId: task.listId,
-              );
-              await context.read<TasksCubit>().updateTask(updatedTask);
-            },
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (task.isImportant)
+                Icon(Icons.star, color: AppColors.primaryColor, size: 20.r),
+              Icon(
+                Icons.chevron_right,
+                color: AppColors.secondaryColor.withAlpha(120),
+                size: 22.r,
+              ),
+            ],
           ),
         ),
       ),

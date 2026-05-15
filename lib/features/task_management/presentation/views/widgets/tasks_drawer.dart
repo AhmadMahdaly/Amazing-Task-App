@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/routing/app_routes.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_list/presentation/views/add_list_bottom_sheet.dart';
+import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
 class TasksDrawer extends StatelessWidget {
@@ -30,20 +35,8 @@ class TasksDrawer extends StatelessWidget {
                 var totalToday = 0;
 
                 if (state is TasksLoaded) {
-                  final now = DateTime.now();
-                  final todayStr = now.toIso8601String().split('T')[0];
-
-                  final todayTasks = state.allTasks.where((t) {
-                    final inMyDay = t.myDayDate == todayStr;
-
-                    final dueToday =
-                        t.dueDate != null &&
-                        t.dueDate!.year == now.year &&
-                        t.dueDate!.month == now.month &&
-                        t.dueDate!.day == now.day;
-
-                    return inMyDay || dueToday;
-                  }).toList();
+                  final todayTasks =
+                      state.allTasks.where(isTaskInMyDay).toList();
 
                   totalToday = todayTasks.length;
                   completedToday = todayTasks
@@ -55,63 +48,76 @@ class TasksDrawer extends StatelessWidget {
                   }
                 }
 
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 20.h,
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 45.r,
-                        height: 45.r,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            CircularProgressIndicator(
-                              value: progress,
-                              strokeWidth: 4.r,
-                              backgroundColor: AppColors.secondaryColor
-                                  .withAlpha(33),
-                              color: Colors.white,
-                            ),
-                            Center(
-                              child: Icon(
-                                Icons.auto_graph,
+                return InkWell(
+                  onTap: () {
+                    if (!isPermanent) {
+                      Navigator.pop(context);
+                    }
+                    unawaited(context.push(AppRoutes.analyticsScreen));
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 20.h,
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 45.r,
+                          height: 45.r,
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              CircularProgressIndicator(
+                                value: progress,
+                                strokeWidth: 4.r,
+                                backgroundColor: AppColors.secondaryColor
+                                    .withAlpha(33),
                                 color: Colors.white,
-                                size: 20.r,
                               ),
-                            ),
-                          ],
+                              Center(
+                                child: Icon(
+                                  Icons.auto_graph,
+                                  color: Colors.white,
+                                  size: 20.r,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 20.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppTexts.todayProgress,
-                              style: AppTextStyle.style9W300.copyWith(
-                                fontSize: 16.sp,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                        SizedBox(width: 20.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppTexts.todayProgress,
+                                style: AppTextStyle.style9W300.copyWith(
+                                  fontSize: 16.sp,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              totalToday == 0
-                                  ? AppTexts.noTasksToday
-                                  : '${AppTexts.completedTasks} $completedToday ${AppTexts.of} $totalToday',
-                              style: AppTextStyle.style9W300.copyWith(
-                                fontSize: 11.sp,
-                                color: Colors.white,
+                              SizedBox(height: 4.h),
+                              Text(
+                                totalToday == 0
+                                    ? AppTexts.noTasksToday
+                                    : '${AppTexts.completedTasks} $completedToday ${AppTexts.of} $totalToday',
+                                style: AppTextStyle.style9W300.copyWith(
+                                  fontSize: 11.sp,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        Icon(
+                          Icons.chevron_right,
+                          color: Colors.white.withAlpha(180),
+                          size: 22.r,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -173,6 +179,14 @@ class TasksDrawer extends StatelessWidget {
                 );
               },
             ),
+            _buildDrawerItem(
+              icon: Icons.bar_chart,
+              title: AppTexts.analytics,
+              context: context,
+              onTap: () {
+                unawaited(context.push(AppRoutes.analyticsScreen));
+              },
+            ),
 
             Divider(color: AppColors.secondaryColor.withAlpha(77)),
 
@@ -181,6 +195,17 @@ class TasksDrawer extends StatelessWidget {
                 builder: (context, state) {
                   if (state is ListsLoading) {
                     return const Center(child: CircularProgressIndicator());
+                  } else if (state is ListsError) {
+                    return Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: Text(
+                        state.message,
+                        style: AppTextStyle.style9W300.copyWith(
+                          color: Colors.redAccent,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    );
                   } else if (state is ListsLoaded) {
                     if (state.lists.isEmpty) {
                       return Padding(

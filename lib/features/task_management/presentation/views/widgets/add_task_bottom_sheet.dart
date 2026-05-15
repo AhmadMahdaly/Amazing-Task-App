@@ -5,6 +5,7 @@ import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
+import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
@@ -297,16 +298,21 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 onPressed: () async {
                   if (_taskController.text.trim().isEmpty) return;
 
+                  final now = DateTime.now();
+                  final hasRepeat = _selectedRepeatMode != null;
+                  final dueDate = _selectedDueDate ??
+                      ((widget.isMyDayView || hasRepeat)
+                          ? DateTime(now.year, now.month, now.day)
+                          : null);
+
                   final newTask = TaskEntity(
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     title: _taskController.text.trim(),
                     listId: widget.currentListId,
-
                     myDayDate: widget.isMyDayView
-                        ? DateTime.now().toIso8601String().split('T')[0]
+                        ? formatMyDayDate(now)
                         : null,
-
-                    dueDate: _selectedDueDate,
+                    dueDate: dueDate,
                     repeatMode: _selectedRepeatMode,
                     position: 0,
                   );

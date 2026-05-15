@@ -7,6 +7,7 @@ import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 import 'package:s/features/task_management/presentation/views/widgets/add_task_bottom_sheet.dart';
+import 'package:s/features/task_management/presentation/views/widgets/completed_tasks_section.dart';
 import 'package:s/features/task_management/presentation/views/widgets/task_item_widget.dart';
 import 'package:s/features/task_management/presentation/views/widgets/tasks_drawer.dart';
 
@@ -99,7 +100,9 @@ class MainTasksScreen extends StatelessWidget {
 
               if (currentState is TasksLoaded) {
                 isMyDay = currentState.currentFilter == TaskFilter.myDay;
-                listId = currentState.currentListId;
+                if (currentState.currentFilter == TaskFilter.customList) {
+                  listId = currentState.currentListId;
+                }
               }
 
               await showModalBottomSheet<void>(
@@ -143,8 +146,15 @@ class MainTasksScreen extends StatelessWidget {
         );
       }
 
+      final isCompletedFilter =
+          state.currentFilter == TaskFilter.completed;
+
       final activeTasks = currentTasks.where((t) => !t.isCompleted).toList();
       final completedTasks = currentTasks.where((t) => t.isCompleted).toList();
+
+      if (isCompletedFilter) {
+        return CompletedTasksSection(tasks: completedTasks);
+      }
 
       return Column(
         children: [
@@ -170,26 +180,9 @@ class MainTasksScreen extends StatelessWidget {
             ),
 
           if (completedTasks.isNotEmpty)
-            Theme(
-              data: Theme.of(
-                context,
-              ).copyWith(dividerColor: Colors.transparent),
-              child: ExpansionTile(
-                initiallyExpanded: false,
-                iconColor: AppColors.secondaryColor,
-                collapsedIconColor: AppColors.secondaryColor,
-                title: Text(
-                  '${AppTexts.completed}  ${completedTasks.length}',
-                  style: AppTextStyle.style9W300.copyWith(
-                    fontSize: 14.sp,
-                    color: AppColors.secondaryColor,
-                  ),
-                ),
-                childrenPadding: EdgeInsets.symmetric(horizontal: 16.w),
-                children: completedTasks
-                    .map((t) => TaskItemWidget(key: ValueKey(t.id), task: t))
-                    .toList(),
-              ),
+            CompletedTasksSection(
+              tasks: completedTasks,
+              compact: true,
             ),
         ],
       );

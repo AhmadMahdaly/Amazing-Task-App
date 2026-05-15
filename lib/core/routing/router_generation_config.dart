@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
+import 'package:s/features/analytics/presentation/views/analytics_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
+import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
 
 import '../../core/constants.dart';
 import '../../core/routing/app_routes.dart';
@@ -22,11 +24,19 @@ void initRouter() {
         name: AppRoutes.mainTasksScreen,
         builder: (context, state) => const MainTasksScreen(),
       ),
-      // GoRoute(
-      //   path: AppRoutes.settingsAndStatsScreen,
-      //   name: AppRoutes.settingsAndStatsScreen,
-      //   builder: (context, state) => const SettingsAndStatsScreen(),
-      // ),
+      GoRoute(
+        path: AppRoutes.analyticsScreen,
+        name: AppRoutes.analyticsScreen,
+        builder: (context, state) => const AnalyticsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.taskDetailScreen,
+        name: AppRoutes.taskDetailScreen,
+        builder: (context, state) {
+          final taskId = state.pathParameters['taskId']!;
+          return TaskDetailScreen(taskId: taskId);
+        },
+      ),
       // GoRoute(
       //   path: AppRoutes.mainLayoutScreen,
       //   name: AppRoutes.mainLayoutScreen,

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/features/task_list/domain/entities/task_list_entity.dart';
+import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 
 class AddListBottomSheet extends StatefulWidget {
   const AddListBottomSheet({super.key});
@@ -13,11 +16,36 @@ class AddListBottomSheet extends StatefulWidget {
 
 class _AddListBottomSheetState extends State<AddListBottomSheet> {
   final TextEditingController _listController = TextEditingController();
+  bool _isSaving = false;
 
   @override
   void dispose() {
     _listController.dispose();
     super.dispose();
+  }
+
+  Future<void> _createList() async {
+    final title = _listController.text.trim();
+    if (title.isEmpty || _isSaving) return;
+
+    setState(() => _isSaving = true);
+
+    final listsCubit = context.read<ListsCubit>();
+    final currentState = listsCubit.state;
+    final position =
+        currentState is ListsLoaded ? currentState.lists.length : 0;
+
+    await listsCubit.addList(
+      TaskListEntity(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: title,
+        position: position,
+      ),
+    );
+
+    if (mounted) {
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -52,6 +80,8 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
           TextField(
             controller: _listController,
             autofocus: true,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _createList(),
             decoration: InputDecoration(
               hintText: AppTexts.enterListName,
               hintStyle: AppTextStyle.style9W300.copyWith(
@@ -83,7 +113,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: _isSaving ? null : () => Navigator.pop(context),
                 child: Text(
                   AppTexts.cancel,
                   style: AppTextStyle.style9W300.copyWith(
@@ -103,20 +133,24 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
                   minimumSize: Size(90.w, 40.h),
                   elevation: 0,
                 ),
-                onPressed: () {
-                  final title = _listController.text.trim();
-                  if (title.isEmpty) return;
-
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  AppTexts.createList,
-                  style: AppTextStyle.style9W300.copyWith(
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                onPressed: _isSaving ? null : _createList,
+                child: _isSaving
+                    ? SizedBox(
+                        width: 20.r,
+                        height: 20.r,
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        AppTexts.createList,
+                        style: AppTextStyle.style9W300.copyWith(
+                          fontSize: 14.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ],
           ),
