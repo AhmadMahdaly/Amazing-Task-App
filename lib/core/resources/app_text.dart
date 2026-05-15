@@ -109,4 +109,11 @@ class AppTexts {
   static String editStep = 'Edit step';
   static String markImportant = 'Mark as important';
   static String unmarkImportant = 'Remove importance';
+  static String pinToNotification = 'Pin to notification';
+  static String unpinFromNotification = 'Unpin from notification';
+  static String pinnedToNotification = 'Pinned to notification';
+  static String notification = 'Notification';
+  static String unpin = 'Unpin';
+  static String pinnedTaskLabel = 'Pinned task';
+  static String pinnedTasksChannelDesc = 'Tasks pinned to the notification shade';
 }

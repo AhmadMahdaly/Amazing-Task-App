@@ -93,6 +93,9 @@ class MainTasksScreen extends StatelessWidget {
             },
           ),
           floatingActionButton: FloatingActionButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(320.r),
+            ),
             onPressed: () async {
               final currentState = context.read<TasksCubit>().state;
               var isMyDay = false;
@@ -146,8 +149,7 @@ class MainTasksScreen extends StatelessWidget {
         );
       }
 
-      final isCompletedFilter =
-          state.currentFilter == TaskFilter.completed;
+      final isCompletedFilter = state.currentFilter == TaskFilter.completed;
 
       final activeTasks = currentTasks.where((t) => !t.isCompleted).toList();
       final completedTasks = currentTasks.where((t) => t.isCompleted).toList();

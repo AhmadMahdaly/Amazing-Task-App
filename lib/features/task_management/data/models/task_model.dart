@@ -16,6 +16,7 @@ class TaskModel extends TaskEntity {
     super.listId,
     super.myDayDate,
     super.completedAt,
+    super.isPinnedToNotification,
     super.position,
   });
 
@@ -53,6 +54,8 @@ class TaskModel extends TaskEntity {
       completedAt: json['completedAt'] != null
           ? DateTime.parse(json['completedAt'] as String)
           : null,
+      isPinnedToNotification:
+          json['isPinnedToNotification'] as bool? ?? false,
       position: json['position'] as int? ?? 0,
     );
   }
@@ -72,6 +75,7 @@ class TaskModel extends TaskEntity {
       listId: entity.listId,
       myDayDate: entity.myDayDate,
       completedAt: entity.completedAt,
+      isPinnedToNotification: entity.isPinnedToNotification,
       position: entity.position,
     );
   }
@@ -99,6 +103,7 @@ class TaskModel extends TaskEntity {
       'listId': listId,
       'myDayDate': myDayDate,
       'completedAt': completedAt?.toIso8601String(),
+      'isPinnedToNotification': isPinnedToNotification,
       'position': position,
     };
   }

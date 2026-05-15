@@ -35,8 +35,9 @@ class TasksDrawer extends StatelessWidget {
                 var totalToday = 0;
 
                 if (state is TasksLoaded) {
-                  final todayTasks =
-                      state.allTasks.where(isTaskInMyDay).toList();
+                  final todayTasks = state.allTasks
+                      .where(isTaskInMyDay)
+                      .toList();
 
                   totalToday = todayTasks.length;
                   completedToday = todayTasks
@@ -258,7 +259,9 @@ class TasksDrawer extends StatelessWidget {
               isBold: true,
               context: context,
               onTap: () async {
-                Navigator.pop(context);
+                if (!SizeConfig.isTablet) {
+                  Navigator.pop(context);
+                }
                 await showModalBottomSheet<void>(
                   context: context,
                   isScrollControlled: true,

@@ -280,10 +280,15 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   ),
                   if (selected != null)
                     ListTile(
-                      leading: const Icon(Icons.delete_outline, color: Colors.red),
+                      leading: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.red,
+                      ),
                       title: Text(
                         AppTexts.removeRepeat,
-                        style: AppTextStyle.style9W300.copyWith(color: Colors.red),
+                        style: AppTextStyle.style9W300.copyWith(
+                          color: Colors.red,
+                        ),
                       ),
                       onTap: () => setSheetState(() => selected = null),
                     ),
@@ -298,7 +303,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         onPressed: () async {
                           Navigator.pop(sheetContext);
                           if (selected == null) {
-                            await _persist(task.copyWith(clearRepeatMode: true));
+                            await _persist(
+                              task.copyWith(clearRepeatMode: true),
+                            );
                           } else {
                             await _persist(task.copyWith(repeatMode: selected));
                           }
@@ -476,8 +483,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         if (task.listId != null &&
             task.listId!.isNotEmpty &&
             listsState is ListsLoaded) {
-          final matches =
-              listsState.lists.where((l) => l.id == task.listId).toList();
+          final matches = listsState.lists
+              .where((l) => l.id == task.listId)
+              .toList();
           if (matches.isNotEmpty) listName = matches.first.title;
         }
 
@@ -748,21 +756,43 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     _SettingsTile(
                       icon: Icons.wb_sunny_outlined,
                       title: AppTexts.myDay,
-                      subtitle: inMyDay ? AppTexts.inMyDay : AppTexts.notInMyDay,
+                      subtitle: inMyDay
+                          ? AppTexts.inMyDay
+                          : AppTexts.notInMyDay,
                       trailing: Switch(
                         value: inMyDay,
                         activeThumbColor: AppColors.primaryColor,
                         onChanged: (v) async {
                           if (v) {
-                            await context
-                                .read<TasksCubit>()
-                                .addToMyDay(task);
+                            await context.read<TasksCubit>().addToMyDay(task);
                           } else {
-                            await context
-                                .read<TasksCubit>()
-                                .removeFromMyDay(task);
+                            await context.read<TasksCubit>().removeFromMyDay(
+                              task,
+                            );
                           }
                         },
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    _SettingsTile(
+                      icon: Icons.notifications_active,
+                      title: AppTexts.pinToNotification,
+                      subtitle: task.isPinnedToNotification
+                          ? AppTexts.pinnedToNotification
+                          : AppTexts.unpinFromNotification,
+                      trailing: Switch(
+                        value: task.isPinnedToNotification,
+                        activeThumbColor: AppColors.primaryColor,
+                        onChanged: task.isCompleted
+                            ? null
+                            : (v) async {
+                                await context
+                                    .read<TasksCubit>()
+                                    .setPinnedToNotification(
+                                      task,
+                                      pinned: v,
+                                    );
+                              },
                       ),
                     ),
                     const Divider(height: 1),

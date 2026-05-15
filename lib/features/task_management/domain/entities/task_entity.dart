@@ -15,6 +15,7 @@ class TaskEntity {
     this.listId,
     this.myDayDate,
     this.completedAt,
+    this.isPinnedToNotification = false,
     this.position = 0,
   });
   final String id;
@@ -30,6 +31,7 @@ class TaskEntity {
   final String? listId;
   final String? myDayDate;
   final DateTime? completedAt;
+  final bool isPinnedToNotification;
   final int position;
 
   bool get hasSteps => steps.isNotEmpty;
@@ -53,6 +55,8 @@ class TaskEntity {
     bool clearMyDayDate = false,
     DateTime? completedAt,
     bool clearCompletedAt = false,
+    bool? isPinnedToNotification,
+    bool clearPin = false,
     int? position,
   }) {
     return TaskEntity(
@@ -70,6 +74,9 @@ class TaskEntity {
       myDayDate: clearMyDayDate ? null : (myDayDate ?? this.myDayDate),
       completedAt:
           clearCompletedAt ? null : (completedAt ?? this.completedAt),
+      isPinnedToNotification: clearPin
+          ? false
+          : (isPinnedToNotification ?? this.isPinnedToNotification),
       position: position ?? this.position,
     );
   }

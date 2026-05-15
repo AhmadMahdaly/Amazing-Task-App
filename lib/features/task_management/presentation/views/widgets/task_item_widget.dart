@@ -64,8 +64,8 @@ class TaskItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateText = task.isCompleted
         ? (showCompletedDate || task.completedAt != null
-            ? formatCompletedDate(task.completedAt)
-            : '')
+              ? formatCompletedDate(task.completedAt)
+              : '')
         : formatTaskDate(task.dueDate);
     final repeatText = _getRepeatText(task.repeatMode);
     final stepsText = task.hasSteps
@@ -128,8 +128,9 @@ class TaskItemWidget extends StatelessWidget {
                 SnackBar(
                   content: Text(
                     AppTexts.taskAddedToMyDay,
-                    style:
-                        AppTextStyle.style9W300.copyWith(color: Colors.white),
+                    style: AppTextStyle.style9W300.copyWith(
+                      color: Colors.white,
+                    ),
                   ),
                   backgroundColor: Colors.orangeAccent,
                   duration: const Duration(seconds: 1),
@@ -157,8 +158,9 @@ class TaskItemWidget extends StatelessWidget {
                 SnackBar(
                   content: Text(
                     AppTexts.taskDeleted,
-                    style:
-                        AppTextStyle.style9W300.copyWith(color: Colors.white),
+                    style: AppTextStyle.style9W300.copyWith(
+                      color: Colors.white,
+                    ),
                   ),
                   backgroundColor: Colors.redAccent,
                   duration: const Duration(seconds: 1),
@@ -202,8 +204,8 @@ class TaskItemWidget extends StatelessWidget {
                                 color: task.isCompleted
                                     ? AppColors.thirdColor
                                     : (isOverdue
-                                        ? Colors.red
-                                        : AppColors.secondaryColor),
+                                          ? Colors.red
+                                          : AppColors.secondaryColor),
                               ),
                               SizedBox(width: 4.w),
                               Expanded(
@@ -214,8 +216,8 @@ class TaskItemWidget extends StatelessWidget {
                                     color: task.isCompleted
                                         ? AppColors.thirdColor
                                         : (isOverdue
-                                            ? Colors.red
-                                            : AppColors.secondaryColor),
+                                              ? Colors.red
+                                              : AppColors.secondaryColor),
                                   ),
                                 ),
                               ),
@@ -248,7 +250,7 @@ class TaskItemWidget extends StatelessWidget {
                                     child: LinearProgressIndicator(
                                       value: task.totalSteps > 0
                                           ? task.completedSteps /
-                                              task.totalSteps
+                                                task.totalSteps
                                           : 0,
                                       minHeight: 4.h,
                                       backgroundColor: AppColors.secondaryColor
@@ -286,16 +288,16 @@ class TaskItemWidget extends StatelessWidget {
                       ],
                     )
                   : null,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 12.w,
+                vertical: 4.h,
+              ),
               leading: InkWell(
                 onTap: () async {
                   await context.read<TasksCubit>().toggleTaskCompletion(task);
                 },
                 child: Icon(
-                  task.isCompleted
-                      ? Icons.check_circle
-                      : Icons.circle_outlined,
+                  task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
                   color: task.isCompleted
                       ? AppColors.primaryColor
                       : AppColors.secondaryColor,
@@ -304,13 +306,13 @@ class TaskItemWidget extends StatelessWidget {
               ),
               title: DirectionalText(
                 task.title,
-                style: AppTextStyle.style9W300.copyWith(
-                  fontSize: 14.sp,
+                style: AppTextStyle.style12W300.copyWith(
                   color: task.isCompleted
                       ? AppColors.secondaryColor
                       : AppColors.forthColor,
-                  decoration:
-                      task.isCompleted ? TextDecoration.lineThrough : null,
+                  decoration: task.isCompleted
+                      ? TextDecoration.lineThrough
+                      : null,
                 ),
               ),
               trailing: IconButton(

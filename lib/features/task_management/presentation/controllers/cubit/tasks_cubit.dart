@@ -2,6 +2,7 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:s/core/resources/app_text.dart';
+import 'package:s/core/services/task_notification_service.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/repo/tasks_repository.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
@@ -9,12 +10,18 @@ import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 part 'tasks_state.dart';
 
 class TasksCubit extends Cubit<TasksState> {
-  TasksCubit(this.tasksRepository) : super(TasksInitial());
+  TasksCubit(this.tasksRepository, this.notificationService)
+      : super(TasksInitial()) {
+    notificationService.registerActionHandler(handleNotificationAction);
+  }
+
   final TasksRepository tasksRepository;
+  final TaskNotificationService notificationService;
 
   TaskFilter _currentFilter = TaskFilter.myDay;
   String _currentTitle = AppTexts.myDay;
   String? _currentListId;
+
   double get todayProgress {
     if (state is! TasksLoaded) return 0;
     final allTasks = (state as TasksLoaded).allTasks;
@@ -22,6 +29,33 @@ class TasksCubit extends Cubit<TasksState> {
     if (todayTasks.isEmpty) return 0;
     final completedCount = todayTasks.where((task) => task.isCompleted).length;
     return completedCount / todayTasks.length;
+  }
+
+  Future<void> handleNotificationAction(
+    String taskId,
+    String? actionId,
+  ) async {
+    final tasks = await tasksRepository.getTasks();
+    TaskEntity? task;
+    for (final t in tasks) {
+      if (t.id == taskId) {
+        task = t;
+        break;
+      }
+    }
+    if (task == null) return;
+
+    if (actionId == actionDelete) {
+      await notificationService.cancelPinned(taskId);
+      await tasksRepository.deleteTask(taskId);
+    } else if (actionId == actionUnpin) {
+      await notificationService.cancelPinned(taskId);
+      await tasksRepository.updateTask(
+        task.copyWith(clearPin: true),
+      );
+    }
+
+    await loadTasks();
   }
 
   Future<void> loadTasks({
@@ -64,6 +98,8 @@ class TasksCubit extends Cubit<TasksState> {
 
       filteredTasks.sort((a, b) => a.position.compareTo(b.position));
 
+      await notificationService.syncAll(allTasks);
+
       emit(
         TasksLoaded(
           tasks: filteredTasks,
@@ -105,16 +141,19 @@ class TasksCubit extends Cubit<TasksState> {
         task.copyWith(
           isCompleted: true,
           completedAt: DateTime.now(),
+          clearPin: true,
         ),
       );
     } else {
-      await tasksRepository.updateTask(
-        task.copyWith(
-          isCompleted: isNowCompleted,
-          completedAt: isNowCompleted ? DateTime.now() : null,
-          clearCompletedAt: !isNowCompleted,
-        ),
+      var updated = task.copyWith(
+        isCompleted: isNowCompleted,
+        completedAt: isNowCompleted ? DateTime.now() : null,
+        clearCompletedAt: !isNowCompleted,
       );
+      if (isNowCompleted) {
+        updated = updated.copyWith(clearPin: true);
+      }
+      await tasksRepository.updateTask(updated);
     }
 
     await loadTasks();
@@ -253,10 +292,21 @@ class TasksCubit extends Cubit<TasksState> {
 
   Future<void> deleteTask(String id) async {
     try {
+      await notificationService.cancelPinned(id);
       await tasksRepository.deleteTask(id);
       await loadTasks();
     } catch (e) {
       emit(TasksError(e.toString()));
     }
+  }
+
+  Future<void> setPinnedToNotification(
+    TaskEntity task, {
+    required bool pinned,
+  }) async {
+    final updated = pinned
+        ? task.copyWith(isPinnedToNotification: true)
+        : task.copyWith(clearPin: true);
+    await updateTask(updated);
   }
 }

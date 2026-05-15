@@ -27,6 +27,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
 
   DateTime? _selectedDueDate;
   String? _selectedRepeatMode;
+  bool _pinToNotification = false;
 
   @override
   void dispose() {
@@ -42,6 +43,60 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
       daysToNextSunday += 7;
     }
     return now.add(Duration(days: daysToNextSunday));
+  }
+
+  Future<void> _showNotificationOptions() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                child: Text(
+                  AppTexts.notification,
+                  style: AppTextStyle.style14W300.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Divider(
+                height: 1,
+                color: AppColors.secondaryColor.withAlpha(77),
+              ),
+              SwitchListTile(
+                secondary: const Icon(
+                  Icons.push_pin,
+                  color: AppColors.primaryColor,
+                ),
+                title: Text(
+                  AppTexts.pinToNotification,
+                  style: AppTextStyle.style12W300,
+                ),
+                subtitle: Text(
+                  AppTexts.pinnedTasksChannelDesc,
+                  style: AppTextStyle.style9W300.copyWith(
+                    fontSize: 11.sp,
+                    color: AppColors.secondaryColor,
+                  ),
+                ),
+                value: _pinToNotification,
+                activeThumbColor: AppColors.primaryColor,
+                onChanged: (value) {
+                  setState(() => _pinToNotification = value);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _showDueDateOptions() async {
@@ -60,8 +115,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 child: Text(
                   AppTexts.dueDate,
-                  style: AppTextStyle.style9W300.copyWith(
-                    fontSize: 16.sp,
+                  style: AppTextStyle.style14W300.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -80,7 +134,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ),
               ListTile(
                 leading: const Icon(Icons.event, color: AppColors.primaryColor),
-                title: Text(AppTexts.tomorrow, style: AppTextStyle.style9W300),
+                title: Text(AppTexts.tomorrow, style: AppTextStyle.style12W300),
                 onTap: () {
                   setState(
                     () => _selectedDueDate = now.add(const Duration(days: 1)),
@@ -93,7 +147,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   Icons.next_plan_outlined,
                   color: AppColors.primaryColor,
                 ),
-                title: Text(AppTexts.nextWeek, style: AppTextStyle.style9W300),
+                title: Text(AppTexts.nextWeek, style: AppTextStyle.style12W300),
                 onTap: () {
                   setState(() => _selectedDueDate = _getNextWeekDate());
                   Navigator.pop(context);
@@ -106,7 +160,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 ),
                 title: Text(
                   AppTexts.pickADate,
-                  style: AppTextStyle.style9W300,
+                  style: AppTextStyle.style12W300,
                 ),
                 onTap: () async {
                   Navigator.pop(context);
@@ -137,7 +191,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   leading: const Icon(Icons.delete_outline, color: Colors.red),
                   title: Text(
                     AppTexts.removeDueDate,
-                    style: AppTextStyle.style9W300.copyWith(color: Colors.red),
+                    style: AppTextStyle.style12W300.copyWith(color: Colors.red),
                   ),
                   onTap: () {
                     setState(() => _selectedDueDate = null);
@@ -166,8 +220,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 child: Text(
                   AppTexts.repeat,
-                  style: AppTextStyle.style9W300.copyWith(
-                    fontSize: 16.sp,
+                  style: AppTextStyle.style14W300.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -219,7 +272,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
       ),
       title: Text(
         title,
-        style: AppTextStyle.style9W300.copyWith(
+        style: AppTextStyle.style12W300.copyWith(
           color: _selectedRepeatMode == value ? AppColors.primaryColor : null,
           fontWeight: _selectedRepeatMode == value
               ? FontWeight.bold
@@ -238,6 +291,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Container(
+      margin: EdgeInsets.symmetric(vertical: 8.h),
       padding: EdgeInsets.only(
         bottom: bottomInset > 0 ? bottomInset : 20.h,
         top: 20.h,
@@ -258,12 +312,11 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
             decoration: InputDecoration(
               hintText: AppTexts.addTask,
               border: InputBorder.none,
-              hintStyle: AppTextStyle.style9W300.copyWith(
-                fontSize: 16.sp,
-                color: AppColors.secondaryColor,
+              hintStyle: AppTextStyle.style14W500.copyWith(
+                color: AppColors.secondaryColor.withAlpha(100),
               ),
             ),
-            style: AppTextStyle.style9W300.copyWith(fontSize: 16.sp),
+            style: AppTextStyle.style14W500,
           ),
 
           SizedBox(height: 16.h),
@@ -277,9 +330,11 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               SizedBox(width: 16.w),
 
               _buildActionIcon(
-                icon: Icons.notifications_none,
-                isActive: false,
-                onTap: () {},
+                icon: _pinToNotification
+                    ? Icons.notifications_active
+                    : Icons.notifications_none,
+                isActive: _pinToNotification,
+                onTap: _showNotificationOptions,
               ),
               SizedBox(width: 16.w),
 
@@ -293,14 +348,18 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
-                  minimumSize: Size(70.w, 35.h),
+                  minimumSize: Size(40.w, 40.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(320.r),
+                  ),
                 ),
                 onPressed: () async {
                   if (_taskController.text.trim().isEmpty) return;
 
                   final now = DateTime.now();
                   final hasRepeat = _selectedRepeatMode != null;
-                  final dueDate = _selectedDueDate ??
+                  final dueDate =
+                      _selectedDueDate ??
                       ((widget.isMyDayView || hasRepeat)
                           ? DateTime(now.year, now.month, now.day)
                           : null);
@@ -309,11 +368,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     title: _taskController.text.trim(),
                     listId: widget.currentListId,
-                    myDayDate: widget.isMyDayView
-                        ? formatMyDayDate(now)
-                        : null,
+                    myDayDate: widget.isMyDayView ? formatMyDayDate(now) : null,
                     dueDate: dueDate,
                     repeatMode: _selectedRepeatMode,
+                    isPinnedToNotification: _pinToNotification,
                     position: 0,
                   );
 
