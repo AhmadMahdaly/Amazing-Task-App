@@ -122,4 +122,13 @@ class AppTexts {
   static String notificationPermissionDeniedSettings =
       'Notifications are disabled. Open app settings and enable notifications to pin tasks.';
   static String openSettings = 'Open settings';
+  static String wallpaper = 'Wallpaper';
+  static String chooseFromGallery = 'Choose from gallery';
+  static String solidColors = 'Solid colors';
+  static String resetWallpaper = 'Reset to default';
+  static String photoPermissionRequired = 'Photo access required';
+  static String photoPermissionDenied =
+      'Allow photo access to choose a wallpaper from your gallery.';
+  static String photoPermissionDeniedSettings =
+      'Photo access is disabled. Open app settings and allow photos to set a wallpaper.';
 }

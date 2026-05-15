@@ -1,5 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:s/core/services/task_notification_service.dart';
+import 'package:s/core/wallpaper/wallpaper_cubit.dart';
+import 'package:s/core/wallpaper/wallpaper_repository.dart';
 import 'package:s/features/task_list/data/datasource/lists_local_data_source.dart';
 import 'package:s/features/task_list/data/repo/lists_repository_impl.dart';
 import 'package:s/features/task_list/domain/repo/lists_repository.dart';
@@ -15,6 +17,10 @@ Future<void> setupGetIt() async {
   getIt
     ..registerLazySingleton<TaskNotificationService>(
       () => TaskNotificationService.instance,
+    )
+    ..registerLazySingleton<WallpaperRepository>(WallpaperRepository.new)
+    ..registerLazySingleton<WallpaperCubit>(
+      () => WallpaperCubit(getIt<WallpaperRepository>())..load(),
     )
     /// ------------------ < Tasks Feature > ------------------
     ..registerLazySingleton<TasksLocalDataSource>(TasksLocalDataSourceImpl.new)

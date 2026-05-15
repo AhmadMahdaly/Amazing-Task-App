@@ -51,6 +51,8 @@
 	<true/>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>My Task needs notifications to show tasks you pin to the notification shade.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>My Task needs access to your photos to set a custom wallpaper background.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

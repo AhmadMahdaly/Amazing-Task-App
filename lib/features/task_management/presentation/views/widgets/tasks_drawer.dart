@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/wallpaper/wallpaper_picker_sheet.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
@@ -189,6 +190,14 @@ class TasksDrawer extends StatelessWidget {
             //     unawaited(context.push(AppRoutes.analyticsScreen));
             //   },
             // ),
+            _buildDrawerItem(
+              icon: Icons.wallpaper_outlined,
+              title: AppTexts.wallpaper,
+              context: context,
+              onTap: () {
+                unawaited(showWallpaperPickerSheet(context));
+              },
+            ),
             Divider(color: AppColors.secondaryColor.withAlpha(77)),
 
             Expanded(

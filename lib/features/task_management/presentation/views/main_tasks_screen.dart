@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/shared_widgets/app_wallpaper.dart';
+import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
@@ -21,13 +23,17 @@ class MainTasksScreen extends StatelessWidget {
       builder: (context, constraints) {
         final isTablet = SizeConfig.isTablet;
 
-        return Scaffold(
-          backgroundColor: AppColors.scaffoldBackgroundLightColor,
-
-          drawer: isTablet ? null : const TasksDrawer(),
-
-          body: BlocBuilder<TasksCubit, TasksState>(
-            builder: (context, state) {
+        return BlocBuilder<WallpaperCubit, WallpaperState>(
+          builder: (context, wallpaperState) {
+            return Scaffold(
+              backgroundColor: wallpaperState.settings.hasWallpaper
+                  ? Colors.transparent
+                  : AppColors.scaffoldBackgroundLightColor,
+              drawer: isTablet ? null : const TasksDrawer(),
+              body: AppWallpaper(
+                settings: wallpaperState.settings,
+                child: BlocBuilder<TasksCubit, TasksState>(
+                  builder: (context, state) {
               var screenTitle = AppTexts.loading;
               var currentTasks = <TaskEntity>[];
 
@@ -114,10 +120,11 @@ class MainTasksScreen extends StatelessWidget {
                 );
               }
 
-              return mainContent;
-            },
-          ),
-          floatingActionButton: FloatingActionButton(
+                    return mainContent;
+                  },
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(320.r),
             ),
@@ -144,8 +151,10 @@ class MainTasksScreen extends StatelessWidget {
               );
             },
             backgroundColor: AppColors.primaryColor,
-            child: Icon(Icons.add, size: 28.r, color: Colors.white),
-          ),
+                child: Icon(Icons.add, size: 28.r, color: Colors.white),
+              ),
+            );
+          },
         );
       },
     );
@@ -211,6 +220,7 @@ class MainTasksScreen extends StatelessWidget {
               tasks: completedTasks,
               compact: true,
             ),
+            24.verticalSpace,
         ],
       );
     }
