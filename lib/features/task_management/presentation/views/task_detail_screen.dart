@@ -11,6 +11,8 @@ import 'package:s/features/task_management/domain/entities/task_step.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_steps_utils.dart';
+import 'package:s/core/shared_widgets/directional_text.dart';
+import 'package:s/core/utils/text_direction_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
 class TaskDetailScreen extends StatefulWidget {
@@ -85,6 +87,63 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   Future<void> _deleteStep(TaskEntity task, int index) async {
     final steps = List<TaskStep>.from(task.steps)..removeAt(index);
+    await _persist(syncTaskStepCounts(task, steps));
+  }
+
+  Future<void> _reorderSteps(
+    TaskEntity task,
+    int oldIndex,
+    int newIndex,
+  ) async {
+    final steps = List<TaskStep>.from(task.steps);
+    if (newIndex > oldIndex) newIndex -= 1;
+    final item = steps.removeAt(oldIndex);
+    steps.insert(newIndex, item);
+    await _persist(syncTaskStepCounts(task, steps));
+  }
+
+  Future<void> _editStep(TaskEntity task, int index) async {
+    final step = task.steps[index];
+    final controller = TextEditingController(text: step.title);
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(AppTexts.editStep, style: AppTextStyle.style9W300),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: AppTexts.stepHint,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(AppTexts.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(AppTexts.save),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (saved != true) {
+      controller.dispose();
+      return;
+    }
+
+    final title = controller.text.trim();
+    controller.dispose();
+    if (title.isEmpty) return;
+
+    final steps = List<TaskStep>.from(task.steps);
+    steps[index] = steps[index].copyWith(title: title);
     await _persist(syncTaskStepCounts(task, steps));
   }
 
@@ -471,6 +530,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   ? TextDecoration.lineThrough
                                   : null,
                             ),
+                            textDirection: textDirectionFor(
+                              _titleController.text.isEmpty
+                                  ? task.title
+                                  : _titleController.text,
+                            ),
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               isDense: true,
@@ -549,43 +613,62 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         ),
                       )
                     else
-                      ...List.generate(task.steps.length, (index) {
-                        final step = task.steps[index];
-                        return Dismissible(
-                          key: ValueKey(step.id),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: EdgeInsets.only(right: 16.w),
-                            color: Colors.redAccent,
-                            child: const Icon(Icons.delete, color: Colors.white),
-                          ),
-                          onDismissed: (_) => _deleteStep(task, index),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: InkWell(
-                              onTap: () => _toggleStep(task, index),
-                              child: Icon(
-                                step.isCompleted
-                                    ? Icons.check_box
-                                    : Icons.check_box_outline_blank,
-                                color: AppColors.primaryColor,
+                      ReorderableListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        buildDefaultDragHandles: false,
+                        itemCount: task.steps.length,
+                        onReorder: (oldIndex, newIndex) =>
+                            _reorderSteps(task, oldIndex, newIndex),
+                        itemBuilder: (context, index) {
+                          final step = task.steps[index];
+                          return Dismissible(
+                            key: ValueKey(step.id),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.only(right: 16.w),
+                              color: Colors.redAccent,
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
                               ),
                             ),
-                            title: Text(
-                              step.title,
-                              style: AppTextStyle.style9W300.copyWith(
-                                decoration: step.isCompleted
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                                color: step.isCompleted
-                                    ? AppColors.secondaryColor
-                                    : AppColors.forthColor,
+                            onDismissed: (_) => _deleteStep(task, index),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: InkWell(
+                                onTap: () => _toggleStep(task, index),
+                                child: Icon(
+                                  step.isCompleted
+                                      ? Icons.check_box
+                                      : Icons.check_box_outline_blank,
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                              title: DirectionalText(
+                                step.title,
+                                style: AppTextStyle.style9W300.copyWith(
+                                  decoration: step.isCompleted
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  color: step.isCompleted
+                                      ? AppColors.secondaryColor
+                                      : AppColors.forthColor,
+                                ),
+                              ),
+                              onTap: () => _editStep(task, index),
+                              trailing: ReorderableDragStartListener(
+                                index: index,
+                                child: Icon(
+                                  Icons.drag_handle,
+                                  color: AppColors.secondaryColor,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        },
+                      ),
                     SizedBox(height: 8.h),
                     Row(
                       children: [

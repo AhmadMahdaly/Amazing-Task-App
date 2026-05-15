@@ -5,10 +5,10 @@ import '../responsive/responsive_config.dart';
 
 const double size9 = 9;
 const double size12 = 12;
-const double size14 = 14;
-const double size16 = 16;
-const double size18 = 18;
-const double size20 = 20;
+const double size14 = 12;
+const double size16 = 14;
+const double size18 = 16;
+const double size20 = 18;
 
 abstract class AppTextStyle {
   // --- Font Size 9 ---

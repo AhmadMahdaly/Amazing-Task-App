@@ -33,7 +33,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
     try {
       final listsCubit = context.read<ListsCubit>();
 
-      await listsCubit.addList(
+      final success = await listsCubit.addList(
         TaskListEntity(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           title: title,
@@ -42,10 +42,13 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
 
       if (!mounted) return;
 
-      final stateAfterSave = listsCubit.state;
-      if (stateAfterSave is ListsLoaded) {
+      if (success) {
         Navigator.pop(context);
-      } else if (stateAfterSave is ListsError) {
+        return;
+      }
+
+      final stateAfterSave = listsCubit.state;
+      if (stateAfterSave is ListsError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

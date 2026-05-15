@@ -106,4 +106,7 @@ class AppTexts {
   static String taskSettings = 'Task Settings';
   static String notes = 'Notes';
   static String removeFromList = 'Remove from list';
+  static String editStep = 'Edit step';
+  static String markImportant = 'Mark as important';
+  static String unmarkImportant = 'Remove importance';
 }

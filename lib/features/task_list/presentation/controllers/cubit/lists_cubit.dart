@@ -20,7 +20,7 @@ class ListsCubit extends Cubit<ListsState> {
     }
   }
 
-  Future<void> addList(TaskListEntity list) async {
+  Future<bool> addList(TaskListEntity list) async {
     try {
       final existing = await listsRepository.getLists();
       final listWithPosition = TaskListEntity(
@@ -29,10 +29,18 @@ class ListsCubit extends Cubit<ListsState> {
         position: _nextListPosition(existing),
       );
       await listsRepository.addList(listWithPosition);
-      await loadLists();
+      await _emitLoadedLists();
+      return true;
     } catch (e) {
       emit(ListsError(e.toString()));
+      return false;
     }
+  }
+
+  Future<void> _emitLoadedLists() async {
+    final lists = await listsRepository.getLists();
+    lists.sort((a, b) => a.position.compareTo(b.position));
+    emit(ListsLoaded(lists));
   }
 
   /// Next position from persisted lists, not UI cubit state (avoids 0 while loading).
