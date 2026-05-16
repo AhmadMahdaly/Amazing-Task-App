@@ -393,7 +393,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
-                  minimumSize: Size(60.w, 60.h),
+                  minimumSize: Size(60.w, 40.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(320.r),
                   ),
@@ -426,7 +426,13 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     title: _taskController.text.trim(),
                     listId: widget.currentListId,
-                    myDayDate: widget.isMyDayView ? formatMyDayDate(now) : null,
+                    myDayDate: widget.isMyDayView
+                        ? deriveMyDayDateWhenAddingFromMyDayView(
+                            reference: now,
+                            dueDate: dueDate,
+                            repeatMode: _selectedRepeatMode,
+                          )
+                        : null,
                     dueDate: dueDate,
                     repeatMode: _selectedRepeatMode,
                     isPinnedToNotification: _pinToNotification,
@@ -459,7 +465,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         child: Icon(
           icon,
           color: isActive ? AppColors.primaryColor : AppColors.secondaryColor,
-          size: 24.r,
+          size: 20.r,
         ),
       ),
     );

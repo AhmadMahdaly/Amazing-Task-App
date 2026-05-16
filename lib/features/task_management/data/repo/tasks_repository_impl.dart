@@ -29,4 +29,9 @@ class TasksRepositoryImpl implements TasksRepository {
     final taskModel = TaskModel(id: id, title: '');
     await localDataSource.deleteTask(taskModel);
   }
+
+  @override
+  Future<void> deleteTasksWhereListId(String listId) async {
+    await localDataSource.deleteTasksWhereListId(listId);
+  }
 }

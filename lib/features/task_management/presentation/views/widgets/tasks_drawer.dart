@@ -9,6 +9,7 @@ import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
+import 'package:s/features/task_list/domain/entities/task_list_entity.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_list/presentation/views/add_list_bottom_sheet.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
@@ -129,6 +130,7 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.wb_sunny_outlined,
               title: AppTexts.myDay,
+              count: state.myDayTasks.length.toString(),
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -140,6 +142,7 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.star_border,
               title: AppTexts.important,
+              count: state.importantTasks.length.toString(),
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -151,6 +154,7 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.calendar_today,
               title: AppTexts.planned,
+              count: state.plannedTasks.length.toString(),
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -173,6 +177,7 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.home_outlined,
               title: AppTexts.tasks,
+              count: state.allTasks.length.toString(),
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -190,14 +195,7 @@ class TasksDrawer extends StatelessWidget {
             //     unawaited(context.push(AppRoutes.analyticsScreen));
             //   },
             // ),
-            _buildDrawerItem(
-              icon: Icons.wallpaper_outlined,
-              title: AppTexts.wallpaper,
-              context: context,
-              onTap: () {
-                unawaited(showWallpaperPickerSheet(context));
-              },
-            ),
+          
             Divider(color: AppColors.secondaryColor.withAlpha(77)),
 
             Expanded(
@@ -212,7 +210,6 @@ class TasksDrawer extends StatelessWidget {
                         state.message,
                         style: AppTextStyle.style9W300.copyWith(
                           color: Colors.redAccent,
-                          fontSize: 12.sp,
                         ),
                       ),
                     );
@@ -226,7 +223,6 @@ class TasksDrawer extends StatelessWidget {
                         child: Text(
                           AppTexts.noCustomListsYet,
                           style: AppTextStyle.style9W300.copyWith(
-                            fontSize: 12.sp,
                             color: Colors.white.withAlpha(128),
                           ),
                         ),
@@ -238,18 +234,7 @@ class TasksDrawer extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final list = state.lists[index];
 
-                        return _buildDrawerItem(
-                          icon: Icons.list,
-                          title: list.title,
-                          context: context,
-                          onTap: () async {
-                            await context.read<TasksCubit>().loadTasks(
-                              filter: TaskFilter.customList,
-                              title: list.title,
-                              customListId: list.id,
-                            );
-                          },
-                        );
+                        return _buildCustomListTile(context, list);
                       },
                     );
                   }
@@ -257,7 +242,12 @@ class TasksDrawer extends StatelessWidget {
                 },
               ),
             ),
-
+  IconButton(
+              icon: Icons.wallpaper_outlined,
+              onPressed: () {
+                unawaited(showWallpaperPickerSheet(context));
+              },
+            ),
             Divider(color: Colors.white.withAlpha(55)),
 
             _buildDrawerItem(
@@ -275,7 +265,7 @@ class TasksDrawer extends StatelessWidget {
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,
-                  builder: (context) => const AddListBottomSheet(),
+                  builder: (ctx) => const AddListBottomSheet(),
                 );
               },
             ),
@@ -303,8 +293,7 @@ class TasksDrawer extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: AppTextStyle.style9W300.copyWith(
-          fontSize: 14.sp,
+        style: AppTextStyle.style12W300.copyWith(
           color: textColor ?? Colors.white,
           fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
         ),
@@ -313,7 +302,6 @@ class TasksDrawer extends StatelessWidget {
           ? Text(
               count,
               style: AppTextStyle.style9W300.copyWith(
-                fontSize: 12.sp,
                 color: Colors.white,
               ),
             )
@@ -325,6 +313,155 @@ class TasksDrawer extends StatelessWidget {
 
         onTap();
       },
+    );
+  }
+
+  Widget _buildCustomListTile(
+    BuildContext context,
+    TaskListEntity list,
+  ) {
+    return Material(
+      color: Colors.transparent,
+      child: ListTile(
+        leading: Icon(Icons.list, color: Colors.white, size: 24.r),
+        title: Text(
+          list.title,
+          style: AppTextStyle.style12W300.copyWith(
+            color: Colors.white,
+          ),
+        ),
+        trailing: Text(
+          list.tasks.length.toString(),
+          style: AppTextStyle.style9W300.copyWith(
+            color: Colors.white,
+          ),
+        ),
+        onTap: () {
+          if (!isPermanent) {
+            Navigator.pop(context);
+          }
+          unawaited(
+            context.read<TasksCubit>().loadTasks(
+                  filter: TaskFilter.customList,
+                  title: list.title,
+                  customListId: list.id,
+                ),
+          );
+        },
+        trailing: PopupMenuButton<String>(
+          icon: Icon(
+            Icons.more_vert,
+            color: Colors.white.withAlpha(204),
+          ),
+          color: AppColors.scaffoldBackgroundLightColor,
+          onSelected: (value) async {
+            switch (value) {
+              case 'edit':
+                if (!SizeConfig.isTablet) {
+                  Navigator.pop(context);
+                }
+                await showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (ctx) => AddListBottomSheet(listToEdit: list),
+                );
+              case 'delete':
+                await _confirmDeleteCustomList(
+                  context,
+                  list: list,
+                );
+            }
+          },
+          itemBuilder: (ctx) => [
+            PopupMenuItem(
+              value: 'edit',
+              child: Text(AppTexts.edit, style: AppTextStyle.style12W300),
+            ),
+            PopupMenuItem(
+              value: 'delete',
+              child: Text(
+                AppTexts.delete,
+                style: AppTextStyle.style12W300.copyWith(
+                  color: Colors.redAccent,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _confirmDeleteCustomList(
+    BuildContext context, {
+    required TaskListEntity list,
+  }) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          AppTexts.deleteList,
+          style: AppTextStyle.style14W300.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          AppTexts.confirmDeleteList,
+          style: AppTextStyle.style12W300,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(AppTexts.cancel, style: AppTextStyle.style12W300),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              AppTexts.delete,
+              style: AppTextStyle.style12W300.copyWith(
+                color: Colors.redAccent,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (!(confirmed ?? false) || !context.mounted) return;
+
+    final tasksCubit = context.read<TasksCubit>();
+    final listsCubit = context.read<ListsCubit>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    final stateBefore = tasksCubit.state;
+    final viewingDeletedList = stateBefore is TasksLoaded &&
+        stateBefore.currentFilter == TaskFilter.customList &&
+        stateBefore.currentListId == list.id;
+
+    if (viewingDeletedList) {
+      await tasksCubit.loadTasks(
+        filter: TaskFilter.myDay,
+        title: AppTexts.myDay,
+      );
+    }
+
+    if (!isPermanent) {
+      Navigator.pop(context);
+    }
+
+    await tasksCubit.deleteTasksForList(list.id);
+    await listsCubit.deleteList(list.id);
+
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          AppTexts.listDeleted,
+          style: AppTextStyle.style12W300.copyWith(color: Colors.white),
+        ),
+        backgroundColor: AppColors.primaryColor,
+        duration: const Duration(seconds: 2),
+      ),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -472,7 +474,26 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
 
     if ((confirmed ?? false) && mounted) {
-      await context.read<TasksCubit>().deleteTask(task.id);
+      final messenger = ScaffoldMessenger.of(context);
+      final cubit = context.read<TasksCubit>();
+      final snapshot = task;
+      await cubit.deleteTask(task.id);
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            AppTexts.taskDeleted,
+            style: AppTextStyle.style12W300.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Colors.redAccent,
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: AppTexts.undo,
+            textColor: Colors.white,
+            onPressed: () => unawaited(cubit.restoreTask(snapshot)),
+          ),
+        ),
+      );
       if (mounted) context.pop();
     }
   }

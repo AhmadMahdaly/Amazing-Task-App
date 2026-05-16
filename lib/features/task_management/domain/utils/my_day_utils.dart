@@ -133,3 +133,23 @@ String _formatDate(DateTime date) {
 
 /// ISO date string (yyyy-MM-dd) for [date].
 String formatMyDayDate(DateTime date) => _formatDate(_calendarDate(date));
+
+/// Only when adding from My Day: returns today's date token if due date plus
+/// repeat mode mean this task should appear on today's agenda; otherwise null.
+String? deriveMyDayDateWhenAddingFromMyDayView({
+  required DateTime reference,
+  DateTime? dueDate,
+  String? repeatMode,
+}) {
+  final tentative = TaskEntity(
+    id: '_',
+    title: '',
+    dueDate: dueDate,
+    repeatMode: repeatMode,
+    position: 0,
+  );
+
+  return isTaskInMyDay(tentative, referenceDate: reference)
+      ? formatMyDayDate(reference)
+      : null;
+}

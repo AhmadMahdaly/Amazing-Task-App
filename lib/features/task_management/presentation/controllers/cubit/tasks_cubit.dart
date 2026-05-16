@@ -283,6 +283,27 @@ class TasksCubit extends Cubit<TasksState> {
     }
   }
 
+  /// Removes tasks whose [listId] matches (e.g. when a custom list is deleted).
+  Future<void> deleteTasksForList(String listId) async {
+    try {
+      final all = await tasksRepository.getTasks();
+      for (final t in all) {
+        if (t.listId == listId) {
+          await notificationService.cancelPinned(t.id);
+        }
+      }
+      await tasksRepository.deleteTasksWhereListId(listId);
+      await loadTasks();
+    } catch (e) {
+      emit(TasksError(e.toString()));
+    }
+  }
+
+  /// Recreates an accidentally deleted task (same id).
+  Future<void> restoreTask(TaskEntity task) async {
+    await addTask(task);
+  }
+
   /// Returns a permission result when pinning was blocked; `null` on success.
   Future<NotificationPermissionResult?> setPinnedToNotification(
     TaskEntity task, {

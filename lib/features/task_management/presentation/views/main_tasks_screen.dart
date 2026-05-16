@@ -47,10 +47,9 @@ class MainTasksScreen extends StatelessWidget {
               final mainContent = CustomScrollView(
                 slivers: [
                   SliverAppBar(
-                    expandedHeight: 150.h,
+                    expandedHeight: 110.h,
                     floating: false,
                     pinned: true,
-                    backgroundColor: AppColors.primaryColor,
                     flexibleSpace: FlexibleSpaceBar(
                       title: state is TasksLoaded &&
                               state.currentFilter == TaskFilter.myDay
@@ -60,42 +59,36 @@ class MainTasksScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   screenTitle,
-                                  style: AppTextStyle.style9W300.copyWith(
-                                    fontSize: 22.sp,
+                                  style: AppTextStyle.style18Bold.copyWith(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   formatFullDate(DateTime.now()),
-                                  style: AppTextStyle.style9W300.copyWith(
-                                    fontSize: 13.sp,
+                                  style: AppTextStyle.style12W400.copyWith(
                                     color: Colors.white.withAlpha(200),
-                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
                               ],
                             )
                           : Text(
                               screenTitle,
-                              style: AppTextStyle.style9W300.copyWith(
-                                fontSize: 22.sp,
+                              style: AppTextStyle.style18Bold.copyWith(
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                      background: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.primaryColor,
-                              AppColors.thirdColor,
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
-                      ),
+                      // background: Container(
+                      //   decoration: const BoxDecoration(
+                      //     gradient: LinearGradient(
+                      //       colors: [
+                      //         AppColors.primaryColor,
+                      //         AppColors.thirdColor,
+                      //       ],
+                      //       begin: Alignment.topCenter,
+                      //       end: Alignment.bottomCenter,
+                      //     ),
+                      //   ),
+                      // ),
                     ),
                   ),
                   SliverToBoxAdapter(

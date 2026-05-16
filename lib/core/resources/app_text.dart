@@ -15,7 +15,10 @@ class AppTexts {
   static String important = 'Important';
   static String myDay = 'My Day';
   static String newList = 'New List';
+  static String listDeleted = 'List deleted';
   static String taskDeleted = 'Task deleted';
+  static String undo = 'Undo';
+  static String editList = 'Rename list';
   static String taskAddedToMyDay = 'Task added to My Day';
   static String yearly = 'Yearly';
   static String monthly = 'Monthly';

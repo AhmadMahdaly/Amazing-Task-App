@@ -63,4 +63,15 @@ class ListsCubit extends Cubit<ListsState> {
       emit(ListsError(e.toString()));
     }
   }
+
+  Future<bool> updateList(TaskListEntity list) async {
+    try {
+      await listsRepository.updateList(list);
+      await _emitLoadedLists();
+      return true;
+    } catch (e) {
+      emit(ListsError(e.toString()));
+      return false;
+    }
+  }
 }

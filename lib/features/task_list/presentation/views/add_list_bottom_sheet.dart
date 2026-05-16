@@ -7,16 +7,27 @@ import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/features/task_list/domain/entities/task_list_entity.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 
+/// Create a list, or pass [listToEdit] to rename an existing list.
 class AddListBottomSheet extends StatefulWidget {
-  const AddListBottomSheet({super.key});
+  const AddListBottomSheet({super.key, this.listToEdit});
+
+  final TaskListEntity? listToEdit;
 
   @override
   State<AddListBottomSheet> createState() => _AddListBottomSheetState();
 }
 
 class _AddListBottomSheetState extends State<AddListBottomSheet> {
-  final TextEditingController _listController = TextEditingController();
+  late final TextEditingController _listController;
   bool _isSaving = false;
+
+  bool get _isEdit => widget.listToEdit != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _listController = TextEditingController(text: widget.listToEdit?.title ?? '');
+  }
 
   @override
   void dispose() {
@@ -24,7 +35,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
     super.dispose();
   }
 
-  Future<void> _createList() async {
+  Future<void> _save() async {
     final title = _listController.text.trim();
     if (title.isEmpty || _isSaving) return;
 
@@ -32,13 +43,20 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
 
     try {
       final listsCubit = context.read<ListsCubit>();
-
-      final success = await listsCubit.addList(
-        TaskListEntity(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: title,
-        ),
-      );
+      final success = _isEdit
+          ? await listsCubit.updateList(
+              TaskListEntity(
+                id: widget.listToEdit!.id,
+                title: title,
+                position: widget.listToEdit!.position,
+              ),
+            )
+          : await listsCubit.addList(
+              TaskListEntity(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: title,
+              ),
+            );
 
       if (!mounted) return;
 
@@ -98,7 +116,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppTexts.newList,
+            _isEdit ? AppTexts.editList : AppTexts.newList,
             style: AppTextStyle.style9W300.copyWith(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
@@ -111,7 +129,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
             controller: _listController,
             autofocus: true,
             textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _createList(),
+            onSubmitted: (_) => _save(),
             decoration: InputDecoration(
               hintText: AppTexts.enterListName,
               hintStyle: AppTextStyle.style9W300.copyWith(
@@ -163,7 +181,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
                   minimumSize: Size(90.w, 40.h),
                   elevation: 0,
                 ),
-                onPressed: _isSaving ? null : _createList,
+                onPressed: _isSaving ? null : _save,
                 child: _isSaving
                     ? SizedBox(
                         width: 20.r,
@@ -174,7 +192,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
                         ),
                       )
                     : Text(
-                        AppTexts.createList,
+                        _isEdit ? AppTexts.save : AppTexts.createList,
                         style: AppTextStyle.style9W300.copyWith(
                           fontSize: 14.sp,
                           color: Colors.white,

@@ -21,7 +21,30 @@ String formatCompletedDate(DateTime? date) {
 }
 
 String formatFullDate(DateTime date) {
-  return '${date.day}/${date.month}/${date.year}';
+  final wd = switch (date.weekday) {
+    DateTime.monday => AppTexts.monday,
+    DateTime.tuesday => AppTexts.tuesday,
+    DateTime.wednesday => AppTexts.wednesday,
+    DateTime.thursday => AppTexts.thursday,
+    DateTime.friday => AppTexts.friday,
+    DateTime.saturday => AppTexts.saturday,
+    _ => AppTexts.sunday,
+  };
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  return '$wd, ${months[date.month - 1]} ${date.day}';
 }
 
 String formatDateHeader(DateTime date) {

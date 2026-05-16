@@ -74,7 +74,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                 slivers: [
                   SliverAppBar(
                     pinned: true,
-                    expandedHeight: 120.h,
+                    expandedHeight: 110.h,
                     leading: IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () => context.pop(),
@@ -83,10 +83,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                     flexibleSpace: FlexibleSpaceBar(
                       title: Text(
                         AppTexts.analytics,
-                        style: AppTextStyle.style9W300.copyWith(
+                        style: AppTextStyle.style20Bold.copyWith(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.sp,
                         ),
                       ),
                       background: Container(
@@ -358,8 +356,8 @@ class _DailyStatsPanel extends StatelessWidget {
             itemCount: stats.length,
             separatorBuilder: (context, index) => SizedBox(height: 8.h),
             itemBuilder: (context, index) {
-              final day = stats[index];
-              return _DayStatRow(day: day, maxValue: maxValue);
+      final reversedStats = stats.reversed.toList();
+      final day = reversedStats[index];              return _DayStatRow(day: day, maxValue: maxValue);
             },
           ),
         ),
@@ -469,7 +467,8 @@ class _MonthlyStatsPanel extends StatelessWidget {
             itemCount: stats.length,
             separatorBuilder: (context, index) => SizedBox(height: 12.h),
             itemBuilder: (context, index) {
-              final month = stats[index];
+                    final reversedStats = stats.reversed.toList();
+      final month = reversedStats[index];
               final label =
                   '${_monthNames[month.month]} ${month.year}';
               final rate = (month.completionRate * 100).round();

@@ -9,6 +9,7 @@ abstract class TasksLocalDataSource {
   Future<void> saveTask(TaskModel task);
   Future<void> deleteTask(TaskModel task);
   Future<void> updateTask(TaskModel task);
+  Future<void> deleteTasksWhereListId(String listId);
 }
 
 class TasksLocalDataSourceImpl implements TasksLocalDataSource {
@@ -61,6 +62,13 @@ class TasksLocalDataSourceImpl implements TasksLocalDataSource {
 
     tasks.removeWhere((element) => element.id == task.id);
 
+    await _saveTasksToCache(tasks);
+  }
+
+  @override
+  Future<void> deleteTasksWhereListId(String listId) async {
+    final tasks = await fetchTasks();
+    tasks.removeWhere((element) => element.listId == listId);
     await _saveTasksToCache(tasks);
   }
 

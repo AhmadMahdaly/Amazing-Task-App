@@ -119,42 +119,40 @@ class TaskItemWidget extends StatelessWidget {
           if (isMyDayView) {
             await cubit.removeFromMyDay(task);
           } else {
+            final snapshot = task;
             await cubit.deleteTask(task.id);
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    AppTexts.taskDeleted,
-                    style: AppTextStyle.style9W300.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                  backgroundColor: Colors.redAccent,
-                  duration: const Duration(seconds: 1),
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  AppTexts.taskDeleted,
+                  style: AppTextStyle.style9W300.copyWith(color: Colors.white),
                 ),
-              );
-            }
+                backgroundColor: Colors.redAccent,
+                duration: const Duration(seconds: 5),
+                action: SnackBarAction(
+                  label: AppTexts.undo,
+                  textColor: Colors.white,
+                  onPressed: () {
+                    unawaited(cubit.restoreTask(snapshot));
+                  },
+                ),
+              ),
+            );
           }
         }
       },
       child: Material(
         color: AppColors.scaffoldBackgroundLightColor,
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(4.r),
         child: InkWell(
           onTap: () => _openDetail(context),
           borderRadius: BorderRadius.circular(8.r),
           child: Container(
-            margin: EdgeInsets.only(bottom: 8.h),
             decoration: BoxDecoration(
               color: AppColors.scaffoldBackgroundLightColor,
-              borderRadius: BorderRadius.circular(8.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(20),
-                  blurRadius: 4.r,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(4.r),
+             
             ),
             child: ListTile(
               subtitle: hasSubtitle
@@ -176,7 +174,7 @@ class TaskItemWidget extends StatelessWidget {
                                           : AppColors.secondaryColor),
                               ),
                               SizedBox(width: 4.w),
-                              Expanded(
+                          Row(children: [    Expanded(
                                 child: DirectionalText(
                                   dateText,
                                   style: AppTextStyle.style9W300.copyWith(
@@ -188,7 +186,30 @@ class TaskItemWidget extends StatelessWidget {
                                               : AppColors.secondaryColor),
                                   ),
                                 ),
-                              ),
+                              ),       if (showRepeat)
+                          Padding(
+                            padding: EdgeInsets.only(top: 2.h),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.repeat,
+                                  size: 12.r,
+                                  color: AppColors.secondaryColor,
+                                ),
+                                SizedBox(width: 4.w),
+                                Expanded(
+                                  child: DirectionalText(
+                                    repeatText,
+                                    style: AppTextStyle.style9W300.copyWith(
+                                      fontSize: 11.sp,
+                                      color: AppColors.secondaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                   ])
                             ],
                           ),
                         if (stepsText.isNotEmpty) ...[
@@ -230,30 +251,7 @@ class TaskItemWidget extends StatelessWidget {
                             ],
                           ),
                         ],
-                        if (showRepeat)
-                          Padding(
-                            padding: EdgeInsets.only(top: 2.h),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.repeat,
-                                  size: 12.r,
-                                  color: AppColors.secondaryColor,
-                                ),
-                                SizedBox(width: 4.w),
-                                Expanded(
-                                  child: DirectionalText(
-                                    repeatText,
-                                    style: AppTextStyle.style9W300.copyWith(
-                                      fontSize: 11.sp,
-                                      color: AppColors.secondaryColor,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
+                    ],
                     )
                   : null,
               contentPadding: EdgeInsets.symmetric(
