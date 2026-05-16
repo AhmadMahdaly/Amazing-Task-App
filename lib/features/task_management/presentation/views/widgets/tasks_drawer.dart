@@ -130,7 +130,12 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.wb_sunny_outlined,
               title: AppTexts.myDay,
-              count: state.myDayTasks.length.toString(),
+              count: context.read<TasksCubit>().state is TasksLoaded
+                  ? (context.read<TasksCubit>().state as TasksLoaded).allTasks
+                        .where(isTaskInMyDay)
+                        .length
+                        .toString()
+                  : '0',
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -142,7 +147,12 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.star_border,
               title: AppTexts.important,
-              count: state.importantTasks.length.toString(),
+              count: context.read<TasksCubit>().state is TasksLoaded
+                  ? (context.read<TasksCubit>().state as TasksLoaded).allTasks
+                        .where((task) => task.isImportant)
+                        .length
+                        .toString()
+                  : '0',
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -154,7 +164,12 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.calendar_today,
               title: AppTexts.planned,
-              count: state.plannedTasks.length.toString(),
+              count: context.read<TasksCubit>().state is TasksLoaded
+                  ? (context.read<TasksCubit>().state as TasksLoaded).allTasks
+                        .where((task) => task.dueDate != null)
+                        .length
+                        .toString()
+                  : '0',
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -177,7 +192,12 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.home_outlined,
               title: AppTexts.tasks,
-              count: state.allTasks.length.toString(),
+              count: context.read<TasksCubit>().state is TasksLoaded
+                  ? (context.read<TasksCubit>().state as TasksLoaded)
+                        .allTasks
+                        .length
+                        .toString()
+                  : '0',
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -195,7 +215,6 @@ class TasksDrawer extends StatelessWidget {
             //     unawaited(context.push(AppRoutes.analyticsScreen));
             //   },
             // ),
-          
             Divider(color: AppColors.secondaryColor.withAlpha(77)),
 
             Expanded(
@@ -242,8 +261,8 @@ class TasksDrawer extends StatelessWidget {
                 },
               ),
             ),
-  IconButton(
-              icon: Icons.wallpaper_outlined,
+            IconButton(
+              icon: const Icon(Icons.wallpaper_outlined),
               onPressed: () {
                 unawaited(showWallpaperPickerSheet(context));
               },
@@ -330,22 +349,17 @@ class TasksDrawer extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        trailing: Text(
-          list.tasks.length.toString(),
-          style: AppTextStyle.style9W300.copyWith(
-            color: Colors.white,
-          ),
-        ),
+
         onTap: () {
           if (!isPermanent) {
             Navigator.pop(context);
           }
           unawaited(
             context.read<TasksCubit>().loadTasks(
-                  filter: TaskFilter.customList,
-                  title: list.title,
-                  customListId: list.id,
-                ),
+              filter: TaskFilter.customList,
+              title: list.title,
+              customListId: list.id,
+            ),
           );
         },
         trailing: PopupMenuButton<String>(
@@ -435,7 +449,8 @@ class TasksDrawer extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
 
     final stateBefore = tasksCubit.state;
-    final viewingDeletedList = stateBefore is TasksLoaded &&
+    final viewingDeletedList =
+        stateBefore is TasksLoaded &&
         stateBefore.currentFilter == TaskFilter.customList &&
         stateBefore.currentListId == list.id;
 
