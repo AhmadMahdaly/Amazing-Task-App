@@ -11,7 +11,7 @@ class Appthemes {
       colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
       useMaterial3: true,
       primaryColor: AppColors.primaryColor,
-      scaffoldBackgroundColor: AppColors.scaffoldBackgroundLightColor,
+      scaffoldBackgroundColor: AppColors.white,
       fontFamily: kPrimaryEnFont,
 
       textTheme: TextTheme(
@@ -20,15 +20,15 @@ class Appthemes {
       ),
       appBarTheme: AppBarTheme(
         iconTheme: const IconThemeData(
-          color: AppColors.scaffoldBackgroundLightColor,
+          color: AppColors.white,
         ),
         toolbarHeight: 100.h,
         titleTextStyle: AppTextStyle.style18Bold.copyWith(
-          color: AppColors.scaffoldBackgroundLightColor,
+          color: AppColors.white,
           fontFamily: kPrimaryEnFont,
         ),
         backgroundColor: AppColors.primaryColor,
-        surfaceTintColor: AppColors.scaffoldBackgroundLightColor,
+        surfaceTintColor: AppColors.white,
       ),
       cardTheme: CardThemeData(
         elevation: 2,
@@ -43,7 +43,7 @@ class Appthemes {
 
       /// Dialog theme
       dialogTheme: DialogThemeData(
-        backgroundColor: AppColors.scaffoldBackgroundLightColor,
+        backgroundColor: AppColors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
@@ -57,8 +57,7 @@ class Appthemes {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryColor,
-          foregroundColor:
-              AppColors.scaffoldBackgroundLightColor, // لون النص والأيقونة
+          foregroundColor: AppColors.white, // لون النص والأيقونة
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.r),
           ),

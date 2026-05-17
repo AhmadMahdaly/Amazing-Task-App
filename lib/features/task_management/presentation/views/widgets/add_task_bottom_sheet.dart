@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/di.dart';
@@ -7,6 +8,7 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/core/services/task_notification_service.dart';
+import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 import 'package:s/features/task_management/domain/utils/repeat_format_utils.dart';
@@ -38,6 +40,53 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   void dispose() {
     _taskController.dispose();
     super.dispose();
+  }
+
+  DateTime _alignDateWithRepeat(DateTime date, String? repeatMode) {
+    if (repeatMode == null) return date;
+
+    if (repeatMode == 'weekdays') {
+      if (date.weekday == DateTime.saturday) {
+        return date.add(const Duration(days: 2));
+      }
+      if (date.weekday == DateTime.sunday) {
+        return date.add(const Duration(days: 1));
+      }
+      return date;
+    }
+
+    if (repeatMode.startsWith('custom:')) {
+      final parts = repeatMode.split(':');
+      if (parts.length > 2 && parts[2] == 'weeks' && parts.length > 3) {
+        final daysStr = parts[3];
+        if (daysStr.isEmpty) return date;
+
+        final days =
+            daysStr.split(',').map((e) => int.tryParse(e) ?? 1).toList()
+              ..sort();
+
+        if (days.contains(date.weekday)) {
+          return date;
+        }
+
+        int? nextDay;
+        for (final d in days) {
+          if (d > date.weekday) {
+            nextDay = d;
+            break;
+          }
+        }
+
+        if (nextDay != null) {
+          return date.add(Duration(days: nextDay - date.weekday));
+        } else {
+          final firstDay = days.first;
+          final daysToAdd = (7 - date.weekday) + firstDay;
+          return date.add(Duration(days: daysToAdd));
+        }
+      }
+    }
+    return date;
   }
 
   DateTime _getNextWeekDate() {
@@ -289,7 +338,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   leading: const Icon(Icons.delete_outline, color: Colors.red),
                   title: Text(
                     AppTexts.removeRepeat,
-                    style: AppTextStyle.style9W300.copyWith(color: Colors.red),
+                    style: AppTextStyle.style12W300.copyWith(color: Colors.red),
                   ),
                   onTap: () {
                     setState(() => _selectedRepeatMode = null);
@@ -340,24 +389,17 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         right: 16.w,
       ),
       decoration: BoxDecoration(
-        color: AppColors.scaffoldBackgroundLightColor,
+        color: AppColors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
+          CustomPrimaryTextfield(
             controller: _taskController,
             autofocus: true,
-            decoration: InputDecoration(
-              hintText: AppTexts.addTask,
-              border: InputBorder.none,
-              hintStyle: AppTextStyle.style14W500.copyWith(
-                color: AppColors.secondaryColor.withAlpha(100),
-              ),
-            ),
-            style: AppTextStyle.style14W500,
+            text: AppTexts.addTask,
           ),
 
           SizedBox(height: 16.h),
@@ -365,8 +407,8 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
             children: [
               _buildActionIcon(
                 icon: _selectedDueDate != null
-                    ? Icons.event
-                    : Icons.calendar_today,
+                    ? CupertinoIcons.calendar_circle_fill
+                    : CupertinoIcons.calendar_circle,
                 isActive: _selectedDueDate != null,
                 onTap: _showDueDateOptions,
               ),
@@ -374,8 +416,8 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
 
               _buildActionIcon(
                 icon: _pinToNotification
-                    ? Icons.notifications_active
-                    : Icons.notifications_none,
+                    ? CupertinoIcons.bell_fill
+                    : CupertinoIcons.bell,
                 isActive: _pinToNotification,
                 onTap: _showNotificationOptions,
               ),
@@ -383,13 +425,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
 
               _buildActionIcon(
                 icon: _selectedRepeatMode != null
-                    ? Icons.repeat_on
-                    : Icons.repeat,
+                    ? CupertinoIcons.repeat_1
+                    : CupertinoIcons.repeat,
                 isActive: _selectedRepeatMode != null,
                 onTap: _showRepeatOptions,
               ),
               const Spacer(),
-
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
@@ -416,23 +457,36 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
 
                   final now = DateTime.now();
                   final hasRepeat = _selectedRepeatMode != null;
-                  final dueDate =
+
+                  final initialDate =
                       _selectedDueDate ??
                       ((widget.isMyDayView || hasRepeat)
                           ? DateTime(now.year, now.month, now.day)
                           : null);
 
+                  final dueDate = initialDate != null
+                      ? _alignDateWithRepeat(initialDate, _selectedRepeatMode)
+                      : null;
+
+                  String? finalMyDayDate;
+                  if (widget.isMyDayView) {
+                    final today = DateTime(now.year, now.month, now.day);
+                    if (dueDate != null && dueDate.isAfter(today)) {
+                      finalMyDayDate = null;
+                    } else {
+                      finalMyDayDate = deriveMyDayDateWhenAddingFromMyDayView(
+                        reference: now,
+                        dueDate: dueDate,
+                        repeatMode: _selectedRepeatMode,
+                      );
+                    }
+                  }
+
                   final newTask = TaskEntity(
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     title: _taskController.text.trim(),
                     listId: widget.currentListId,
-                    myDayDate: widget.isMyDayView
-                        ? deriveMyDayDateWhenAddingFromMyDayView(
-                            reference: now,
-                            dueDate: dueDate,
-                            repeatMode: _selectedRepeatMode,
-                          )
-                        : null,
+                    myDayDate: finalMyDayDate,
                     dueDate: dueDate,
                     repeatMode: _selectedRepeatMode,
                     isPinnedToNotification: _pinToNotification,

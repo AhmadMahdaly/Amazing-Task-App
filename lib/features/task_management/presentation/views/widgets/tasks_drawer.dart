@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/resources/app_colors.dart';
-import 'package:s/core/wallpaper/wallpaper_picker_sheet.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
+import 'package:s/core/wallpaper/wallpaper_picker_sheet.dart';
 import 'package:s/features/task_list/domain/entities/task_list_entity.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_list/presentation/views/add_list_bottom_sheet.dart';
@@ -74,41 +74,39 @@ class TasksDrawer extends StatelessWidget {
                               CircularProgressIndicator(
                                 value: progress,
                                 strokeWidth: 4.r,
-                                backgroundColor: AppColors.secondaryColor
-                                    .withAlpha(33),
-                                color: Colors.white,
+                                backgroundColor: AppColors.white.withAlpha(
+                                  33,
+                                ),
+                                color: AppColors.white,
                               ),
                               Center(
                                 child: Icon(
                                   Icons.auto_graph,
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   size: 20.r,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(width: 20.w),
+                        20.horizontalSpace,
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 AppTexts.todayProgress,
-                                style: AppTextStyle.style9W300.copyWith(
-                                  fontSize: 16.sp,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                                style: AppTextStyle.style12Bold.copyWith(
+                                  color: AppColors.white,
                                 ),
                               ),
-                              SizedBox(height: 4.h),
+                              4.verticalSpace,
                               Text(
                                 totalToday == 0
                                     ? AppTexts.noTasksToday
                                     : '${AppTexts.completedTasks} $completedToday ${AppTexts.of} $totalToday',
                                 style: AppTextStyle.style9W300.copyWith(
-                                  fontSize: 11.sp,
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                 ),
                               ),
                             ],
@@ -116,7 +114,7 @@ class TasksDrawer extends StatelessWidget {
                         ),
                         Icon(
                           Icons.chevron_right,
-                          color: Colors.white.withAlpha(180),
+                          color: AppColors.white.withAlpha(180),
                           size: 22.r,
                         ),
                       ],
@@ -125,17 +123,12 @@ class TasksDrawer extends StatelessWidget {
                 );
               },
             ),
-            Divider(color: Colors.white.withAlpha(77)),
+            Divider(color: AppColors.white.withAlpha(77)),
 
             _buildDrawerItem(
               icon: Icons.wb_sunny_outlined,
               title: AppTexts.myDay,
-              count: context.read<TasksCubit>().state is TasksLoaded
-                  ? (context.read<TasksCubit>().state as TasksLoaded).allTasks
-                        .where(isTaskInMyDay)
-                        .length
-                        .toString()
-                  : '0',
+
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -147,12 +140,7 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.star_border,
               title: AppTexts.important,
-              count: context.read<TasksCubit>().state is TasksLoaded
-                  ? (context.read<TasksCubit>().state as TasksLoaded).allTasks
-                        .where((task) => task.isImportant)
-                        .length
-                        .toString()
-                  : '0',
+
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -164,12 +152,7 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.calendar_today,
               title: AppTexts.planned,
-              count: context.read<TasksCubit>().state is TasksLoaded
-                  ? (context.read<TasksCubit>().state as TasksLoaded).allTasks
-                        .where((task) => task.dueDate != null)
-                        .length
-                        .toString()
-                  : '0',
+
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -192,12 +175,7 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.home_outlined,
               title: AppTexts.tasks,
-              count: context.read<TasksCubit>().state is TasksLoaded
-                  ? (context.read<TasksCubit>().state as TasksLoaded)
-                        .allTasks
-                        .length
-                        .toString()
-                  : '0',
+
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -228,7 +206,7 @@ class TasksDrawer extends StatelessWidget {
                       child: Text(
                         state.message,
                         style: AppTextStyle.style9W300.copyWith(
-                          color: Colors.redAccent,
+                          color: AppColors.errorColor,
                         ),
                       ),
                     );
@@ -242,7 +220,7 @@ class TasksDrawer extends StatelessWidget {
                         child: Text(
                           AppTexts.noCustomListsYet,
                           style: AppTextStyle.style9W300.copyWith(
-                            color: Colors.white.withAlpha(128),
+                            color: AppColors.white.withAlpha(128),
                           ),
                         ),
                       );
@@ -267,13 +245,13 @@ class TasksDrawer extends StatelessWidget {
                 unawaited(showWallpaperPickerSheet(context));
               },
             ),
-            Divider(color: Colors.white.withAlpha(55)),
+            Divider(color: AppColors.white.withAlpha(55)),
 
             _buildDrawerItem(
               icon: Icons.add,
               title: AppTexts.newList,
-              iconColor: Colors.white,
-              textColor: Colors.white,
+              iconColor: AppColors.white,
+              textColor: AppColors.white,
               isBold: true,
               context: context,
               onTap: () async {
@@ -307,13 +285,14 @@ class TasksDrawer extends StatelessWidget {
     return ListTile(
       leading: Icon(
         icon,
-        color: iconColor ?? Colors.white,
+        color: iconColor ?? AppColors.white,
         size: 24.r,
       ),
       title: Text(
         title,
         style: AppTextStyle.style12W300.copyWith(
-          color: textColor ?? Colors.white,
+          fontSize: 10.sp,
+          color: textColor ?? AppColors.white,
           fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
         ),
       ),
@@ -321,7 +300,7 @@ class TasksDrawer extends StatelessWidget {
           ? Text(
               count,
               style: AppTextStyle.style9W300.copyWith(
-                color: Colors.white,
+                color: AppColors.white,
               ),
             )
           : null,
@@ -346,7 +325,8 @@ class TasksDrawer extends StatelessWidget {
         title: Text(
           list.title,
           style: AppTextStyle.style12W300.copyWith(
-            color: Colors.white,
+            fontSize: 10.sp,
+            color: AppColors.white,
           ),
         ),
 
@@ -365,9 +345,9 @@ class TasksDrawer extends StatelessWidget {
         trailing: PopupMenuButton<String>(
           icon: Icon(
             Icons.more_vert,
-            color: Colors.white.withAlpha(204),
+            color: AppColors.white.withAlpha(75),
           ),
-          color: AppColors.scaffoldBackgroundLightColor,
+          color: AppColors.white,
           onSelected: (value) async {
             switch (value) {
               case 'edit':
@@ -390,14 +370,14 @@ class TasksDrawer extends StatelessWidget {
           itemBuilder: (ctx) => [
             PopupMenuItem(
               value: 'edit',
-              child: Text(AppTexts.edit, style: AppTextStyle.style12W300),
+              child: Text(AppTexts.edit, style: AppTextStyle.style9W300),
             ),
             PopupMenuItem(
               value: 'delete',
               child: Text(
                 AppTexts.delete,
-                style: AppTextStyle.style12W300.copyWith(
-                  color: Colors.redAccent,
+                style: AppTextStyle.style9W300.copyWith(
+                  color: AppColors.errorColor,
                 ),
               ),
             ),
@@ -414,12 +394,7 @@ class TasksDrawer extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(
-          AppTexts.deleteList,
-          style: AppTextStyle.style14W300.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: Text(AppTexts.deleteList, style: AppTextStyle.style12Bold),
         content: Text(
           AppTexts.confirmDeleteList,
           style: AppTextStyle.style12W300,
@@ -434,7 +409,7 @@ class TasksDrawer extends StatelessWidget {
             child: Text(
               AppTexts.delete,
               style: AppTextStyle.style12W300.copyWith(
-                color: Colors.redAccent,
+                color: AppColors.errorColor,
               ),
             ),
           ),
@@ -472,7 +447,7 @@ class TasksDrawer extends StatelessWidget {
       SnackBar(
         content: Text(
           AppTexts.listDeleted,
-          style: AppTextStyle.style12W300.copyWith(color: Colors.white),
+          style: AppTextStyle.style12W300.copyWith(color: AppColors.white),
         ),
         backgroundColor: AppColors.primaryColor,
         duration: const Duration(seconds: 2),

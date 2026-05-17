@@ -32,7 +32,6 @@ class WallpaperSettings {
   }
 }
 
-/// Preset background colors (WhatsApp-style pastels).
 const List<Color> wallpaperPresetColors = [
   Color(0xFFECE5DD),
   Color(0xFFD0E9F5),
@@ -45,8 +44,6 @@ const List<Color> wallpaperPresetColors = [
   Color(0xFFFFCDD2),
   Color(0xFFC5CAE9),
   Color(0xFFDCEDC8),
-  Color(0xFFF5F5F5),
-  Color(0xFFFFFFFF),
   Color(0xFF263238),
   Color(0xFF37474F),
   Color(0xFF1B5E20),

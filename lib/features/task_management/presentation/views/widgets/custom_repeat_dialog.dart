@@ -3,9 +3,10 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/shared_widgets/custom_dropdown_button.dart';
+import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/features/task_management/domain/utils/repeat_format_utils.dart';
 
-/// Shows the custom repeat dialog. Returns the encoded repeat mode or null.
 Future<String?> showCustomRepeatDialog(
   BuildContext context, {
   String? initialMode,
@@ -23,7 +24,7 @@ Future<String?> showCustomRepeatDialog(
       return StatefulBuilder(
         builder: (context, setStateDialog) {
           return AlertDialog(
-            backgroundColor: AppColors.scaffoldBackgroundLightColor,
+            backgroundColor: AppColors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.r),
             ),
@@ -46,14 +47,15 @@ Future<String?> showCustomRepeatDialog(
                     SizedBox(width: 10.w),
                     SizedBox(
                       width: 50.w,
-                      child: TextField(
+                      child: CustomPrimaryTextfield(
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.center,
                         style: AppTextStyle.style12W300,
-                        controller: TextEditingController(text: count.toString())
-                          ..selection = TextSelection.collapsed(
-                            offset: count.toString().length,
-                          ),
+                        controller:
+                            TextEditingController(text: count.toString())
+                              ..selection = TextSelection.collapsed(
+                                offset: count.toString().length,
+                              ),
                         onChanged: (val) {
                           count = int.tryParse(val) ?? 1;
                         },
@@ -61,16 +63,9 @@ Future<String?> showCustomRepeatDialog(
                     ),
                     SizedBox(width: 10.w),
                     Expanded(
-                      child: DropdownButtonFormField<String>(
+                      child: CustomDropdownButtonFormField<String>(
                         value: unit,
-                        dropdownColor: AppColors.scaffoldBackgroundLightColor,
-                        decoration: const InputDecoration(
-                          isDense: true,
-                          border: InputBorder.none,
-                        ),
-                        style: AppTextStyle.style12W300.copyWith(
-                          color: AppColors.forthColor,
-                        ),
+
                         items: [
                           DropdownMenuItem(
                             value: 'days',

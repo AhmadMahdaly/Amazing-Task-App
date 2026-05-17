@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import 'package:get_it/get_it.dart';
 import 'package:s/core/services/task_notification_service.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';

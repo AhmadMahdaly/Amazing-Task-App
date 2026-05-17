@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_colors.dart';
-import 'package:s/core/shared_widgets/app_wallpaper.dart';
-import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/shared_widgets/app_wallpaper.dart';
+import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
@@ -28,123 +28,138 @@ class MainTasksScreen extends StatelessWidget {
             return Scaffold(
               backgroundColor: wallpaperState.settings.hasWallpaper
                   ? Colors.transparent
-                  : AppColors.scaffoldBackgroundLightColor,
+                  : AppColors.primaryColor,
               drawer: isTablet ? null : const TasksDrawer(),
               body: AppWallpaper(
                 settings: wallpaperState.settings,
                 child: BlocBuilder<TasksCubit, TasksState>(
                   builder: (context, state) {
-              var screenTitle = AppTexts.loading;
-              var currentTasks = <TaskEntity>[];
+                    var screenTitle = AppTexts.loading;
+                    var currentTasks = <TaskEntity>[];
 
-              if (state is TasksLoaded) {
-                screenTitle = state.title;
-                currentTasks = state.tasks;
-              } else if (state is TasksError) {
-                screenTitle = AppTexts.thereIsAnError;
-              }
+                    if (state is TasksLoaded) {
+                      screenTitle = state.title;
+                      currentTasks = state.tasks;
+                    } else if (state is TasksError) {
+                      screenTitle = AppTexts.thereIsAnError;
+                    }
 
-              final mainContent = CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    expandedHeight: 110.h,
-                    floating: false,
-                    pinned: true,
-                    flexibleSpace: FlexibleSpaceBar(
-                      title: state is TasksLoaded &&
-                              state.currentFilter == TaskFilter.myDay
-                          ? Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  screenTitle,
-                                  style: AppTextStyle.style18Bold.copyWith(
-                                    color: Colors.white,
+                    final mainContent = CustomScrollView(
+                      slivers: [
+                        SliverAppBar(
+                          expandedHeight: 110.h,
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          scrolledUnderElevation: 0,
+                          surfaceTintColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          floating: true,
+                          pinned: true,
+                          flexibleSpace: FlexibleSpaceBar(
+                            title:
+                                state is TasksLoaded &&
+                                    state.currentFilter == TaskFilter.myDay
+                                ? Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        screenTitle,
+                                        style: AppTextStyle.style18Bold
+                                            .copyWith(
+                                              color: AppColors.white,
+                                            ),
+                                      ),
+                                      Text(
+                                        formatFullDate(DateTime.now()),
+                                        style: AppTextStyle.style12W400
+                                            .copyWith(color: AppColors.white),
+                                      ),
+                                    ],
+                                  )
+                                : Text(
+                                    screenTitle,
+                                    style: AppTextStyle.style18Bold.copyWith(
+                                      color: AppColors.white,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  formatFullDate(DateTime.now()),
-                                  style: AppTextStyle.style12W400.copyWith(
-                                    color: Colors.white.withAlpha(200),
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Text(
-                              screenTitle,
-                              style: AppTextStyle.style18Bold.copyWith(
-                                color: Colors.white,
-                              ),
-                            ),
-                      // background: Container(
-                      //   decoration: const BoxDecoration(
-                      //     gradient: LinearGradient(
-                      //       colors: [
-                      //         AppColors.primaryColor,
-                      //         AppColors.thirdColor,
-                      //       ],
-                      //       begin: Alignment.topCenter,
-                      //       end: Alignment.bottomCenter,
-                      //     ),
-                      //   ),
-                      // ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: _buildBodyContent(state, currentTasks, context),
-                  ),
-                ],
-              );
+                            // background: Container(
+                            //   decoration: const BoxDecoration(
+                            //     gradient: LinearGradient(
+                            //       colors: [
+                            //         AppColors.primaryColor,
+                            //         AppColors.thirdColor,
+                            //       ],
+                            //       begin: Alignment.topCenter,
+                            //       end: Alignment.bottomCenter,
+                            //     ),
+                            //   ),
+                            // ),
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: _buildBodyContent(
+                            state,
+                            currentTasks,
+                            context,
+                          ),
+                        ),
+                      ],
+                    );
 
-              if (isTablet) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: constraints.maxWidth * 0.4,
-                      child: const TasksDrawer(isPermanent: true),
-                    ),
+                    if (isTablet) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: constraints.maxWidth * 0.4,
+                            child: const TasksDrawer(isPermanent: true),
+                          ),
 
-                    Expanded(
-                      child: mainContent,
-                    ),
-                  ],
-                );
-              }
+                          Expanded(
+                            child: mainContent,
+                          ),
+                        ],
+                      );
+                    }
 
                     return mainContent;
                   },
                 ),
               ),
               floatingActionButton: FloatingActionButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(320.r),
-            ),
-            onPressed: () async {
-              final currentState = context.read<TasksCubit>().state;
-              var isMyDay = false;
-              String? listId;
-
-              if (currentState is TasksLoaded) {
-                isMyDay = currentState.currentFilter == TaskFilter.myDay;
-                if (currentState.currentFilter == TaskFilter.customList) {
-                  listId = currentState.currentListId;
-                }
-              }
-
-              await showModalBottomSheet<void>(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) => AddTaskBottomSheet(
-                  isMyDayView: isMyDay,
-                  currentListId: listId,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(320.r),
                 ),
-              );
-            },
-            backgroundColor: AppColors.primaryColor,
-                child: Icon(Icons.add, size: 28.r, color: Colors.white),
+                onPressed: () async {
+                  final currentState = context.read<TasksCubit>().state;
+                  var isMyDay = false;
+                  String? listId;
+
+                  if (currentState is TasksLoaded) {
+                    isMyDay = currentState.currentFilter == TaskFilter.myDay;
+                    if (currentState.currentFilter == TaskFilter.customList) {
+                      listId = currentState.currentListId;
+                    }
+                  }
+
+                  await showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddTaskBottomSheet(
+                      isMyDayView: isMyDay,
+                      currentListId: listId,
+                    ),
+                  );
+                },
+                backgroundColor: AppColors.buttonColor,
+                child: Icon(
+                  Icons.add,
+                  size: 28.r,
+                  color: AppColors.primaryColor,
+                ),
               ),
             );
           },
@@ -170,7 +185,9 @@ class MainTasksScreen extends StatelessWidget {
           child: Center(
             child: Text(
               AppTexts.noTasksInThisList,
-              style: AppTextStyle.style9W300,
+              style: AppTextStyle.style9W300.copyWith(
+                color: AppColors.white,
+              ),
             ),
           ),
         );
@@ -191,7 +208,7 @@ class MainTasksScreen extends StatelessWidget {
             ReorderableListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
               itemCount: activeTasks.length,
               onReorder: (oldIndex, newIndex) async {
                 await context.read<TasksCubit>().reorderTasks(
@@ -213,7 +230,7 @@ class MainTasksScreen extends StatelessWidget {
               tasks: completedTasks,
               compact: true,
             ),
-            24.verticalSpace,
+          24.verticalSpace,
         ],
       );
     }

@@ -39,7 +39,7 @@ class CustomDropdownButtonFormField<T> extends StatelessWidget {
       style: AppTextStyle.style14W500.copyWith(
         color: AppColors.thirdColor,
       ),
-      dropdownColor: AppColors.scaffoldBackgroundLightColor,
+      dropdownColor: AppColors.white,
 
       decoration: InputDecoration(
         hintText: hintText,
@@ -58,7 +58,7 @@ class CustomDropdownButtonFormField<T> extends StatelessWidget {
           vertical: 10.h,
         ),
         filled: true,
-        fillColor: AppColors.scaffoldBackgroundLightColor,
+        fillColor: AppColors.white,
       ),
     );
   }

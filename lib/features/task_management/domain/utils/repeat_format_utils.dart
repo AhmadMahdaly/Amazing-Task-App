@@ -29,7 +29,7 @@ String formatRepeatMode(String? mode) {
           .where((l) => l.isNotEmpty)
           .join(', ');
       if (count == 1) {
-        return '$dayLabels';
+        return dayLabels;
       }
       return '${AppTexts.repeatEvery} $count ${AppTexts.weeks}: $dayLabels';
     }
@@ -83,9 +83,7 @@ CustomRepeatInitialValues? parseCustomRepeatMode(String? mode) {
   if (unit == 'weeks' && parts.length > 3 && parts[3].isNotEmpty) {
     for (final part in parts[3].split(',')) {
       final day = int.tryParse(part);
-      if (day != null &&
-          day >= DateTime.monday &&
-          day <= DateTime.sunday) {
+      if (day != null && day >= DateTime.monday && day <= DateTime.sunday) {
         weekdays.add(day);
       }
     }
@@ -122,19 +120,19 @@ String _weekdayShortLabel(String value) {
   if (day == null) return '';
   switch (day) {
     case DateTime.sunday:
-      return AppTexts.sunday;
+      return AppTexts.sunday.substring(0, 3);
     case DateTime.monday:
-      return AppTexts.monday;
+      return AppTexts.monday.substring(0, 3);
     case DateTime.tuesday:
-      return AppTexts.tuesday;
+      return AppTexts.tuesday.substring(0, 3);
     case DateTime.wednesday:
-      return AppTexts.wednesday;
+      return AppTexts.wednesday.substring(0, 3);
     case DateTime.thursday:
-      return AppTexts.thursday;
+      return AppTexts.thursday.substring(0, 3);
     case DateTime.friday:
-      return AppTexts.friday;
+      return AppTexts.friday.substring(0, 3);
     case DateTime.saturday:
-      return AppTexts.saturday;
+      return AppTexts.saturday.substring(0, 3);
     default:
       return '';
   }

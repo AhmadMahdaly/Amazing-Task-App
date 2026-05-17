@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:s/core/utils/text_direction_utils.dart';
 
 import '../constants.dart';
 import '../resources/app_colors.dart';
@@ -8,6 +9,7 @@ import '../responsive/responsive_config.dart';
 
 class CustomPrimaryTextfield extends StatelessWidget {
   const CustomPrimaryTextfield({
+    this.onFieldSubmitted,
     this.controller,
     this.focusNode,
     super.key,
@@ -48,11 +50,24 @@ class CustomPrimaryTextfield extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final bool? enabled;
   final int? maxLines;
+  final void Function(String)? onFieldSubmitted;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      // height: 52.h,
       child: TextFormField(
+        onFieldSubmitted: onFieldSubmitted,
+        textAlign:
+            textAlign ??
+            textAlignFor(
+              controller?.text.isEmpty ?? true
+                  ? text ?? ''
+                  : controller?.text ?? '',
+            ),
+        textDirection: textDirectionFor(
+          controller?.text.isEmpty ?? true
+              ? text ?? ''
+              : controller?.text ?? '',
+        ),
         maxLines: maxLines,
         enabled: enabled,
         keyboardType: keyboardType,
@@ -65,7 +80,6 @@ class CustomPrimaryTextfield extends StatelessWidget {
             style ??
             AppTextStyle.style14W500.copyWith(color: AppColors.thirdColor),
 
-        textAlign: textAlign ?? TextAlign.start,
         validator: validator,
         focusNode: focusNode,
         controller: controller,
@@ -92,7 +106,7 @@ class CustomPrimaryTextfield extends StatelessWidget {
             vertical: 10.h,
           ),
           filled: true,
-          fillColor: AppColors.scaffoldBackgroundLightColor,
+          fillColor: AppColors.white,
         ),
 
         textInputAction: textInputAction,

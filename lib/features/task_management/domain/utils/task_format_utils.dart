@@ -15,7 +15,7 @@ String formatTaskDate(DateTime? date) {
 
 String formatCompletedDate(DateTime? date) {
   if (date == null) return AppTexts.completedDateUnknown;
-  return '${AppTexts.completedOn} ${formatTaskDate(date)} • '
+  return '${formatTaskDate(date)} • ' //'${AppTexts.completedOn}
       '${date.hour.toString().padLeft(2, '0')}:'
       '${date.minute.toString().padLeft(2, '0')}';
 }

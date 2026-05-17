@@ -8,7 +8,6 @@ import 'package:s/features/task_management/domain/utils/task_date_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/presentation/views/widgets/task_item_widget.dart';
 
-/// Completed tasks grouped by completion date, newest first.
 class CompletedTasksSection extends StatelessWidget {
   const CompletedTasksSection({
     required this.tasks,
@@ -27,9 +26,7 @@ class CompletedTasksSection extends StatelessWidget {
         child: Center(
           child: Text(
             AppTexts.noCompletedTasks,
-            style: AppTextStyle.style9W300.copyWith(
-              color: AppColors.secondaryColor,
-            ),
+            style: AppTextStyle.style9W300.copyWith(color: AppColors.white),
           ),
         ),
       );
@@ -56,15 +53,14 @@ class CompletedTasksSection extends StatelessWidget {
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           initiallyExpanded: false,
-          iconColor: AppColors.secondaryColor,
-          collapsedIconColor: AppColors.secondaryColor,
+          iconColor: AppColors.white,
+          collapsedIconColor: AppColors.white,
           tilePadding: EdgeInsets.symmetric(horizontal: 16.w),
           childrenPadding: EdgeInsets.only(bottom: 8.h),
           title: Text(
             '${AppTexts.completed}  ${tasks.length}',
-            style: AppTextStyle.style12W300.copyWith(
-              color: AppColors.secondaryColor.withAlpha(160),
-              fontWeight: FontWeight.w600,
+            style: AppTextStyle.style12W600.copyWith(
+              color: AppColors.white,
             ),
           ),
           // subtitle: sorted.first.completedAt != null
@@ -124,13 +120,14 @@ class _DateHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 12.h, bottom: 6.h),
+      padding: EdgeInsets.only(top: 8.h, bottom: 6.h),
       child: Row(
         children: [
+          16.horizontalSpace,
           Icon(
             Icons.event_available,
             size: 16.r,
-            color: AppColors.primaryColor,
+            color: AppColors.white.withAlpha(200),
           ),
           SizedBox(width: 8.w),
           Text(
@@ -138,7 +135,7 @@ class _DateHeader extends StatelessWidget {
             style: AppTextStyle.style9W300.copyWith(
               fontSize: 13.sp,
               fontWeight: FontWeight.bold,
-              color: AppColors.primaryColor,
+              color: AppColors.white.withAlpha(200),
             ),
           ),
         ],

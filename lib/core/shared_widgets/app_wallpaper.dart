@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/wallpaper/wallpaper_settings.dart';
 
-/// Paints a WhatsApp-style chat background behind [child].
 class AppWallpaper extends StatelessWidget {
   const AppWallpaper({
     required this.settings,
@@ -29,24 +28,24 @@ class AppWallpaper extends StatelessWidget {
   Widget _buildBackground() {
     switch (settings.type) {
       case WallpaperType.color:
-        return ColoredBox(color: settings.color ?? Colors.white);
+        return ColoredBox(color: settings.color ?? AppColors.primaryColor);
       case WallpaperType.image:
         final path = settings.imagePath;
         if (path == null || path.isEmpty) {
           return const ColoredBox(
-            color: AppColors.scaffoldBackgroundLightColor,
+            color: AppColors.primaryColor,
           );
         }
         return Image.file(
           File(path),
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const ColoredBox(
-            color: AppColors.scaffoldBackgroundLightColor,
+          errorBuilder: (_, _, _) => const ColoredBox(
+            color: AppColors.primaryColor,
           ),
         );
       case WallpaperType.none:
         return const ColoredBox(
-          color: AppColors.scaffoldBackgroundLightColor,
+          color: AppColors.primaryColor,
         );
     }
   }

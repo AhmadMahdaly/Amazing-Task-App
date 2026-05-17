@@ -4,4 +4,4 @@ import '../core/responsive/responsive_config.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 final double radius = 12.r;
-const kPrimaryEnFont = 'NotoSans';
+const kPrimaryEnFont = 'Almarai';

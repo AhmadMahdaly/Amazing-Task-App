@@ -40,7 +40,7 @@ class _SplashViewState extends State<SplashView> {
             child: Image.asset(
               AppImages.appLogo,
               fit: BoxFit.cover,
-              width: SizeConfig.screenWidth * 0.35,
+              width: SizeConfig.screenWidth * 0.25,
             ),
           ),
         ],

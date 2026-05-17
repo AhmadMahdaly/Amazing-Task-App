@@ -4,6 +4,7 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/features/task_list/domain/entities/task_list_entity.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 
@@ -26,7 +27,9 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _listController = TextEditingController(text: widget.listToEdit?.title ?? '');
+    _listController = TextEditingController(
+      text: widget.listToEdit?.title ?? '',
+    );
   }
 
   @override
@@ -108,7 +111,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
         right: 16.w,
       ),
       decoration: BoxDecoration(
-        color: AppColors.scaffoldBackgroundLightColor,
+        color: AppColors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
       child: Column(
@@ -125,34 +128,12 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
           ),
           SizedBox(height: 16.h),
 
-          TextField(
+          CustomPrimaryTextfield(
             controller: _listController,
             autofocus: true,
             textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _save(),
-            decoration: InputDecoration(
-              hintText: AppTexts.enterListName,
-              hintStyle: AppTextStyle.style9W300.copyWith(
-                fontSize: 14.sp,
-                color: AppColors.secondaryColor,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.r),
-                borderSide: const BorderSide(color: AppColors.secondaryColor),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.r),
-                borderSide: const BorderSide(color: AppColors.primaryColor),
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 12.w,
-                vertical: 14.h,
-              ),
-            ),
-            style: AppTextStyle.style9W300.copyWith(
-              fontSize: 16.sp,
-              color: AppColors.forthColor,
-            ),
+            onFieldSubmitted: (_) => _save(),
+            text: AppTexts.enterListName,
           ),
 
           SizedBox(height: 24.h),

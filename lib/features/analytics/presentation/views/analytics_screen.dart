@@ -35,7 +35,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackgroundLightColor,
+      backgroundColor: AppColors.white,
       body: BlocBuilder<TasksCubit, TasksState>(
         builder: (context, tasksState) {
           if (tasksState is TasksLoading) {
@@ -46,7 +46,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
             return Center(
               child: Text(
                 AppTexts.thereIsAnError,
-                style: AppTextStyle.style9W300,
+                style: AppTextStyle.style9W300.copyWith(
+                  color: AppColors.primaryColor,
+                ),
               ),
             );
           }
@@ -230,8 +232,7 @@ class _OverviewGrid extends StatelessWidget {
           ),
           _StatCard(
             label: AppTexts.today,
-            value:
-                '${summary.todayCompleted}/${summary.todayScheduled}',
+            value: '${summary.todayCompleted}/${summary.todayScheduled}',
             icon: Icons.wb_sunny_outlined,
           ),
           _StatCard(
@@ -296,20 +297,23 @@ class _StatCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Icon(icon, color: accent ?? AppColors.primaryColor, size: 22.r),
           Text(
             value,
+            textAlign: TextAlign.center,
             style: AppTextStyle.style9W300.copyWith(
               fontSize: 20.sp,
+
               fontWeight: FontWeight.bold,
               color: AppColors.forthColor,
             ),
           ),
           Text(
             label,
+            textAlign: TextAlign.center,
             style: AppTextStyle.style9W300.copyWith(
               fontSize: 11.sp,
               color: AppColors.secondaryColor,
@@ -336,7 +340,11 @@ class _DailyStatsPanel extends StatelessWidget {
     final maxCompleted = stats
         .map((s) => s.completedCount)
         .fold(0, (a, b) => a > b ? a : b);
-    final maxValue = [maxScheduled, maxCompleted, 1].reduce((a, b) => a > b ? a : b);
+    final maxValue = [
+      maxScheduled,
+      maxCompleted,
+      1,
+    ].reduce((a, b) => a > b ? a : b);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -356,8 +364,9 @@ class _DailyStatsPanel extends StatelessWidget {
             itemCount: stats.length,
             separatorBuilder: (context, index) => SizedBox(height: 8.h),
             itemBuilder: (context, index) {
-      final reversedStats = stats.reversed.toList();
-      final day = reversedStats[index];              return _DayStatRow(day: day, maxValue: maxValue);
+              final reversedStats = stats.reversed.toList();
+              final day = reversedStats[index];
+              return _DayStatRow(day: day, maxValue: maxValue);
             },
           ),
         ),
@@ -401,7 +410,7 @@ class _DayStatRow extends StatelessWidget {
               _Bar(
                 value: day.completedCount,
                 max: maxValue,
-                color: AppColors.primaryColor,
+                color: AppColors.successColor,
               ),
             ],
           ),
@@ -467,10 +476,9 @@ class _MonthlyStatsPanel extends StatelessWidget {
             itemCount: stats.length,
             separatorBuilder: (context, index) => SizedBox(height: 12.h),
             itemBuilder: (context, index) {
-                    final reversedStats = stats.reversed.toList();
-      final month = reversedStats[index];
-              final label =
-                  '${_monthNames[month.month]} ${month.year}';
+              final reversedStats = stats.reversed.toList();
+              final month = reversedStats[index];
+              final label = '${_monthNames[month.month]} ${month.year}';
               final rate = (month.completionRate * 100).round();
 
               return Container(
@@ -617,7 +625,7 @@ class _LegendRow extends StatelessWidget {
       children: [
         _LegendDot(color: AppColors.thirdColor, label: AppTexts.scheduled),
         SizedBox(width: 16.w),
-        _LegendDot(color: AppColors.primaryColor, label: AppTexts.completed),
+        _LegendDot(color: AppColors.successColor, label: AppTexts.completed),
       ],
     );
   }

@@ -12,7 +12,7 @@ Future<void> showWallpaperPickerSheet(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: AppColors.scaffoldBackgroundLightColor,
+    backgroundColor: AppColors.white,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
     ),

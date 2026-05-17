@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_constructors_over_static_methods, use_setters_to_change_properties, unreachable_from_main
+
 import 'dart:async';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -17,10 +19,11 @@ Future<void> onBackgroundNotificationResponse(
   await NotificationActionHandler.handle(response);
 }
 
-typedef TaskNotificationActionHandler = Future<void> Function(
-  String taskId,
-  String? actionId,
-);
+typedef TaskNotificationActionHandler =
+    Future<void> Function(
+      String taskId,
+      String? actionId,
+    );
 
 class TaskNotificationService {
   TaskNotificationService();
@@ -49,11 +52,15 @@ class TaskNotificationService {
   Future<void> initialize() async {
     if (_initialized) return;
 
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@drawable/image',
+    );
     const darwinSettings = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
       requestSoundPermission: false,
+      defaultPresentAlert: false,
+      defaultPresentSound: false,
     );
 
     await _plugin.initialize(
@@ -72,15 +79,18 @@ class TaskNotificationService {
   }
 
   Future<void> _createAndroidChannel() async {
-    final androidPlugin =
-        _plugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
 
     if (androidPlugin == null) return;
 
     final channel = AndroidNotificationChannel(
       _channelId,
       _channelName,
+      enableVibration: false,
+      playSound: false,
       description: AppTexts.pinnedTasksChannelDesc,
       importance: Importance.defaultImportance,
     );
@@ -112,7 +122,8 @@ class TaskNotificationService {
     await NotificationActionHandler.handle(response);
   }
 
-  int notificationIdFor(String taskId) => taskId.hashCode.abs() % 2147483646 + 1;
+  int notificationIdFor(String taskId) =>
+      taskId.hashCode.abs() % 2147483646 + 1;
 
   Future<void> syncAll(List<TaskEntity> tasks) async {
     if (!await hasPermission()) return;
@@ -154,7 +165,10 @@ class TaskNotificationService {
       importance: Importance.defaultImportance,
       priority: Priority.defaultPriority,
       ongoing: true,
+      enableVibration: false,
+      playSound: false,
       autoCancel: false,
+      silent: true,
       category: AndroidNotificationCategory.status,
       actions: <AndroidNotificationAction>[
         AndroidNotificationAction(
@@ -172,7 +186,7 @@ class TaskNotificationService {
     );
 
     const darwinDetails = DarwinNotificationDetails(
-      presentAlert: true,
+      presentAlert: false,
       presentBadge: true,
       presentSound: false,
     );

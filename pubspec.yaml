@@ -1,7 +1,7 @@
 name: s
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.6+7
+version: 1.0.9+9
 
 environment:
   sdk: ^3.9.0
@@ -37,11 +37,11 @@ flutter:
   assets:
     - assets/images/png/
   fonts:
-    - family: NotoSans
+    - family: Almarai
       fonts:
-        - asset: assets/fonts/NotoSans-Regular.ttf
-        - asset: assets/fonts/NotoSans-Medium.ttf
-        - asset: assets/fonts/NotoSans-Bold.ttf
+        - asset: assets/fonts/Almarai-Light.ttf
+        - asset: assets/fonts/Almarai-Regular.ttf
+        - asset: assets/fonts/Almarai-Bold.ttf
 icons_launcher:
   image_path: "assets/images/png/logo.png"
   platforms:

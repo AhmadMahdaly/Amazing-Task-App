@@ -72,11 +72,9 @@ class TaskEntity {
       steps: steps ?? this.steps,
       listId: clearListId ? null : (listId ?? this.listId),
       myDayDate: clearMyDayDate ? null : (myDayDate ?? this.myDayDate),
-      completedAt:
-          clearCompletedAt ? null : (completedAt ?? this.completedAt),
-      isPinnedToNotification: clearPin
-          ? false
-          : (isPinnedToNotification ?? this.isPinnedToNotification),
+      completedAt: clearCompletedAt ? null : (completedAt ?? this.completedAt),
+      isPinnedToNotification:
+          !clearPin && (isPinnedToNotification ?? this.isPinnedToNotification),
       position: position ?? this.position,
     );
   }

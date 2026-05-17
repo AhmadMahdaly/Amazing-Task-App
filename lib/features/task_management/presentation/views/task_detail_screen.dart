@@ -1,3 +1,5 @@
+// ignore_for_file: parameter_assignments
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -7,18 +9,18 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/services/notification_permission_helper.dart';
+import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
+import 'package:s/core/shared_widgets/directional_text.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/entities/task_step.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 import 'package:s/features/task_management/domain/utils/repeat_format_utils.dart';
-import 'package:s/features/task_management/presentation/views/widgets/custom_repeat_dialog.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_steps_utils.dart';
-import 'package:s/core/services/notification_permission_helper.dart';
-import 'package:s/core/shared_widgets/directional_text.dart';
-import 'package:s/core/utils/text_direction_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
+import 'package:s/features/task_management/presentation/views/widgets/custom_repeat_dialog.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   const TaskDetailScreen({required this.taskId, super.key});
@@ -116,13 +118,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       builder: (dialogContext) {
         return AlertDialog(
           title: Text(AppTexts.editStep, style: AppTextStyle.style9W300),
-          content: TextField(
+          content: CustomPrimaryTextfield(
             controller: controller,
             autofocus: true,
-            decoration: InputDecoration(
-              hintText: AppTexts.stepHint,
-              border: const OutlineInputBorder(),
-            ),
+            text: AppTexts.stepHint,
           ),
           actions: [
             TextButton(
@@ -521,7 +520,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             body: Center(
               child: Text(
                 AppTexts.thereIsAnError,
-                style: AppTextStyle.style9W300,
+                style: AppTextStyle.style9W300.copyWith(
+                  color: AppColors.white,
+                ),
               ),
             ),
           );
@@ -544,7 +545,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         }
 
         return Scaffold(
-          backgroundColor: AppColors.scaffoldBackgroundLightColor,
+          backgroundColor: AppColors.white,
           appBar: AppBar(
             backgroundColor: AppColors.primaryColor,
             foregroundColor: Colors.white,
@@ -583,7 +584,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         ),
                         SizedBox(width: 12.w),
                         Expanded(
-                          child: TextField(
+                          child: CustomPrimaryTextfield(
                             controller: _titleController,
                             style: AppTextStyle.style9W300.copyWith(
                               fontSize: 18.sp,
@@ -592,18 +593,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   ? TextDecoration.lineThrough
                                   : null,
                             ),
-                            textDirection: textDirectionFor(
-                              _titleController.text.isEmpty
-                                  ? task.title
-                                  : _titleController.text,
-                            ),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              isDense: true,
-                            ),
+
                             onChanged: (_) =>
                                 setState(() => _titleDirty = true),
-                            onSubmitted: (_) => _saveTitle(task),
+                            onFieldSubmitted: (_) => _saveTitle(task),
                           ),
                         ),
                       ],
@@ -722,7 +715,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                               onTap: () => _editStep(task, index),
                               trailing: ReorderableDragStartListener(
                                 index: index,
-                                child: Icon(
+                                child: const Icon(
                                   Icons.drag_handle,
                                   color: AppColors.secondaryColor,
                                 ),
@@ -735,22 +728,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: TextField(
+                          child: CustomPrimaryTextfield(
                             controller: _stepController,
-                            decoration: InputDecoration(
-                              hintText: AppTexts.stepHint,
-                              hintStyle: AppTextStyle.style9W300.copyWith(
-                                color: AppColors.secondaryColor,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 12.w,
-                                vertical: 10.h,
-                              ),
-                            ),
-                            onSubmitted: (_) => _addStep(task),
+                            text: AppTexts.stepHint,
+
+                            onFieldSubmitted: (_) => _addStep(task),
                           ),
                         ),
                         SizedBox(width: 8.w),
