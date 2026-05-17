@@ -239,11 +239,22 @@ class TasksDrawer extends StatelessWidget {
                 },
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.wallpaper_outlined),
-              onPressed: () {
-                unawaited(showWallpaperPickerSheet(context));
-              },
+            Row(
+              children: [
+                8.horizontalSpace,
+                IconButton(
+                  icon: const Icon(Icons.wallpaper_outlined),
+                  onPressed: () {
+                    unawaited(showWallpaperPickerSheet(context));
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add_task_rounded),
+                  onPressed: () async {
+                    await context.pushNamed(AppRoutes.challengesScreen);
+                  },
+                ),
+              ],
             ),
             Divider(color: AppColors.white.withAlpha(55)),
 
@@ -255,9 +266,6 @@ class TasksDrawer extends StatelessWidget {
               isBold: true,
               context: context,
               onTap: () async {
-                if (!SizeConfig.isTablet) {
-                  Navigator.pop(context);
-                }
                 await showModalBottomSheet<void>(
                   context: context,
                   isScrollControlled: true,

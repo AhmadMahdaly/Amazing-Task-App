@@ -118,8 +118,10 @@ class AppTexts {
   static String notification = 'Notification';
   static String unpin = 'Unpin';
   static String pinnedTaskLabel = 'Pinned task';
-  static String pinnedTasksChannelDesc = 'Tasks pinned to the notification shade';
-  static String notificationPermissionRequired = 'Notification permission required';
+  static String pinnedTasksChannelDesc =
+      'Tasks pinned to the notification shade';
+  static String notificationPermissionRequired =
+      'Notification permission required';
   static String notificationPermissionDenied =
       'Allow notifications to pin tasks. You can enable them when prompted.';
   static String notificationPermissionDeniedSettings =
@@ -134,4 +136,58 @@ class AppTexts {
       'Allow photo access to choose a wallpaper from your gallery.';
   static String photoPermissionDeniedSettings =
       'Photo access is disabled. Open app settings and allow photos to set a wallpaper.';
+
+  ///
+  static String failedToUpdateChallengeStatus =
+      'Failed to update challenge status';
+  static String failedToAddChallenge = 'Failed to add challenge';
+  static String failedToLoadChallenges = 'Failed to load challenges';
+  static String yourChallenges = 'Your Challenges';
+  static String results = 'Results';
+  static String notEnoughDataForAnalysis =
+      'There is not enough data for analysis.';
+  static String challengesAnalysis = 'Challenges Analysis';
+  static String challengePeriod = 'Challenge Period';
+  static String timeIsUp = 'Time is up';
+  static String status = 'Status';
+  static String expirationDate = 'Expiration Date';
+  static String remainingTime = 'Remaining Time';
+  static String failed = 'Failed';
+  static String succeeded = 'Succeeded';
+  static String hard = 'Hard';
+  static String medium = 'Medium';
+  static String easy = 'Easy';
+  static String failure = 'Failure';
+  static String success = 'Success';
+  static String active = 'Active';
+  static String startByAddingChallenge = 'Start by adding a challenge';
+  static String noChallengesCurrently =
+      'There are no challenges currently. Start a new challenge!';
+  static String yourChallengesList = 'Your Challenges List';
+  static String start = 'Start';
+  static String setEndTime = 'Set End Time';
+  static String whenWillItStart = 'When will it start';
+  static String chooseImage = 'Choose Image';
+  static String noImageSelected = 'No image selected.';
+  static String light = 'Light';
+  static String challengeLevel = 'Challenge Level';
+  static String pleaseEnterCategory = 'Please enter a category';
+  static String whichActivityCategory = 'Which activity category';
+  static String pleaseEnterDescription = 'Please enter a description';
+  static String describeTheChallenge = 'Describe the challenge';
+  static String pleaseEnterTitle = 'Please enter a title';
+  static String whatWillYouDo = 'What will you do';
+  static String addNewChallenge = 'Add New Challenge';
+  static String endDateMustBeInFuture = 'The end date must be in the future';
+  static String analysisByStatus = 'Analysis by Status';
+  static String activeChallenges = 'Active';
+  static String successfulChallenges = 'Successful';
+  static String failedChallenges = 'Failed';
+  static String analysisByLevel = 'Analysis by Level';
+  static String timeRemaining = 'Time Remaining';
+  static String completionDate = 'Completion Date';
+  static String timeExpired = 'Time Expired';
+  static String minute = 'Minute';
+  static String day = 'Day';
+  static String hour = 'Hour';
 }

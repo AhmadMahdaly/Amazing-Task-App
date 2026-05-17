@@ -293,6 +293,7 @@ class TaskItemWidget extends StatelessWidget {
                 title: DirectionalText(
                   task.title,
                   style: AppTextStyle.style12W300.copyWith(
+                    fontSize: 11.sp,
                     color: task.isCompleted
                         ? AppColors.secondaryColor
                         : AppColors.forthColor,

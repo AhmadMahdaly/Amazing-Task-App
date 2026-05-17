@@ -4,6 +4,10 @@ import 'package:get_it/get_it.dart';
 import 'package:s/core/services/task_notification_service.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/core/wallpaper/wallpaper_repository.dart';
+import 'package:s/features/challenges/data/datasource/challenges_local_datasource.dart';
+import 'package:s/features/challenges/data/repositories/challenge_repository_impl.dart';
+import 'package:s/features/challenges/domain/repositories/challenge_repository.dart';
+import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
 import 'package:s/features/task_list/data/datasource/lists_local_data_source.dart';
 import 'package:s/features/task_list/data/repo/lists_repository_impl.dart';
 import 'package:s/features/task_list/domain/repo/lists_repository.dart';
@@ -40,5 +44,13 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<ListsRepository>(
       () => ListsRepositoryImpl(getIt<ListsLocalDataSource>()),
     )
-    ..registerFactory<ListsCubit>(() => ListsCubit(getIt<ListsRepository>()));
+    ..registerFactory<ListsCubit>(() => ListsCubit(getIt<ListsRepository>()))
+    ///
+        ..registerLazySingleton<ChallengeLocalDataSource>(
+      ChallengeLocalDataSourceImpl.new)
+    ..registerLazySingleton<ChallengeRepository>(
+      () => ChallengeRepositoryImpl(getIt()),
+    )
+    ..registerFactory<ChallengeCubit>(() => ChallengeCubit(getIt()))
+    ;
 }

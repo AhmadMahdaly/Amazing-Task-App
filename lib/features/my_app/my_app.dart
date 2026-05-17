@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
+import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
@@ -27,6 +28,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider.value(
           value: getIt<WallpaperCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<ChallengeCubit>()..loadChallenges(),
         ),
       ],
       child: GestureDetector(

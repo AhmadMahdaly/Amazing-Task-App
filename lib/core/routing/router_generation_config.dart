@@ -1,5 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:s/features/analytics/presentation/views/analytics_screen.dart';
+import 'package:s/features/challenges/presentation/screens/add_challenge_screen.dart';
+import 'package:s/features/challenges/presentation/screens/analysis_screen.dart';
+import 'package:s/features/challenges/presentation/screens/challenges_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
 
@@ -37,14 +40,21 @@ void initRouter() {
           return TaskDetailScreen(taskId: taskId);
         },
       ),
-      // GoRoute(
-      //   path: AppRoutes.mainLayoutScreen,
-      //   name: AppRoutes.mainLayoutScreen,
-      //   builder: (context, state) => BlocProvider(
-      //     create: (_) => getIt<MainLayoutCubit>(),
-      //     child: const MainLayoutView(),
-      //   ),
-      // ),
+      GoRoute(
+        path: AppRoutes.challengesScreen,
+        name: AppRoutes.challengesScreen,
+        builder: (context, state) => const ChallengesScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.addChallengeScreen,
+        name: AppRoutes.addChallengeScreen,
+        builder: (context, state) => const AddChallengeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.challengeAnalysisScreen,
+        name: AppRoutes.challengeAnalysisScreen,
+        builder: (context, state) => const ChallengeAnalysisScreen(),
+      ),
       // GoRoute(
       //   path: AppRoutes.loginScreen,
       //   name: AppRoutes.loginScreen,

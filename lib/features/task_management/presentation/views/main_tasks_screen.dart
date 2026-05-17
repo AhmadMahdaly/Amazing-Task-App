@@ -154,7 +154,7 @@ class MainTasksScreen extends StatelessWidget {
                     ),
                   );
                 },
-                backgroundColor: AppColors.buttonColor,
+                backgroundColor: AppColors.white,
                 child: Icon(
                   Icons.add,
                   size: 28.r,
