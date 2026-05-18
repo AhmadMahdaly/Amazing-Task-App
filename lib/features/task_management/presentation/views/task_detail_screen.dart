@@ -10,6 +10,7 @@ import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
+import 'package:s/core/shared_widgets/custom_primary_button.dart';
 import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/core/shared_widgets/directional_text.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
@@ -520,7 +521,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             body: Center(
               child: Text(
                 AppTexts.thereIsAnError,
-                style: AppTextStyle.style9W300.copyWith(
+                style: AppTextStyle.style12W300.copyWith(
+                  fontSize: 10.sp,
                   color: AppColors.white,
                 ),
               ),
@@ -548,8 +550,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           backgroundColor: AppColors.white,
           appBar: AppBar(
             backgroundColor: AppColors.primaryColor,
-            foregroundColor: Colors.white,
-            title: Text(AppTexts.taskDetails, style: AppTextStyle.style9W300),
+            foregroundColor: AppColors.white,
+            title: Text(AppTexts.taskDetails, style: AppTextStyle.style16W300),
             actions: [
               IconButton(
                 icon: const Icon(Icons.delete_outline),
@@ -582,13 +584,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             size: 28.r,
                           ),
                         ),
-                        SizedBox(width: 12.w),
+                        12.horizontalSpace,
                         Expanded(
                           child: CustomPrimaryTextfield(
                             controller: _titleController,
-                            style: AppTextStyle.style9W300.copyWith(
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.bold,
+                            style: AppTextStyle.style18Bold.copyWith(
                               decoration: task.isCompleted
                                   ? TextDecoration.lineThrough
                                   : null,
@@ -602,7 +602,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       ],
                     ),
                     if (task.isCompleted) ...[
-                      SizedBox(height: 8.h),
+                      8.verticalSpace,
                       Row(
                         children: [
                           Icon(
@@ -610,11 +610,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             size: 16.r,
                             color: AppColors.thirdColor,
                           ),
-                          SizedBox(width: 6.w),
+                          6.horizontalSpace,
                           Text(
                             formatCompletedDate(task.completedAt),
-                            style: AppTextStyle.style9W300.copyWith(
-                              fontSize: 12.sp,
+                            style: AppTextStyle.style12W300.copyWith(
                               color: AppColors.thirdColor,
                             ),
                           ),
@@ -622,11 +621,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       ),
                     ],
                     if (task.dueDate != null && !task.isCompleted) ...[
-                      SizedBox(height: 4.h),
+                      4.verticalSpace,
                       Text(
                         '${AppTexts.dueDate}: ${formatTaskDate(task.dueDate)}',
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 12.sp,
+                        style: AppTextStyle.style12W300.copyWith(
                           color: AppColors.secondaryColor,
                         ),
                       ),
@@ -634,21 +632,14 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 16.h),
-              Text(
-                AppTexts.steps,
-                style: AppTextStyle.style9W300.copyWith(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              16.verticalSpace,
+              Text(AppTexts.steps, style: AppTextStyle.style16Bold),
               if (task.hasSteps)
                 Padding(
                   padding: EdgeInsets.only(top: 4.h, bottom: 8.h),
                   child: Text(
                     '${task.completedSteps}/${task.totalSteps} ${AppTexts.completed}',
-                    style: AppTextStyle.style9W300.copyWith(
-                      fontSize: 12.sp,
+                    style: AppTextStyle.style12W300.copyWith(
                       color: AppColors.secondaryColor,
                     ),
                   ),
@@ -661,8 +652,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         padding: EdgeInsets.symmetric(vertical: 8.h),
                         child: Text(
                           AppTexts.noStepsYet,
-                          style: AppTextStyle.style9W300.copyWith(
-                            fontSize: 13.sp,
+                          style: AppTextStyle.style12W300.copyWith(
                             color: AppColors.secondaryColor,
                           ),
                         ),
@@ -724,7 +714,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           );
                         },
                       ),
-                    SizedBox(height: 8.h),
+                    8.verticalSpace,
                     Row(
                       children: [
                         Expanded(
@@ -748,15 +738,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 20.h),
+              20.verticalSpace,
               Text(
                 AppTexts.taskSettings,
-                style: AppTextStyle.style9W300.copyWith(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: AppTextStyle.style16Bold,
               ),
-              SizedBox(height: 8.h),
+              8.verticalSpace,
               _SectionCard(
                 child: Column(
                   children: [
@@ -848,24 +835,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 24.h),
+              24.verticalSpace,
               if (_titleDirty)
-                SizedBox(
+                CustomPrimaryButton(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                    ),
-                    onPressed: () => _saveTitle(task),
-                    child: Text(
-                      AppTexts.save,
-                      style: AppTextStyle.style9W300.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+
+                  onPressed: () => _saveTitle(task),
+                  text: AppTexts.save,
                 ),
             ],
           ),
@@ -886,11 +862,11 @@ class _SectionCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(15),
+            color: AppColors.forthColor.withAlpha(15),
             blurRadius: 8.r,
             offset: const Offset(0, 2),
           ),
@@ -921,11 +897,10 @@ class _SettingsTile extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: AppColors.primaryColor),
-      title: Text(title, style: AppTextStyle.style9W300),
+      title: Text(title, style: AppTextStyle.style12W300),
       subtitle: Text(
         subtitle,
-        style: AppTextStyle.style9W300.copyWith(
-          fontSize: 12.sp,
+        style: AppTextStyle.style12W300.copyWith(
           color: AppColors.secondaryColor,
         ),
       ),

@@ -88,7 +88,7 @@ class _AddChallengeScreenState extends State<AddChallengeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppTexts.addNewChallenge),
+        title: Text(AppTexts.addNewChallenge, style: AppTextStyle.style16Bold),
       ),
       body: Form(
         key: _formKey,
@@ -150,7 +150,7 @@ class _AddChallengeScreenState extends State<AddChallengeScreen> {
                   Expanded(
                     child: _imageFile == null
                         ? Text(AppTexts.noImageSelected)
-                        : Image.file(_imageFile!, height: 100),
+                        : Image.file(_imageFile!, height: 100.h),
                   ),
                   TextButton.icon(
                     onPressed: _pickImage,
@@ -222,7 +222,7 @@ class _AddChallengeScreenState extends State<AddChallengeScreen> {
               context: context,
               initialDate: date,
               firstDate: DateTime.now().subtract(const Duration(days: 30)),
-              lastDate: DateTime.now().add(const Duration(days: 365)),
+              lastDate: DateTime(2100),
             );
             if (newDate == null) return;
 

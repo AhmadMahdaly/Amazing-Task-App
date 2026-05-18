@@ -190,4 +190,10 @@ class AppTexts {
   static String minute = 'Minute';
   static String day = 'Day';
   static String hour = 'Hour';
+  static String howChallengesWork = 'How Challenges Work';
+  static String challengeDescription =
+      'Creating a challenge means making a real commitment to yourself.\n'
+      'Once a challenge is created, it cannot be deleted or undone.\n'
+      'Every challenge ends with only one of two results: success or failure.\n'
+      'Choose your challenge carefully and stay committed until the end.';
 }

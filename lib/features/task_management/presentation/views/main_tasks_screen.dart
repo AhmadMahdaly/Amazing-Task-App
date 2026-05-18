@@ -185,7 +185,8 @@ class MainTasksScreen extends StatelessWidget {
           child: Center(
             child: Text(
               AppTexts.noTasksInThisList,
-              style: AppTextStyle.style9W300.copyWith(
+              style: AppTextStyle.style12W300.copyWith(
+                fontSize: 10.sp,
                 color: AppColors.white,
               ),
             ),

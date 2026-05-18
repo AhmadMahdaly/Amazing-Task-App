@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:s/core/functions/play_sound.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
@@ -279,6 +280,7 @@ class TaskItemWidget extends StatelessWidget {
                 leading: InkWell(
                   onTap: () async {
                     await context.read<TasksCubit>().toggleTaskCompletion(task);
+                    await playSound();
                   },
                   child: Icon(
                     task.isCompleted

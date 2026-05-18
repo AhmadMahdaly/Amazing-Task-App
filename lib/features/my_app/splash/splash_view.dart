@@ -25,7 +25,7 @@ class _SplashViewState extends State<SplashView> {
   Future<void> _redirect() async {
     if (_hasRedirected || !mounted) return;
     _hasRedirected = true;
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
     context.go(AppRoutes.mainTasksScreen);
   }
