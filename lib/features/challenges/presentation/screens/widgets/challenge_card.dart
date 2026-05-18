@@ -74,7 +74,7 @@ class ChallengeCard extends StatelessWidget {
 
     return Card(
       color: challenge.status == ChallengeStatus.failed
-          ? AppColors.errorColor
+          ? AppColors.errorColor.withAlpha(200)
           : challenge.status == ChallengeStatus.success
           ? AppColors.successColor.withAlpha(200)
           : cardColor,

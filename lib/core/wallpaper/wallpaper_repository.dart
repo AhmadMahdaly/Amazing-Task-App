@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_slow_async_io
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -30,64 +28,123 @@ class WallpaperRepository {
     }
 
     if (typeRaw == 'image') {
-      final path =
-          CacheHelper.getData(WallpaperCacheKeys.imagePath) as String?;
-      if (path == null || path.isEmpty || !File(path).existsSync()) {
+      final path = CacheHelper.getData(WallpaperCacheKeys.imagePath) as String?;
+      if (path == null || path.isEmpty) {
         return WallpaperSettings.defaultSettings;
       }
+
+      if (path.startsWith('assets/')) {
+        return WallpaperSettings(
+          type: WallpaperType.image,
+          imagePath: path,
+        );
+      }
+
+      final fileName = path.split('/').last;
+      final dir = await getApplicationDocumentsDirectory();
+      final actualPath = '${dir.path}/$fileName';
+
+      if (!File(actualPath).existsSync()) {
+        return WallpaperSettings.defaultSettings;
+      }
+
       return WallpaperSettings(
         type: WallpaperType.image,
-        imagePath: path,
+        imagePath: actualPath,
       );
     }
 
     return WallpaperSettings.defaultSettings;
   }
 
-  Future<void> saveColor(Color color) async {
-    await _deleteStoredImageIfAny();
-    await CacheHelper.saveData(key: WallpaperCacheKeys.type, value: 'color');
-    await CacheHelper.saveData(
-      key: WallpaperCacheKeys.color,
-      value: color.toARGB32(),
-    );
-    await CacheHelper.removeData(WallpaperCacheKeys.imagePath);
+  Future<void> _deleteStoredImageIfAny() async {
+    final path =
+        CacheHelper.getData(
+              WallpaperCacheKeys.imagePath,
+            )
+            as String?;
+
+    if (path == null || path.isEmpty) return;
+    if (path.startsWith('assets/')) return;
+
+    try {
+      final fileName = path.split('/').last;
+      final dir = await getApplicationDocumentsDirectory();
+      final actualPath = '${dir.path}/$fileName';
+
+      final file = File(actualPath);
+
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (_) {}
   }
 
-  Future<String> saveImageFromPath(String sourcePath) async {
+  Future<void> save(WallpaperSettings settings) async {
+    await CacheHelper.saveData(
+      key: WallpaperCacheKeys.type,
+      value: settings.type.name,
+    );
+
+    if (settings.type == WallpaperType.color && settings.color != null) {
+      await _deleteStoredImageIfAny();
+
+      await CacheHelper.saveData(
+        key: WallpaperCacheKeys.color,
+        value: settings.color!.toARGB32(),
+      );
+
+      await CacheHelper.removeData(
+        WallpaperCacheKeys.imagePath,
+      );
+
+      return;
+    }
+
+    if (settings.type == WallpaperType.image && settings.imagePath != null) {
+      await CacheHelper.saveData(
+        key: WallpaperCacheKeys.imagePath,
+        value: settings.imagePath,
+      );
+
+      await CacheHelper.removeData(
+        WallpaperCacheKeys.color,
+      );
+
+      return;
+    }
+  }
+
+  Future<String> saveImageFromPath(
+    String sourcePath,
+  ) async {
     await _deleteStoredImageIfAny();
 
     final dir = await getApplicationDocumentsDirectory();
-    final fileName = 'wallpaper_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    final destPath = '${dir.path}/$fileName';
-    await File(sourcePath).copy(destPath);
 
-    await CacheHelper.saveData(key: WallpaperCacheKeys.type, value: 'image');
-    await CacheHelper.saveData(
-      key: WallpaperCacheKeys.imagePath,
-      value: destPath,
-    );
-    await CacheHelper.removeData(WallpaperCacheKeys.color);
+    final fileName = 'wallpaper_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+    final destPath = '${dir.path}/$fileName';
+
+    await File(sourcePath).copy(destPath);
 
     return destPath;
   }
 
   Future<void> clear() async {
     await _deleteStoredImageIfAny();
-    await CacheHelper.saveData(key: WallpaperCacheKeys.type, value: 'none');
-    await CacheHelper.removeData(WallpaperCacheKeys.color);
-    await CacheHelper.removeData(WallpaperCacheKeys.imagePath);
-  }
 
-  Future<void> _deleteStoredImageIfAny() async {
-    final path =
-        CacheHelper.getData(WallpaperCacheKeys.imagePath) as String?;
-    if (path == null || path.isEmpty) return;
-    try {
-      final file = File(path);
-      if (await file.exists()) {
-        await file.delete();
-      }
-    } catch (_) {}
+    await CacheHelper.saveData(
+      key: WallpaperCacheKeys.type,
+      value: 'none',
+    );
+
+    await CacheHelper.removeData(
+      WallpaperCacheKeys.color,
+    );
+
+    await CacheHelper.removeData(
+      WallpaperCacheKeys.imagePath,
+    );
   }
 }

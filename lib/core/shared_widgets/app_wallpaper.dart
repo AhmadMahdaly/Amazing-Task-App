@@ -29,6 +29,7 @@ class AppWallpaper extends StatelessWidget {
     switch (settings.type) {
       case WallpaperType.color:
         return ColoredBox(color: settings.color ?? AppColors.primaryColor);
+
       case WallpaperType.image:
         final path = settings.imagePath;
         if (path == null || path.isEmpty) {
@@ -36,6 +37,17 @@ class AppWallpaper extends StatelessWidget {
             color: AppColors.primaryColor,
           );
         }
+
+        if (path.startsWith('assets/')) {
+          return Image.asset(
+            path,
+            fit: BoxFit.cover,
+            errorBuilder: (_, _, _) => const ColoredBox(
+              color: AppColors.primaryColor,
+            ),
+          );
+        }
+
         return Image.file(
           File(path),
           fit: BoxFit.cover,
@@ -43,6 +55,7 @@ class AppWallpaper extends StatelessWidget {
             color: AppColors.primaryColor,
           ),
         );
+
       case WallpaperType.none:
         return const ColoredBox(
           color: AppColors.primaryColor,

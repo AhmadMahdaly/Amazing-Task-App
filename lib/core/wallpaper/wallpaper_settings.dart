@@ -4,14 +4,17 @@ enum WallpaperType { none, color, image }
 
 class WallpaperSettings {
   const WallpaperSettings({
-    this.type = WallpaperType.none,
+    this.type = WallpaperType.image,
     this.color,
-    this.imagePath,
+    this.imagePath = defaultWallpaper,
   });
 
   final WallpaperType type;
   final Color? color;
   final String? imagePath;
+
+  static const String defaultWallpaper =
+      'assets/images/wallpapers/wellpaper1.jpeg';
 
   static const WallpaperSettings defaultSettings = WallpaperSettings();
 
@@ -47,4 +50,10 @@ const List<Color> wallpaperPresetColors = [
   Color(0xFF263238),
   Color(0xFF37474F),
   Color(0xFF1B5E20),
+];
+
+const List<String> wallpaperPresetImages = [
+  'assets/images/wallpapers/wellpaper1.jpeg',
+  'assets/images/wallpapers/wellpaper3.jpeg',
+  'assets/images/wallpapers/wellpaper4.jpeg',
 ];

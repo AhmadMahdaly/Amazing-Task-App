@@ -196,4 +196,5 @@ class AppTexts {
       'Once a challenge is created, it cannot be deleted or undone.\n'
       'Every challenge ends with only one of two results: success or failure.\n'
       'Choose your challenge carefully and stay committed until the end.';
+  static String wallpaperImages = 'Wallpaper Images';
 }

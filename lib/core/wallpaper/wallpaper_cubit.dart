@@ -19,13 +19,33 @@ class WallpaperCubit extends Cubit<WallpaperState> {
   }
 
   Future<void> setColor(Color color) async {
-    await _repository.saveColor(color);
+    await _repository.save(
+      WallpaperSettings(
+        type: WallpaperType.color,
+        color: color,
+      ),
+    );
     emit(
       state.copyWith(
         settings: WallpaperSettings(
           type: WallpaperType.color,
           color: color,
         ),
+      ),
+    );
+  }
+
+  Future<void> setAssetImage(String assetPath) async {
+    final settings = WallpaperSettings(
+      type: WallpaperType.image,
+      imagePath: assetPath,
+    );
+
+    await _repository.save(settings);
+
+    emit(
+      state.copyWith(
+        settings: settings,
       ),
     );
   }
@@ -44,14 +64,15 @@ class WallpaperCubit extends Cubit<WallpaperState> {
     if (picked == null) return null;
 
     final path = await _repository.saveImageFromPath(picked.path);
-    emit(
-      state.copyWith(
-        settings: WallpaperSettings(
-          type: WallpaperType.image,
-          imagePath: path,
-        ),
-      ),
+
+    final newSettings = WallpaperSettings(
+      type: WallpaperType.image,
+      imagePath: path,
     );
+
+    await _repository.save(newSettings);
+
+    emit(state.copyWith(settings: newSettings));
     return null;
   }
 
