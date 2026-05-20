@@ -222,10 +222,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     if (repeatMode == null) return date;
 
     if (repeatMode == 'weekdays') {
-      if (date.weekday == DateTime.saturday)
+      if (date.weekday == DateTime.saturday) {
         return date.add(const Duration(days: 2));
-      if (date.weekday == DateTime.sunday)
+      }
+      if (date.weekday == DateTime.sunday) {
         return date.add(const Duration(days: 1));
+      }
       return date;
     }
 
@@ -257,8 +259,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         final targetDay = int.tryParse(parts[3]);
         if (targetDay != null) {
           if (date.day == targetDay) return date;
-          if (date.day < targetDay)
+          if (date.day < targetDay) {
             return DateTime(date.year, date.month, targetDay);
+          }
           return DateTime(date.year, date.month + 1, targetDay);
         }
       } else if (unit == 'years' && parts.length > 3) {
