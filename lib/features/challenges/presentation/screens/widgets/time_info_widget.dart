@@ -34,6 +34,7 @@ class TimeInfo extends StatelessWidget {
         Text(
           '$label: ',
           style: AppTextStyle.style12Bold.copyWith(
+            fontSize: 10.sp,
             color:
                 challenge.status == ChallengeStatus.failed ||
                     challenge.status == ChallengeStatus.success
@@ -44,8 +45,7 @@ class TimeInfo extends StatelessWidget {
         Expanded(
           child: Text(
             '$value.',
-            style: AppTextStyle.style12W500.copyWith(
-              fontSize: 11.sp,
+            style: AppTextStyle.style9W500.copyWith(
               color:
                   challenge.status == ChallengeStatus.failed ||
                       challenge.status == ChallengeStatus.success

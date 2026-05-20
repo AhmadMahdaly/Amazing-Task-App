@@ -5,10 +5,10 @@ import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
+import 'package:s/core/utils/app_icons_helper.dart';
 import 'package:s/features/task_list/domain/entities/task_list_entity.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 
-/// Create a list, or pass [listToEdit] to rename an existing list.
 class AddListBottomSheet extends StatefulWidget {
   const AddListBottomSheet({super.key, this.listToEdit});
 
@@ -21,6 +21,7 @@ class AddListBottomSheet extends StatefulWidget {
 class _AddListBottomSheetState extends State<AddListBottomSheet> {
   late final TextEditingController _listController;
   bool _isSaving = false;
+  late int _selectedIconCode;
 
   bool get _isEdit => widget.listToEdit != null;
 
@@ -30,12 +31,76 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
     _listController = TextEditingController(
       text: widget.listToEdit?.title ?? '',
     );
+
+    _selectedIconCode = widget.listToEdit?.iconCode ?? Icons.list.codePoint;
   }
 
   @override
   void dispose() {
     _listController.dispose();
     super.dispose();
+  }
+
+  Future<void> _showIconPicker() async {
+    FocusScope.of(context).unfocus();
+
+    await showModalBottomSheet<void>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16.r),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  AppTexts.chooseListIcon,
+                  style: AppTextStyle.style14Bold.copyWith(
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+                16.verticalSpace,
+                Wrap(
+                  spacing: 16.w,
+                  runSpacing: 16.h,
+                  alignment: WrapAlignment.center,
+                  children: AppIconsHelper.availableIcons.map((iconData) {
+                    final isSelected = iconData.codePoint == _selectedIconCode;
+                    return InkWell(
+                      onTap: () {
+                        setState(() => _selectedIconCode = iconData.codePoint);
+                        Navigator.pop(context);
+                      },
+                      borderRadius: BorderRadius.circular(32.r),
+                      child: Container(
+                        padding: EdgeInsets.all(12.r),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isSelected
+                              ? AppColors.primaryColor
+                              : AppColors.secondaryColor.withAlpha(33),
+                        ),
+                        child: Icon(
+                          iconData,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.primaryColor.withAlpha(150),
+                          size: 28.r,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                16.verticalSpace,
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _save() async {
@@ -52,12 +117,14 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
                 id: widget.listToEdit!.id,
                 title: title,
                 position: widget.listToEdit!.position,
+                iconCode: _selectedIconCode,
               ),
             )
           : await listsCubit.addList(
               TaskListEntity(
                 id: DateTime.now().millisecondsSinceEpoch.toString(),
                 title: title,
+                iconCode: _selectedIconCode,
               ),
             );
 
@@ -128,12 +195,35 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
           ),
           SizedBox(height: 16.h),
 
-          CustomPrimaryTextfield(
-            controller: _listController,
-            autofocus: true,
-            textInputAction: TextInputAction.done,
-            onFieldSubmitted: (_) => _save(),
-            text: AppTexts.enterListName,
+          Row(
+            children: [
+              InkWell(
+                onTap: _showIconPicker,
+                borderRadius: BorderRadius.circular(8.r),
+                child: Container(
+                  padding: EdgeInsets.all(12.r),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryColor.withAlpha(33),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Icon(
+                    AppIconsHelper.getIconFromCode(_selectedIconCode),
+                    color: AppColors.primaryColor,
+                    size: 28.r,
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: CustomPrimaryTextfield(
+                  controller: _listController,
+                  autofocus: true,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) => _save(),
+                  text: AppTexts.enterListName,
+                ),
+              ),
+            ],
           ),
 
           SizedBox(height: 24.h),
@@ -152,7 +242,6 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
                 ),
               ),
               SizedBox(width: 12.w),
-
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,

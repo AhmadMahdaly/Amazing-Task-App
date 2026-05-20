@@ -42,32 +42,204 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     super.dispose();
   }
 
+  String _getRepeatCategory() {
+    final mode = _selectedRepeatMode;
+    if (mode == null) return '';
+    if (!mode.startsWith('custom:')) return mode;
+
+    final parts = mode.split(':');
+    final count = int.tryParse(parts[1]) ?? 1;
+    final unit = parts.length > 2 ? parts[2] : '';
+
+    if (count == 1) {
+      if (unit == 'days') return 'daily';
+      if (unit == 'weeks' && parts.length > 3) {
+        final days =
+            parts[3].split(',').map((e) => int.tryParse(e) ?? 0).toList()
+              ..sort();
+        final dStr = days.join(',');
+
+        if (dStr == '1,2,3,4,5' || dStr == '1,2,3,4,7') return 'weekdays';
+        if (days.length == 1) return 'weekly';
+      }
+      if (unit == 'months') return 'monthly';
+      if (unit == 'years') return 'yearly';
+    }
+    return 'custom';
+  }
+
+  Future<void> _handleRepeatSelection(String type) async {
+    Navigator.pop(context);
+
+    if (type == 'daily') {
+      setState(() => _selectedRepeatMode = 'custom:1:days');
+      return;
+    }
+
+    final now = DateTime.now();
+    var initialMode = 'custom:1:weeks:${now.weekday}';
+
+    if (type == 'weekdays') {
+      initialMode = 'custom:1:weeks:1,2,3,4,7';
+    } else if (type == 'weekly') {
+      initialMode = 'custom:1:weeks:${now.weekday}';
+    } else if (type == 'monthly') {
+      initialMode = 'custom:1:months:${now.day}';
+    } else if (type == 'yearly') {
+      initialMode = 'custom:1:years:${now.month}-${now.day}';
+    } else if (type == 'custom') {
+      initialMode = _selectedRepeatMode ?? 'custom:1:weeks:${now.weekday}';
+    }
+
+    final result = await showCustomRepeatDialog(
+      context,
+      initialMode: initialMode,
+    );
+
+    if (result != null && mounted) {
+      setState(() => _selectedRepeatMode = result);
+    }
+  }
+
+  Future<void> _showRepeatOptions() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+      ),
+      builder: (context) {
+        final category = _getRepeatCategory();
+
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                child: Text(
+                  AppTexts.repeat,
+                  style: AppTextStyle.style14W300.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Divider(height: 1, color: AppColors.secondaryColor.withAlpha(77)),
+
+              _buildRepeatOptionTile(AppTexts.daily, 'daily', category),
+              _buildRepeatOptionTile(AppTexts.weekdays, 'weekdays', category),
+              _buildRepeatOptionTile(AppTexts.weekly, 'weekly', category),
+              _buildRepeatOptionTile(AppTexts.monthly, 'monthly', category),
+              _buildRepeatOptionTile(AppTexts.yearly, 'yearly', category),
+
+              ListTile(
+                leading: Icon(
+                  Icons.dashboard_customize,
+                  color: category == 'custom'
+                      ? AppColors.primaryColor
+                      : AppColors.secondaryColor,
+                ),
+                title: Text(
+                  AppTexts.custom,
+                  style: AppTextStyle.style12W300.copyWith(
+                    color: category == 'custom' ? AppColors.primaryColor : null,
+                    fontWeight: category == 'custom'
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                ),
+                subtitle: category == 'custom' && _selectedRepeatMode != null
+                    ? Text(
+                        formatRepeatMode(_selectedRepeatMode),
+                        style: AppTextStyle.style9W300.copyWith(
+                          fontSize: 11.sp,
+                          color: AppColors.secondaryColor,
+                        ),
+                      )
+                    : null,
+                onTap: () => _handleRepeatSelection('custom'),
+              ),
+
+              if (_selectedRepeatMode != null)
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: Colors.red),
+                  title: Text(
+                    AppTexts.removeRepeat,
+                    style: AppTextStyle.style12W300.copyWith(color: Colors.red),
+                  ),
+                  onTap: () {
+                    setState(() => _selectedRepeatMode = null);
+                    Navigator.pop(context);
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  ListTile _buildRepeatOptionTile(
+    String title,
+    String type,
+    String currentCategory,
+  ) {
+    final isSelected = currentCategory == type;
+    String? subtitleText;
+
+    if (isSelected &&
+        type != 'daily' &&
+        type != 'weekdays' &&
+        _selectedRepeatMode != null) {
+      subtitleText = formatRepeatMode(_selectedRepeatMode);
+    }
+
+    return ListTile(
+      leading: Icon(
+        Icons.repeat,
+        color: isSelected ? AppColors.primaryColor : AppColors.secondaryColor,
+      ),
+      title: Text(
+        title,
+        style: AppTextStyle.style12W300.copyWith(
+          color: isSelected ? AppColors.primaryColor : null,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      subtitle: subtitleText != null
+          ? Text(
+              subtitleText,
+              style: AppTextStyle.style9W300.copyWith(
+                fontSize: 11.sp,
+                color: AppColors.secondaryColor,
+              ),
+            )
+          : null,
+      onTap: () => _handleRepeatSelection(type),
+    );
+  }
+
   DateTime _alignDateWithRepeat(DateTime date, String? repeatMode) {
     if (repeatMode == null) return date;
 
     if (repeatMode == 'weekdays') {
-      if (date.weekday == DateTime.saturday) {
+      if (date.weekday == DateTime.saturday)
         return date.add(const Duration(days: 2));
-      }
-      if (date.weekday == DateTime.sunday) {
+      if (date.weekday == DateTime.sunday)
         return date.add(const Duration(days: 1));
-      }
       return date;
     }
 
     if (repeatMode.startsWith('custom:')) {
       final parts = repeatMode.split(':');
-      if (parts.length > 2 && parts[2] == 'weeks' && parts.length > 3) {
+      final unit = parts.length > 2 ? parts[2] : '';
+
+      if (unit == 'weeks' && parts.length > 3) {
         final daysStr = parts[3];
         if (daysStr.isEmpty) return date;
-
         final days =
             daysStr.split(',').map((e) => int.tryParse(e) ?? 1).toList()
               ..sort();
-
-        if (days.contains(date.weekday)) {
-          return date;
-        }
+        if (days.contains(date.weekday)) return date;
 
         int? nextDay;
         for (final d in days) {
@@ -76,13 +248,32 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
             break;
           }
         }
-
         if (nextDay != null) {
           return date.add(Duration(days: nextDay - date.weekday));
         } else {
-          final firstDay = days.first;
-          final daysToAdd = (7 - date.weekday) + firstDay;
-          return date.add(Duration(days: daysToAdd));
+          return date.add(Duration(days: (7 - date.weekday) + days.first));
+        }
+      } else if (unit == 'months' && parts.length > 3) {
+        final targetDay = int.tryParse(parts[3]);
+        if (targetDay != null) {
+          if (date.day == targetDay) return date;
+          if (date.day < targetDay)
+            return DateTime(date.year, date.month, targetDay);
+          return DateTime(date.year, date.month + 1, targetDay);
+        }
+      } else if (unit == 'years' && parts.length > 3) {
+        final md = parts[3].split('-');
+        if (md.length == 2) {
+          final targetMonth = int.tryParse(md[0]);
+          final targetDay = int.tryParse(md[1]);
+          if (targetMonth != null && targetDay != null) {
+            final cleanDate = DateTime(date.year, date.month, date.day);
+            final candidate = DateTime(date.year, targetMonth, targetDay);
+            if (candidate.isBefore(cleanDate)) {
+              return DateTime(date.year + 1, targetMonth, targetDay);
+            }
+            return candidate;
+          }
         }
       }
     }
@@ -213,7 +404,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   Icons.next_plan_outlined,
                   color: AppColors.primaryColor,
                 ),
-                title: Text(AppTexts.nextWeek, style: AppTextStyle.style12W300),
+                title: Text(
+                  AppTexts.nextSunday,
+                  style: AppTextStyle.style12W300,
+                ),
                 onTap: () {
                   setState(() => _selectedDueDate = _getNextWeekDate());
                   Navigator.pop(context);
@@ -267,111 +461,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
             ],
           ),
         );
-      },
-    );
-  }
-
-  Future<void> _showRepeatOptions() async {
-    await showModalBottomSheet<void>(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 12.h),
-                child: Text(
-                  AppTexts.repeat,
-                  style: AppTextStyle.style14W300.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Divider(
-                height: 1,
-                color: AppColors.secondaryColor.withAlpha(77),
-              ),
-              _buildRepeatOptionTile(AppTexts.daily, 'daily'),
-              _buildRepeatOptionTile(AppTexts.weekdays, 'weekdays'),
-              _buildRepeatOptionTile(AppTexts.weekly, 'weekly'),
-              _buildRepeatOptionTile(AppTexts.monthly, 'monthly'),
-              _buildRepeatOptionTile(AppTexts.yearly, 'yearly'),
-
-              ListTile(
-                leading: Icon(
-                  Icons.dashboard_customize,
-                  color: isCustomRepeatMode(_selectedRepeatMode)
-                      ? AppColors.primaryColor
-                      : AppColors.secondaryColor,
-                ),
-                title: Text(
-                  AppTexts.custom,
-                  style: AppTextStyle.style12W300.copyWith(
-                    color: isCustomRepeatMode(_selectedRepeatMode)
-                        ? AppColors.primaryColor
-                        : null,
-                    fontWeight: isCustomRepeatMode(_selectedRepeatMode)
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  ),
-                ),
-                subtitle: isCustomRepeatMode(_selectedRepeatMode)
-                    ? Text(
-                        formatRepeatMode(_selectedRepeatMode),
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 11.sp,
-                          color: AppColors.secondaryColor,
-                        ),
-                      )
-                    : null,
-                onTap: () async {
-                  Navigator.pop(context);
-                  await _showCustomRepeatDialog();
-                },
-              ),
-              if (_selectedRepeatMode != null)
-                ListTile(
-                  leading: const Icon(Icons.delete_outline, color: Colors.red),
-                  title: Text(
-                    AppTexts.removeRepeat,
-                    style: AppTextStyle.style12W300.copyWith(color: Colors.red),
-                  ),
-                  onTap: () {
-                    setState(() => _selectedRepeatMode = null);
-                    Navigator.pop(context);
-                  },
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  ListTile _buildRepeatOptionTile(String title, String value) {
-    return ListTile(
-      leading: Icon(
-        Icons.repeat,
-        color: _selectedRepeatMode == value
-            ? AppColors.primaryColor
-            : AppColors.secondaryColor,
-      ),
-      title: Text(
-        title,
-        style: AppTextStyle.style12W300.copyWith(
-          color: _selectedRepeatMode == value ? AppColors.primaryColor : null,
-          fontWeight: _selectedRepeatMode == value
-              ? FontWeight.bold
-              : FontWeight.normal,
-        ),
-      ),
-      onTap: () {
-        setState(() => _selectedRepeatMode = value);
-        Navigator.pop(context);
       },
     );
   }
@@ -523,15 +612,5 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         ),
       ),
     );
-  }
-
-  Future<void> _showCustomRepeatDialog() async {
-    final result = await showCustomRepeatDialog(
-      context,
-      initialMode: _selectedRepeatMode,
-    );
-    if (result != null && mounted) {
-      setState(() => _selectedRepeatMode = result);
-    }
   }
 }

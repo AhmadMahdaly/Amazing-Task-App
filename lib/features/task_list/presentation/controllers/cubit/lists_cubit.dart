@@ -27,6 +27,7 @@ class ListsCubit extends Cubit<ListsState> {
         id: list.id,
         title: list.title,
         position: _nextListPosition(existing),
+        iconCode: list.iconCode,
       );
       await listsRepository.addList(listWithPosition);
       await _emitLoadedLists();

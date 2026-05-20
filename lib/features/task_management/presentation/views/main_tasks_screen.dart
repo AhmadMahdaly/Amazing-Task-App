@@ -26,6 +26,7 @@ class MainTasksScreen extends StatelessWidget {
         return BlocBuilder<WallpaperCubit, WallpaperState>(
           builder: (context, wallpaperState) {
             return Scaffold(
+              resizeToAvoidBottomInset: false,
               backgroundColor: wallpaperState.settings.hasWallpaper
                   ? Colors.transparent
                   : AppColors.primaryColor,

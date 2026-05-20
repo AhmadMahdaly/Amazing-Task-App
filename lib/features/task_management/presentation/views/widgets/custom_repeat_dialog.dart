@@ -17,6 +17,9 @@ Future<String?> showCustomRepeatDialog(
   final selectedDays = <int>[
     ...(parsed?.weekdays ?? [DateTime.now().weekday]),
   ];
+  var selectedMonthDay = parsed?.monthDay ?? DateTime.now().day;
+  var selectedYearMonth = parsed?.yearMonth ?? DateTime.now().month;
+  var selectedYearDay = parsed?.yearDay ?? DateTime.now().day;
 
   return showDialog<String>(
     context: context,
@@ -35,120 +38,240 @@ Future<String?> showCustomRepeatDialog(
                 color: AppColors.primaryColor,
               ),
             ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      AppTexts.repeatEvery,
-                      style: AppTextStyle.style12W300,
-                    ),
-                    SizedBox(width: 10.w),
-                    SizedBox(
-                      width: 50.w,
-                      child: CustomPrimaryTextfield(
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyle.style12W300,
-                        controller:
-                            TextEditingController(text: count.toString())
-                              ..selection = TextSelection.collapsed(
-                                offset: count.toString().length,
-                              ),
-                        onChanged: (val) {
-                          count = int.tryParse(val) ?? 1;
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      child: CustomDropdownButtonFormField<String>(
-                        value: unit,
-
-                        items: [
-                          DropdownMenuItem(
-                            value: 'days',
-                            child: Text(AppTexts.days),
-                          ),
-                          DropdownMenuItem(
-                            value: 'weeks',
-                            child: Text(AppTexts.weeks),
-                          ),
-                          DropdownMenuItem(
-                            value: 'months',
-                            child: Text(AppTexts.months),
-                          ),
-                          DropdownMenuItem(
-                            value: 'years',
-                            child: Text(AppTexts.years),
-                          ),
-                        ],
-                        onChanged: (val) {
-                          setStateDialog(() => unit = val!);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                if (unit == 'weeks') ...[
-                  SizedBox(height: 20.h),
-                  Text(
-                    AppTexts.inTheseDays,
-                    style: AppTextStyle.style12W300,
-                  ),
-                  SizedBox(height: 12.h),
-                  Wrap(
-                    spacing: 8.w,
-                    runSpacing: 8.h,
-                    alignment: WrapAlignment.center,
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
                     children: [
-                      _DayToggle(
-                        dayValue: DateTime.sunday,
-                        label: AppTexts.sunday,
-                        selectedDays: selectedDays,
-                        onChanged: setStateDialog,
+                      Text(
+                        AppTexts.repeatEvery,
+                        style: AppTextStyle.style12W300,
                       ),
-                      _DayToggle(
-                        dayValue: DateTime.monday,
-                        label: AppTexts.monday,
-                        selectedDays: selectedDays,
-                        onChanged: setStateDialog,
+                      10.horizontalSpace,
+                      SizedBox(
+                        width: 50.w,
+                        child: CustomPrimaryTextfield(
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyle.style12W300,
+                          controller:
+                              TextEditingController(text: count.toString())
+                                ..selection = TextSelection.collapsed(
+                                  offset: count.toString().length,
+                                ),
+                          onChanged: (val) {
+                            count = int.tryParse(val) ?? 1;
+                          },
+                        ),
                       ),
-                      _DayToggle(
-                        dayValue: DateTime.tuesday,
-                        label: AppTexts.tuesday,
-                        selectedDays: selectedDays,
-                        onChanged: setStateDialog,
-                      ),
-                      _DayToggle(
-                        dayValue: DateTime.wednesday,
-                        label: AppTexts.wednesday,
-                        selectedDays: selectedDays,
-                        onChanged: setStateDialog,
-                      ),
-                      _DayToggle(
-                        dayValue: DateTime.thursday,
-                        label: AppTexts.thursday,
-                        selectedDays: selectedDays,
-                        onChanged: setStateDialog,
-                      ),
-                      _DayToggle(
-                        dayValue: DateTime.friday,
-                        label: AppTexts.friday,
-                        selectedDays: selectedDays,
-                        onChanged: setStateDialog,
-                      ),
-                      _DayToggle(
-                        dayValue: DateTime.saturday,
-                        label: AppTexts.saturday,
-                        selectedDays: selectedDays,
-                        onChanged: setStateDialog,
+                      10.horizontalSpace,
+                      Expanded(
+                        child: CustomDropdownButtonFormField<String>(
+                          value: unit,
+                          items: [
+                            DropdownMenuItem(
+                              value: 'days',
+                              child: Text(AppTexts.days),
+                            ),
+                            DropdownMenuItem(
+                              value: 'weeks',
+                              child: Text(AppTexts.weeks),
+                            ),
+                            DropdownMenuItem(
+                              value: 'months',
+                              child: Text(AppTexts.months),
+                            ),
+                            DropdownMenuItem(
+                              value: 'years',
+                              child: Text(AppTexts.years),
+                            ),
+                          ],
+                          onChanged: (val) => setStateDialog(() => unit = val!),
+                        ),
                       ),
                     ],
                   ),
+
+                  if (unit == 'weeks') ...[
+                    20.verticalSpace,
+                    Text(
+                      AppTexts.inTheseDays,
+                      style: AppTextStyle.style12W300,
+                      textAlign: TextAlign.start,
+                    ),
+                    12.verticalSpace,
+                    Wrap(
+                      spacing: 4.w,
+                      runSpacing: 8.h,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _DayToggle(
+                          dayValue: DateTime.sunday,
+                          label: AppTexts.sunday.substring(0, 3),
+                          selectedDays: selectedDays,
+                          onChanged: setStateDialog,
+                        ),
+                        _DayToggle(
+                          dayValue: DateTime.monday,
+                          label: AppTexts.monday.substring(0, 3),
+                          selectedDays: selectedDays,
+                          onChanged: setStateDialog,
+                        ),
+                        _DayToggle(
+                          dayValue: DateTime.tuesday,
+                          label: AppTexts.tuesday.substring(0, 3),
+                          selectedDays: selectedDays,
+                          onChanged: setStateDialog,
+                        ),
+                        _DayToggle(
+                          dayValue: DateTime.wednesday,
+                          label: AppTexts.wednesday.substring(0, 3),
+                          selectedDays: selectedDays,
+                          onChanged: setStateDialog,
+                        ),
+                        _DayToggle(
+                          dayValue: DateTime.thursday,
+                          label: AppTexts.thursday.substring(0, 3),
+                          selectedDays: selectedDays,
+                          onChanged: setStateDialog,
+                        ),
+                        _DayToggle(
+                          dayValue: DateTime.friday,
+                          label: AppTexts.friday.substring(0, 3),
+                          selectedDays: selectedDays,
+                          onChanged: setStateDialog,
+                        ),
+                        _DayToggle(
+                          dayValue: DateTime.saturday,
+                          label: AppTexts.saturday.substring(0, 3),
+                          selectedDays: selectedDays,
+                          onChanged: setStateDialog,
+                        ),
+                      ],
+                    ),
+                  ],
+
+                  if (unit == 'months') ...[
+                    20.verticalSpace,
+                    Text(
+                      AppTexts.dayOfMonth,
+                      style: AppTextStyle.style12W300,
+                      textAlign: TextAlign.start,
+                    ),
+                    8.verticalSpace,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomPrimaryTextfield(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            controller:
+                                TextEditingController(
+                                    text: selectedMonthDay.toString(),
+                                  )
+                                  ..selection = TextSelection.collapsed(
+                                    offset: selectedMonthDay.toString().length,
+                                  ),
+                            onChanged: (val) {
+                              final d = int.tryParse(val);
+                              if (d != null && d >= 1 && d <= 31) {
+                                selectedMonthDay = d;
+                              }
+                            },
+                          ),
+                        ),
+                        10.horizontalSpace,
+                        IconButton(
+                          icon: const Icon(
+                            Icons.calendar_month,
+                            color: AppColors.primaryColor,
+                          ),
+                          onPressed: () async {
+                            final now = DateTime.now();
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime(
+                                now.year,
+                                now.month,
+                                selectedMonthDay,
+                              ),
+                              firstDate: DateTime(now.year, now.month, 1),
+                              lastDate: DateTime(
+                                now.year,
+                                now.month + 1,
+                                0,
+                              ),
+                            );
+                            if (picked != null) {
+                              setStateDialog(
+                                () => selectedMonthDay = picked.day,
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+
+                  if (unit == 'years') ...[
+                    20.verticalSpace,
+                    Text(
+                      AppTexts.yearlyRepeatDate,
+                      style: AppTextStyle.style12W300,
+                      textAlign: TextAlign.start,
+                    ),
+                    8.verticalSpace,
+                    InkWell(
+                      onTap: () async {
+                        final now = DateTime.now();
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime(
+                            now.year,
+                            selectedYearMonth,
+                            selectedYearDay,
+                          ),
+                          firstDate: DateTime(now.year, 1, 1),
+                          lastDate: DateTime(now.year, 12, 31),
+                        );
+                        if (picked != null) {
+                          setStateDialog(() {
+                            selectedYearMonth = picked.month;
+                            selectedYearDay = picked.day;
+                          });
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 12.h,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColors.secondaryColor.withAlpha(77),
+                          ),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '$selectedYearDay / $selectedYearMonth',
+                              style: AppTextStyle.style12W300,
+                            ),
+                            const Icon(
+                              Icons.calendar_month,
+                              color: AppColors.primaryColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
             actions: [
               TextButton(
@@ -169,14 +292,15 @@ Future<String?> showCustomRepeatDialog(
                     count: count,
                     unit: unit,
                     weekdays: unit == 'weeks' ? selectedDays : const [],
+                    monthDay: selectedMonthDay.clamp(1, 31),
+                    yearMonth: selectedYearMonth,
+                    yearDay: selectedYearDay,
                   );
                   Navigator.pop(dialogContext, customMode);
                 },
                 child: Text(
                   AppTexts.save,
-                  style: AppTextStyle.style12W300.copyWith(
-                    color: Colors.white,
-                  ),
+                  style: AppTextStyle.style12W300.copyWith(color: Colors.white),
                 ),
               ),
             ],

@@ -3,8 +3,11 @@ class TaskListEntity {
     required this.id,
     required this.title,
     this.position = 0,
+    this.iconCode,
   });
+
   final String id;
   final String title;
   final int position;
+  final int? iconCode;
 }

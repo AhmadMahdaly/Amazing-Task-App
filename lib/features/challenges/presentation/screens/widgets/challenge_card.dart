@@ -195,7 +195,7 @@ class ChallengeCard extends StatelessWidget {
                 12.verticalSpace,
                 DirectionalText(
                   challenge.title,
-                  style: AppTextStyle.style20Bold,
+                  style: AppTextStyle.style14Bold,
                   overflow: TextOverflow.ellipsis,
                 ),
 
@@ -203,7 +203,7 @@ class ChallengeCard extends StatelessWidget {
 
                 DirectionalText(
                   challenge.description,
-                  style: AppTextStyle.style14W500.copyWith(
+                  style: AppTextStyle.style12W500.copyWith(
                     color:
                         challenge.status == ChallengeStatus.failed ||
                             challenge.status == ChallengeStatus.success

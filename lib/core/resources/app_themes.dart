@@ -23,7 +23,7 @@ class Appthemes {
           color: AppColors.white,
         ),
         toolbarHeight: 100.h,
-        titleTextStyle: AppTextStyle.style18Bold.copyWith(
+        titleTextStyle: AppTextStyle.style16Bold.copyWith(
           color: AppColors.white,
           fontFamily: kPrimaryEnFont,
         ),

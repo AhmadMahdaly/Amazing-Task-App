@@ -34,6 +34,7 @@ class AppTexts {
   static String today = 'Today';
   static String dueDate = 'Due Date';
   static String nextWeek = 'Next Week';
+  static String nextSunday = 'Next Sunday';
   static String pickADate = 'Pick a date';
   static String removeDueDate = 'Remove due date';
   static String repeat = 'Repeat';
@@ -197,4 +198,9 @@ class AppTexts {
       'Every challenge ends with only one of two results: success or failure.\n'
       'Choose your challenge carefully and stay committed until the end.';
   static String wallpaperImages = 'Wallpaper Images';
+  static String yearlyOn = 'Yearly on';
+  static String monthlyOnDay = 'Monthly on day';
+  static String yearlyRepeatDate = 'Yearly repeat date:';
+  static String dayOfMonth = 'Day of month (1 - 31):';
+  static String chooseListIcon = 'Choose a list icon';
 }

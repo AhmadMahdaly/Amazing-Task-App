@@ -13,7 +13,7 @@ part 'tasks_state.dart';
 
 class TasksCubit extends Cubit<TasksState> {
   TasksCubit(this.tasksRepository, this.notificationService)
-      : super(TasksInitial()) {
+    : super(TasksInitial()) {
     notificationService.registerActionHandler(handleNotificationAction);
   }
 
@@ -149,11 +149,27 @@ class TasksCubit extends Cubit<TasksState> {
       final unit = parts[2];
 
       if (unit == 'days') return baseDate.add(Duration(days: count));
+
       if (unit == 'months') {
-        return DateTime(baseDate.year, baseDate.month + count, baseDate.day);
+        var targetDay = baseDate.day;
+        if (parts.length > 3 && parts[3].isNotEmpty) {
+          targetDay = int.tryParse(parts[3]) ?? baseDate.day;
+        }
+        // كلاس DateTime سيعالج تلقائياً لو كان الشهر القادم 30 يوماً والمطلوب 31
+        return DateTime(baseDate.year, baseDate.month + count, targetDay);
       }
+
       if (unit == 'years') {
-        return DateTime(baseDate.year + count, baseDate.month, baseDate.day);
+        var targetMonth = baseDate.month;
+        var targetDay = baseDate.day;
+        if (parts.length > 3 && parts[3].isNotEmpty) {
+          final md = parts[3].split('-');
+          if (md.length == 2) {
+            targetMonth = int.tryParse(md[0]) ?? baseDate.month;
+            targetDay = int.tryParse(md[1]) ?? baseDate.day;
+          }
+        }
+        return DateTime(baseDate.year + count, targetMonth, targetDay);
       }
 
       if (unit == 'weeks') {
@@ -163,7 +179,6 @@ class TasksCubit extends Cubit<TasksState> {
         final days =
             daysStr.split(',').map((e) => int.tryParse(e) ?? 1).toList()
               ..sort();
-
         final currentDay = baseDate.weekday;
         int? nextDay;
 

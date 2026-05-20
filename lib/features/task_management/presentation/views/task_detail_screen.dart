@@ -623,7 +623,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     if (task.dueDate != null && !task.isCompleted) ...[
                       4.verticalSpace,
                       Text(
-                        '${AppTexts.dueDate}: ${formatTaskDate(task.dueDate)}',
+                        '${AppTexts.nextSunday}: ${formatTaskDate(task.dueDate)}',
                         style: AppTextStyle.style12W300.copyWith(
                           color: AppColors.secondaryColor,
                         ),
@@ -749,7 +749,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   children: [
                     _SettingsTile(
                       icon: Icons.calendar_today,
-                      title: AppTexts.dueDate,
+                      title: AppTexts.nextSunday,
                       subtitle: task.dueDate != null
                           ? formatTaskDate(task.dueDate)
                           : AppTexts.noDueDate,

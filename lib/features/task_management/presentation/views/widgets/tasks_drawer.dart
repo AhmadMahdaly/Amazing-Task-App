@@ -8,6 +8,7 @@ import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
+import 'package:s/core/utils/app_icons_helper.dart';
 import 'package:s/core/wallpaper/wallpaper_picker_sheet.dart';
 import 'package:s/features/task_list/domain/entities/task_list_entity.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
@@ -329,7 +330,11 @@ class TasksDrawer extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: ListTile(
-        leading: Icon(Icons.list, color: Colors.white, size: 24.r),
+        leading: Icon(
+          AppIconsHelper.getIconFromCode(list.iconCode),
+          color: Colors.white,
+          size: 24.r,
+        ),
         title: Text(
           list.title,
           style: AppTextStyle.style12W300.copyWith(

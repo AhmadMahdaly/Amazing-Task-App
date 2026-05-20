@@ -5,6 +5,7 @@ class TaskListModel extends TaskListEntity {
     required super.id,
     required super.title,
     super.position,
+    super.iconCode,
   });
 
   factory TaskListModel.fromEntity(TaskListEntity entity) {
@@ -12,6 +13,7 @@ class TaskListModel extends TaskListEntity {
       id: entity.id,
       title: entity.title,
       position: entity.position,
+      iconCode: entity.iconCode,
     );
   }
 
@@ -20,6 +22,7 @@ class TaskListModel extends TaskListEntity {
       id: json['id'] as String,
       title: json['title'] as String,
       position: json['position'] as int? ?? 0,
+      iconCode: json['iconCode'] as int?,
     );
   }
 
@@ -28,6 +31,7 @@ class TaskListModel extends TaskListEntity {
       'id': id,
       'title': title,
       'position': position,
+      'iconCode': iconCode,
     };
   }
 }
