@@ -13,7 +13,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mahdaly.my_task1"
+    namespace = "com.mahdaly.my_task"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -28,7 +28,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.mahdaly.my_task1"
+        applicationId = "com.mahdaly.my_task"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
