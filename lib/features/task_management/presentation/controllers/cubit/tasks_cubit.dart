@@ -5,6 +5,7 @@ import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/services/notification_action_handler.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/core/services/task_notification_service.dart';
+import 'package:s/core/utils/home_widget_helper.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/repo/tasks_repository.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
@@ -84,7 +85,10 @@ class TasksCubit extends Cubit<TasksState> {
       filteredTasks.sort((a, b) => a.position.compareTo(b.position));
 
       await notificationService.syncAll(allTasks);
-
+      final activeTasksForWidget = allTasks
+          .where((t) => !t.isCompleted)
+          .toList();
+      await HomeWidgetHelper.syncTasksToWidget(activeTasksForWidget);
       emit(
         TasksLoaded(
           tasks: filteredTasks,

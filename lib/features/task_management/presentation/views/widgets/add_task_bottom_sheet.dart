@@ -491,6 +491,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
           CustomPrimaryTextfield(
             controller: _taskController,
             autofocus: true,
+            onChanged: (_) {
+              setState(() {});
+            },
+
             text: AppTexts.addTask,
           ),
 
