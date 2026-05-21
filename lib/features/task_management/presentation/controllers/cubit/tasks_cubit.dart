@@ -62,7 +62,9 @@ class TasksCubit extends Cubit<TasksState> {
 
       switch (_currentFilter) {
         case TaskFilter.allTasks:
-          filteredTasks = allTasks;
+          filteredTasks = allTasks
+              .where((task) => task.listId == null)
+              .toList();
         case TaskFilter.planned:
           filteredTasks = allTasks
               .where((task) => task.dueDate != null)
