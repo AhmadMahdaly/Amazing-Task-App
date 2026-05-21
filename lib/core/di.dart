@@ -8,6 +8,8 @@ import 'package:s/features/challenges/data/datasource/challenges_local_datasourc
 import 'package:s/features/challenges/data/repositories/challenge_repository_impl.dart';
 import 'package:s/features/challenges/domain/repositories/challenge_repository.dart';
 import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
+import 'package:s/features/focus_mode/data/datasource/focus_local_data_source.dart';
+import 'package:s/features/focus_mode/presentation/controllers/cubit/focus_cubit.dart';
 import 'package:s/features/task_list/data/datasource/lists_local_data_source.dart';
 import 'package:s/features/task_list/data/repo/lists_repository_impl.dart';
 import 'package:s/features/task_list/domain/repo/lists_repository.dart';
@@ -46,11 +48,16 @@ Future<void> setupGetIt() async {
     )
     ..registerFactory<ListsCubit>(() => ListsCubit(getIt<ListsRepository>()))
     ///
-        ..registerLazySingleton<ChallengeLocalDataSource>(
-      ChallengeLocalDataSourceImpl.new)
+    ..registerLazySingleton<ChallengeLocalDataSource>(
+      ChallengeLocalDataSourceImpl.new,
+    )
     ..registerLazySingleton<ChallengeRepository>(
       () => ChallengeRepositoryImpl(getIt()),
     )
     ..registerFactory<ChallengeCubit>(() => ChallengeCubit(getIt()))
-    ;
+    ///
+    ..registerLazySingleton<FocusLocalDataSource>(
+      FocusLocalDataSourceImpl.new,
+    )
+    ..registerFactory<FocusCubit>(() => FocusCubit(getIt()));
 }

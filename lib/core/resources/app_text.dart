@@ -209,4 +209,9 @@ class AppTexts {
       'There are no suggested tasks currently';
   static String close = 'Close';
   static String suggestions = 'Suggestions';
+  static String focusSession = 'Focus Session';
+  static String noRecordedSessionsYet = 'There are no recorded sessions yet';
+  static String focusHistory = 'Focus History';
+  static String focusCycleCompleted =
+      'Well done! The focus cycle has been completed and recorded';
 }

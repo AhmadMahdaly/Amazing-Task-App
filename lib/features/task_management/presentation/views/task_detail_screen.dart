@@ -9,6 +9,7 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/core/shared_widgets/custom_primary_button.dart';
 import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
@@ -562,6 +563,17 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             foregroundColor: AppColors.white,
             title: Text(AppTexts.taskDetails, style: AppTextStyle.style16W300),
             actions: [
+              IconButton(
+                icon: const Icon(
+                  Icons.timer_outlined,
+                ),
+                onPressed: () async {
+                  await context.push(
+                    AppRoutes.focusScreen,
+                    extra: task,
+                  );
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.delete_outline),
                 onPressed: () => _confirmDelete(task),
