@@ -100,7 +100,7 @@ class TasksCubit extends Cubit<TasksState> {
   Future<void> toggleTaskCompletion(TaskEntity task) async {
     final isNowCompleted = !task.isCompleted;
 
-    if (isNowCompleted && task.repeatMode != null) {
+    if (isNowCompleted && task.repeatMode != null && task.completedAt == null) {
       final nextDueDate = _calculateNextDueDate(
         task.dueDate ?? DateTime.now(),
         task.repeatMode!,
@@ -155,7 +155,7 @@ class TasksCubit extends Cubit<TasksState> {
         if (parts.length > 3 && parts[3].isNotEmpty) {
           targetDay = int.tryParse(parts[3]) ?? baseDate.day;
         }
-        // كلاس DateTime سيعالج تلقائياً لو كان الشهر القادم 30 يوماً والمطلوب 31
+
         return DateTime(baseDate.year, baseDate.month + count, targetDay);
       }
 
@@ -222,8 +222,27 @@ class TasksCubit extends Cubit<TasksState> {
   }
 
   Future<void> addToMyDay(TaskEntity task) async {
+    final now = DateTime.now();
+
+    var newDueDate = task.dueDate;
+    if (newDueDate != null) {
+      final today = DateTime(now.year, now.month, now.day);
+      final currentDue = DateTime(
+        newDueDate.year,
+        newDueDate.month,
+        newDueDate.day,
+      );
+
+      if (currentDue != today) {
+        newDueDate = today;
+      }
+    }
+
     await updateTask(
-      task.copyWith(myDayDate: formatMyDayDate(DateTime.now())),
+      task.copyWith(
+        myDayDate: formatMyDayDate(now),
+        dueDate: newDueDate,
+      ),
     );
   }
 
@@ -298,7 +317,6 @@ class TasksCubit extends Cubit<TasksState> {
     }
   }
 
-  /// Removes tasks whose [listId] matches (e.g. when a custom list is deleted).
   Future<void> deleteTasksForList(String listId) async {
     try {
       final all = await tasksRepository.getTasks();
@@ -314,12 +332,10 @@ class TasksCubit extends Cubit<TasksState> {
     }
   }
 
-  /// Recreates an accidentally deleted task (same id).
   Future<void> restoreTask(TaskEntity task) async {
     await addTask(task);
   }
 
-  /// Returns a permission result when pinning was blocked; `null` on success.
   Future<NotificationPermissionResult?> setPinnedToNotification(
     TaskEntity task, {
     required bool pinned,

@@ -34,7 +34,7 @@ class AppTexts {
   static String today = 'Today';
   static String dueDate = 'Due Date';
   static String nextWeek = 'Next Week';
-  static String nextSunday = 'Next Sunday';
+  static String nextSunday = 'Next Week (Sunday)';
   static String pickADate = 'Pick a date';
   static String removeDueDate = 'Remove due date';
   static String repeat = 'Repeat';
@@ -203,4 +203,10 @@ class AppTexts {
   static String yearlyRepeatDate = 'Yearly repeat date:';
   static String dayOfMonth = 'Day of month (1 - 31):';
   static String chooseListIcon = 'Choose a list icon';
+  static String addedToMyDaySuccess = 'Added to My Day';
+  static String customList = 'Custom List';
+  static String noSuggestedTasksCurrently =
+      'There are no suggested tasks currently';
+  static String close = 'Close';
+  static String suggestions = 'Suggestions';
 }

@@ -9,6 +9,7 @@ import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
+import 'package:s/features/task_management/presentation/views/suggestions_bottom_sheet.dart';
 import 'package:s/features/task_management/presentation/views/widgets/add_task_bottom_sheet.dart';
 import 'package:s/features/task_management/presentation/views/widgets/completed_tasks_section.dart';
 import 'package:s/features/task_management/presentation/views/widgets/task_item_widget.dart';
@@ -85,18 +86,6 @@ class MainTasksScreen extends StatelessWidget {
                                       color: AppColors.white,
                                     ),
                                   ),
-                            // background: Container(
-                            //   decoration: const BoxDecoration(
-                            //     gradient: LinearGradient(
-                            //       colors: [
-                            //         AppColors.primaryColor,
-                            //         AppColors.thirdColor,
-                            //       ],
-                            //       begin: Alignment.topCenter,
-                            //       end: Alignment.bottomCenter,
-                            //     ),
-                            //   ),
-                            // ),
                           ),
                         ),
                         SliverToBoxAdapter(
@@ -129,38 +118,78 @@ class MainTasksScreen extends StatelessWidget {
                   },
                 ),
               ),
-              floatingActionButton: FloatingActionButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(320.r),
-                ),
-                onPressed: () async {
-                  final currentState = context.read<TasksCubit>().state;
+              floatingActionButton: BlocBuilder<TasksCubit, TasksState>(
+                builder: (context, state) {
                   var isMyDay = false;
                   String? listId;
 
-                  if (currentState is TasksLoaded) {
-                    isMyDay = currentState.currentFilter == TaskFilter.myDay;
-                    if (currentState.currentFilter == TaskFilter.customList) {
-                      listId = currentState.currentListId;
+                  if (state is TasksLoaded) {
+                    isMyDay = state.currentFilter == TaskFilter.myDay;
+                    if (state.currentFilter == TaskFilter.customList) {
+                      listId = state.currentListId;
                     }
                   }
 
-                  await showModalBottomSheet<void>(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => AddTaskBottomSheet(
-                      isMyDayView: isMyDay,
-                      currentListId: listId,
-                    ),
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isMyDay) ...[
+                        FloatingActionButton.extended(
+                          heroTag: 'suggestions_fab',
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(320.r),
+                          ),
+                          onPressed: () async {
+                            await showModalBottomSheet<void>(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) =>
+                                  const SuggestionsBottomSheet(),
+                            );
+                          },
+                          backgroundColor: AppColors.white,
+                          label: Text(
+                            AppTexts.suggestions,
+                            style: AppTextStyle.style12W400.copyWith(
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.lightbulb_outline,
+                            size: 24.r,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        16.horizontalSpace,
+                      ],
+
+                      FloatingActionButton(
+                        heroTag: 'add_task_fab',
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(320.r),
+                        ),
+                        onPressed: () async {
+                          await showModalBottomSheet<void>(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => AddTaskBottomSheet(
+                              isMyDayView: isMyDay,
+                              currentListId: listId,
+                            ),
+                          );
+                        },
+                        backgroundColor: AppColors.white,
+                        child: Icon(
+                          Icons.add,
+                          size: 28.r,
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    ],
                   );
                 },
-                backgroundColor: AppColors.white,
-                child: Icon(
-                  Icons.add,
-                  size: 28.r,
-                  color: AppColors.primaryColor,
-                ),
               ),
             );
           },

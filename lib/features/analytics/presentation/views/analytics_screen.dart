@@ -5,6 +5,7 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/utils/app_icons_helper.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_management/domain/utils/task_analytics.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
@@ -65,9 +66,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
           return BlocBuilder<ListsCubit, ListsState>(
             builder: (context, listsState) {
               final listTitles = <String, String>{};
+              final listIcons = <String, int?>{};
               if (listsState is ListsLoaded) {
                 for (final list in listsState.lists) {
                   listTitles[list.id] = list.title;
+                  listIcons[list.id] = list.iconCode;
                 }
               }
               final listStats = computeListStats(tasks, listTitles);
@@ -161,6 +164,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                                   ? AppTexts.generalTasks
                                   : s.title,
                               stats: s,
+                              icon: listIcons[s.listId] ?? 0,
                             ),
                           ),
                           SizedBox(height: 32.h),
@@ -304,10 +308,7 @@ class _StatCard extends StatelessWidget {
           Text(
             value,
             textAlign: TextAlign.center,
-            style: AppTextStyle.style9W300.copyWith(
-              fontSize: 20.sp,
-
-              fontWeight: FontWeight.bold,
+            style: AppTextStyle.style18Bold.copyWith(
               color: AppColors.forthColor,
             ),
           ),
@@ -334,31 +335,23 @@ class _DailyStatsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maxScheduled = stats
-        .map((s) => s.scheduledCount)
-        .fold(0, (a, b) => a > b ? a : b);
     final maxCompleted = stats
         .map((s) => s.completedCount)
         .fold(0, (a, b) => a > b ? a : b);
-    final maxValue = [
-      maxScheduled,
-      maxCompleted,
-      1,
-    ].reduce((a, b) => a > b ? a : b);
+    final maxValue = maxCompleted > 0 ? maxCompleted : 1;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           AppTexts.last14Days,
-          style: AppTextStyle.style9W300.copyWith(
-            fontSize: 14.sp,
+          style: AppTextStyle.style14W300.copyWith(
             color: AppColors.secondaryColor,
           ),
         ),
-        SizedBox(height: 8.h),
+        8.verticalSpace,
         _LegendRow(),
-        SizedBox(height: 12.h),
+        12.verticalSpace,
         Expanded(
           child: ListView.separated(
             itemCount: stats.length,
@@ -406,7 +399,7 @@ class _DayStatRow extends StatelessWidget {
                 max: maxValue,
                 color: AppColors.thirdColor,
               ),
-              SizedBox(height: 4.h),
+              4.verticalSpace,
               _Bar(
                 value: day.completedCount,
                 max: maxValue,
@@ -415,7 +408,7 @@ class _DayStatRow extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(width: 8.w),
+        8.horizontalSpace,
         SizedBox(
           width: 36.w,
           child: Text(
@@ -660,8 +653,12 @@ class _LegendDot extends StatelessWidget {
 }
 
 class _ListStatTile extends StatelessWidget {
-  const _ListStatTile({required this.title, required this.stats});
-
+  const _ListStatTile({
+    required this.icon,
+    required this.title,
+    required this.stats,
+  });
+  final int icon;
   final String title;
   final ListTaskStats stats;
 
@@ -684,8 +681,12 @@ class _ListStatTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.list, color: AppColors.primaryColor, size: 22.r),
-          SizedBox(width: 12.w),
+          Icon(
+            AppIconsHelper.getIconFromCode(icon),
+            color: AppColors.primaryColor,
+            size: 22.r,
+          ),
+          12.horizontalSpace,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

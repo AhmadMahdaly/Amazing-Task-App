@@ -58,7 +58,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
               children: [
                 Text(
                   AppTexts.chooseListIcon,
-                  style: AppTextStyle.style14Bold.copyWith(
+                  style: AppTextStyle.style12Bold.copyWith(
                     color: AppColors.primaryColor,
                   ),
                 ),
@@ -187,13 +187,11 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
         children: [
           Text(
             _isEdit ? AppTexts.editList : AppTexts.newList,
-            style: AppTextStyle.style9W300.copyWith(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
+            style: AppTextStyle.style16Bold.copyWith(
               color: AppColors.primaryColor,
             ),
           ),
-          SizedBox(height: 16.h),
+          16.verticalSpace,
 
           Row(
             children: [
@@ -203,21 +201,22 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
                 child: Container(
                   padding: EdgeInsets.all(12.r),
                   decoration: BoxDecoration(
-                    color: AppColors.secondaryColor.withAlpha(33),
+                    color: AppColors.secondaryColor.withAlpha(25),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Icon(
                     AppIconsHelper.getIconFromCode(_selectedIconCode),
                     color: AppColors.primaryColor,
-                    size: 28.r,
+                    size: 24.r,
                   ),
                 ),
               ),
-              SizedBox(width: 12.w),
+              8.horizontalSpace,
               Expanded(
                 child: CustomPrimaryTextfield(
                   controller: _listController,
                   autofocus: true,
+                  onChanged: (_) => setState(() {}),
                   textInputAction: TextInputAction.done,
                   onFieldSubmitted: (_) => _save(),
                   text: AppTexts.enterListName,
@@ -226,7 +225,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
             ],
           ),
 
-          SizedBox(height: 24.h),
+          24.verticalSpace,
 
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -235,13 +234,12 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
                 onPressed: _isSaving ? null : () => Navigator.pop(context),
                 child: Text(
                   AppTexts.cancel,
-                  style: AppTextStyle.style9W300.copyWith(
-                    fontSize: 14.sp,
+                  style: AppTextStyle.style12W300.copyWith(
                     color: AppColors.secondaryColor,
                   ),
                 ),
               ),
-              SizedBox(width: 12.w),
+              8.horizontalSpace,
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,
@@ -263,8 +261,7 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
                       )
                     : Text(
                         _isEdit ? AppTexts.save : AppTexts.createList,
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 14.sp,
+                        style: AppTextStyle.style12W300.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),

@@ -53,8 +53,7 @@ class ListTaskStats {
   final int totalTasks;
   final int completedTasks;
 
-  double get completionRate =>
-      totalTasks > 0 ? completedTasks / totalTasks : 0;
+  double get completionRate => totalTasks > 0 ? completedTasks / totalTasks : 0;
 }
 
 class TaskAnalyticsSummary {
@@ -80,7 +79,7 @@ class TaskAnalyticsSummary {
       totalTasks > 0 ? completedTasks / totalTasks : 0;
 
   double get todayCompletionRate =>
-      todayScheduled > 0 ? todayCompleted / todayScheduled : 0;
+      todayScheduled == 0 ? 0.0 : todayCompleted / todayScheduled;
 }
 
 /// Tasks scheduled for [day] (My Day rules + due date on that day).
@@ -92,9 +91,7 @@ int countScheduledOnDay(List<TaskEntity> tasks, DateTime day) {
 int countCompletedOnDay(List<TaskEntity> tasks, DateTime day) {
   return tasks
       .where(
-        (t) =>
-            t.completedAt != null &&
-            isSameCalendarDay(t.completedAt!, day),
+        (t) => t.completedAt != null && isSameCalendarDay(t.completedAt!, day),
       )
       .length;
 }
@@ -226,12 +223,9 @@ List<ListTaskStats> computeListStats(
     final listTasks = entry.value;
     return ListTaskStats(
       listId: listId,
-      title: listId.isEmpty
-          ? ''
-          : (listTitles[listId] ?? ''),
+      title: listId.isEmpty ? '' : (listTitles[listId] ?? ''),
       totalTasks: listTasks.length,
       completedTasks: listTasks.where((t) => t.isCompleted).length,
     );
-  }).toList()
-    ..sort((a, b) => b.totalTasks.compareTo(a.totalTasks));
+  }).toList()..sort((a, b) => b.totalTasks.compareTo(a.totalTasks));
 }

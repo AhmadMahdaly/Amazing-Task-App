@@ -14,7 +14,7 @@ import 'package:s/features/task_management/domain/utils/repeat_format_utils.dart
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
-class TaskItemWidget extends StatelessWidget {
+class TaskItemWidget extends StatefulWidget {
   const TaskItemWidget({
     required this.task,
     this.showCompletedDate = false,
@@ -24,30 +24,36 @@ class TaskItemWidget extends StatelessWidget {
   final TaskEntity task;
   final bool showCompletedDate;
 
+  @override
+  State<TaskItemWidget> createState() => _TaskItemWidgetState();
+}
+
+class _TaskItemWidgetState extends State<TaskItemWidget> {
+  bool _isHidden = false;
   void _openDetail(BuildContext context) {
-    unawaited(context.push('/task/${task.id}'));
+    unawaited(context.push('/task/${widget.task.id}'));
   }
 
   @override
   Widget build(BuildContext context) {
-    final dateText = task.isCompleted
-        ? (showCompletedDate || task.completedAt != null
-              ? formatCompletedDate(task.completedAt)
+    final dateText = widget.task.isCompleted
+        ? (widget.showCompletedDate || widget.task.completedAt != null
+              ? formatCompletedDate(widget.task.completedAt)
               : '')
-        : formatTaskDate(task.dueDate);
-    final repeatText = formatRepeatMode(task.repeatMode);
-    final stepsText = task.hasSteps
-        ? '${task.completedSteps}/${task.totalSteps} ${AppTexts.stepsProgress}'
+        : formatTaskDate(widget.task.dueDate);
+    final repeatText = formatRepeatMode(widget.task.repeatMode);
+    final stepsText = widget.task.hasSteps
+        ? '${widget.task.completedSteps}/${widget.task.totalSteps} ${AppTexts.stepsProgress}'
         : '';
 
-    final showRepeat = repeatText.isNotEmpty && !task.isCompleted;
+    final showRepeat = repeatText.isNotEmpty && !widget.task.isCompleted;
     final hasSubtitle =
         dateText.isNotEmpty || showRepeat || stepsText.isNotEmpty;
 
     final isOverdue =
-        !task.isCompleted &&
-        task.dueDate != null &&
-        task.dueDate!.isBefore(
+        !widget.task.isCompleted &&
+        widget.task.dueDate != null &&
+        widget.task.dueDate!.isBefore(
           DateTime(
             DateTime.now().year,
             DateTime.now().month,
@@ -60,11 +66,13 @@ class TaskItemWidget extends StatelessWidget {
     if (currentState is TasksLoaded) {
       isMyDayView = currentState.currentFilter == TaskFilter.myDay;
     }
-
+    if (_isHidden) {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
       child: Dismissible(
-        key: ValueKey('${task.id}_dismissible'),
+        key: ValueKey('${widget.task.id}_dismissible'),
         direction: DismissDirection.horizontal,
         background: Container(
           color: isMyDayView ? AppColors.primaryColor : Colors.orangeAccent,
@@ -91,7 +99,7 @@ class TaskItemWidget extends StatelessWidget {
             if (isMyDayView) {
               return true;
             } else {
-              await cubit.addToMyDay(task);
+              await cubit.addToMyDay(widget.task);
 
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -113,17 +121,21 @@ class TaskItemWidget extends StatelessWidget {
             return true;
           }
         },
-        onDismissed: (direction) async {
+        onDismissed: (direction) {
+          setState(() {
+            _isHidden = true;
+          });
+
           final cubit = context.read<TasksCubit>();
 
           if (direction == DismissDirection.startToEnd) {
-            await cubit.postponeToTomorrow(task);
+            unawaited(cubit.postponeToTomorrow(widget.task));
           } else {
             if (isMyDayView) {
-              await cubit.removeFromMyDay(task);
+              unawaited(cubit.removeFromMyDay(widget.task));
             } else {
-              final snapshot = task;
-              await cubit.deleteTask(task.id);
+              final snapshot = widget.task;
+              unawaited(cubit.deleteTask(widget.task.id));
               if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -134,7 +146,9 @@ class TaskItemWidget extends StatelessWidget {
                     ),
                   ),
                   backgroundColor: Colors.redAccent,
-                  duration: const Duration(seconds: 5),
+                  behavior: SnackBarBehavior.floating,
+                  dismissDirection: DismissDirection.horizontal,
+                  duration: const Duration(seconds: 4),
                   action: SnackBarAction(
                     label: AppTexts.undo,
                     textColor: Colors.white,
@@ -161,7 +175,6 @@ class TaskItemWidget extends StatelessWidget {
               child: ListTile(
                 subtitle: hasSubtitle
                     ? Column(
-                        // crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           if (dateText.isNotEmpty)
                             Row(
@@ -169,11 +182,11 @@ class TaskItemWidget extends StatelessWidget {
                                 Row(
                                   children: [
                                     Icon(
-                                      task.isCompleted
+                                      widget.task.isCompleted
                                           ? Icons.event_available
                                           : Icons.schedule,
                                       size: 12.r,
-                                      color: task.isCompleted
+                                      color: widget.task.isCompleted
                                           ? AppColors.thirdColor
                                           : (isOverdue
                                                 ? Colors.red
@@ -187,7 +200,7 @@ class TaskItemWidget extends StatelessWidget {
                                         dateText,
                                         overflow: TextOverflow.ellipsis,
                                         style: AppTextStyle.style9W300.copyWith(
-                                          color: task.isCompleted
+                                          color: widget.task.isCompleted
                                               ? AppColors.thirdColor
                                               : (isOverdue
                                                     ? Colors.red
@@ -249,15 +262,15 @@ class TaskItemWidget extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                if (task.hasSteps)
+                                if (widget.task.hasSteps)
                                   SizedBox(
                                     width: 60.w,
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(2.r),
                                       child: LinearProgressIndicator(
-                                        value: task.totalSteps > 0
-                                            ? task.completedSteps /
-                                                  task.totalSteps
+                                        value: widget.task.totalSteps > 0
+                                            ? widget.task.completedSteps /
+                                                  widget.task.totalSteps
                                             : 0,
                                         minHeight: 4.h,
                                         backgroundColor: AppColors
@@ -279,45 +292,49 @@ class TaskItemWidget extends StatelessWidget {
                 ),
                 leading: InkWell(
                   onTap: () async {
-                    await context.read<TasksCubit>().toggleTaskCompletion(task);
+                    await context.read<TasksCubit>().toggleTaskCompletion(
+                      widget.task,
+                    );
                     await playSound();
                   },
                   child: Icon(
-                    task.isCompleted
+                    widget.task.isCompleted
                         ? Icons.check_circle
                         : Icons.circle_outlined,
-                    color: task.isCompleted
+                    color: widget.task.isCompleted
                         ? AppColors.primaryColor
                         : AppColors.secondaryColor,
                     size: 24.r,
                   ),
                 ),
                 title: DirectionalText(
-                  task.title,
+                  widget.task.title,
                   style: AppTextStyle.style12W300.copyWith(
                     fontSize: 11.sp,
-                    color: task.isCompleted
+                    color: widget.task.isCompleted
                         ? AppColors.secondaryColor
                         : AppColors.forthColor,
-                    decoration: task.isCompleted
+                    decoration: widget.task.isCompleted
                         ? TextDecoration.lineThrough
                         : null,
                   ),
                 ),
                 trailing: IconButton(
-                  tooltip: task.isImportant
+                  tooltip: widget.task.isImportant
                       ? AppTexts.unmarkImportant
                       : AppTexts.markImportant,
                   icon: Icon(
-                    task.isImportant ? Icons.star : Icons.star_border,
-                    color: task.isImportant
+                    widget.task.isImportant ? Icons.star : Icons.star_border,
+                    color: widget.task.isImportant
                         ? AppColors.primaryColor
                         : AppColors.secondaryColor,
                     size: 24.r,
                   ),
                   onPressed: () async {
                     await context.read<TasksCubit>().updateTask(
-                      task.copyWith(isImportant: !task.isImportant),
+                      widget.task.copyWith(
+                        isImportant: !widget.task.isImportant,
+                      ),
                     );
                   },
                 ),

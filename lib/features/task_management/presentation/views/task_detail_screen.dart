@@ -452,10 +452,17 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppTexts.deleteTask, style: AppTextStyle.style9W300),
+        title: Text(
+          AppTexts.deleteTask,
+          style: AppTextStyle.style14Bold.copyWith(
+            color: AppColors.secondaryColor,
+          ),
+        ),
         content: Text(
           AppTexts.confirmDeleteTask,
-          style: AppTextStyle.style9W300,
+          style: AppTextStyle.style9W300.copyWith(
+            color: AppColors.secondaryColor,
+          ),
         ),
         actions: [
           TextButton(
@@ -486,7 +493,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             style: AppTextStyle.style12W300.copyWith(color: Colors.white),
           ),
           backgroundColor: Colors.redAccent,
-          duration: const Duration(seconds: 5),
+          behavior: SnackBarBehavior.floating,
+          dismissDirection: DismissDirection.horizontal,
+          duration: const Duration(seconds: 2),
           action: SnackBarAction(
             label: AppTexts.undo,
             textColor: Colors.white,
@@ -663,8 +672,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         buildDefaultDragHandles: false,
                         itemCount: task.steps.length,
-                        onReorder: (oldIndex, newIndex) =>
-                            _reorderSteps(task, oldIndex, newIndex),
+                        onReorder: (oldIndex, newIndex) => setState(
+                          () => _reorderSteps(task, oldIndex, newIndex),
+                        ),
                         itemBuilder: (context, index) {
                           final step = task.steps[index];
                           return Dismissible(
@@ -702,7 +712,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                       : AppColors.forthColor,
                                 ),
                               ),
-                              onTap: () => _editStep(task, index),
+                              onTap: () =>
+                                  setState(() => _editStep(task, index)),
                               trailing: ReorderableDragStartListener(
                                 index: index,
                                 child: const Icon(
@@ -721,8 +732,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           child: CustomPrimaryTextfield(
                             controller: _stepController,
                             text: AppTexts.stepHint,
-
-                            onFieldSubmitted: (_) => _addStep(task),
+                            onChanged: (_) => setState(() {}),
+                            onFieldSubmitted: (_) =>
+                                setState(() => _addStep(task)),
                           ),
                         ),
                         SizedBox(width: 8.w),
@@ -766,7 +778,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     _SettingsTile(
                       icon: Icons.star,
                       title: AppTexts.important,
-                      subtitle: task.isImportant ? AppTexts.important : '—',
+                      // subtitle: task.isImportant ? AppTexts.important : '—',
                       trailing: Switch(
                         value: task.isImportant,
                         activeThumbColor: AppColors.primaryColor,
@@ -800,9 +812,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     _SettingsTile(
                       icon: Icons.notifications_active,
                       title: AppTexts.pinToNotification,
-                      subtitle: task.isPinnedToNotification
-                          ? AppTexts.pinnedToNotification
-                          : AppTexts.unpinFromNotification,
+                      // subtitle: task.isPinnedToNotification
+                      //     ? AppTexts.pinnedToNotification
+                      //     : AppTexts.unpinFromNotification,
                       trailing: Switch(
                         value: task.isPinnedToNotification,
                         activeThumbColor: AppColors.primaryColor,
@@ -881,14 +893,14 @@ class _SettingsTile extends StatelessWidget {
   const _SettingsTile({
     required this.icon,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     this.onTap,
     this.trailing,
   });
 
   final IconData icon;
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final VoidCallback? onTap;
   final Widget? trailing;
 
@@ -898,12 +910,14 @@ class _SettingsTile extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: AppColors.primaryColor),
       title: Text(title, style: AppTextStyle.style12W300),
-      subtitle: Text(
-        subtitle,
-        style: AppTextStyle.style12W300.copyWith(
-          color: AppColors.secondaryColor,
-        ),
-      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle!,
+              style: AppTextStyle.style12W300.copyWith(
+                color: AppColors.secondaryColor,
+              ),
+            )
+          : null,
       trailing: trailing ?? const Icon(Icons.chevron_right),
       onTap: onTap,
     );
