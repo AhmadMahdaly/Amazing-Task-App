@@ -46,8 +46,12 @@ class TasksCubit extends Cubit<TasksState> {
     TaskFilter? filter,
     String? title,
     String? customListId,
+    bool forceLoading = false,
   }) async {
-    emit(TasksLoading());
+    if (state is! TasksLoaded || forceLoading) {
+      emit(TasksLoading());
+    }
+
     try {
       if (filter != null) {
         _currentFilter = filter;
@@ -82,13 +86,22 @@ class TasksCubit extends Cubit<TasksState> {
           filteredTasks = allTasks.where((task) => task.isImportant).toList();
       }
 
-      filteredTasks.sort((a, b) => a.position.compareTo(b.position));
+      if (_currentFilter == TaskFilter.myDay) {
+        filteredTasks.sort((a, b) {
+          if (a.isImportant && !b.isImportant) return -1;
+          if (!a.isImportant && b.isImportant) return 1;
+          return a.position.compareTo(b.position);
+        });
+      } else {
+        filteredTasks.sort((a, b) => a.position.compareTo(b.position));
+      }
 
       await notificationService.syncAll(allTasks);
       final activeTasksForWidget = allTasks
           .where((t) => !t.isCompleted)
           .toList();
       await HomeWidgetHelper.syncTasksToWidget(activeTasksForWidget);
+
       emit(
         TasksLoaded(
           tasks: filteredTasks,
@@ -278,12 +291,6 @@ class TasksCubit extends Cubit<TasksState> {
     final task = currentTasks.removeAt(oldIndex);
     currentTasks.insert(newIndex, task);
 
-    for (var i = 0; i < currentTasks.length; i++) {
-      await tasksRepository.updateTask(
-        currentTasks[i].copyWith(position: i),
-      );
-    }
-
     emit(
       TasksLoaded(
         tasks: currentTasks,
@@ -293,6 +300,16 @@ class TasksCubit extends Cubit<TasksState> {
         allTasks: (state as TasksLoaded).allTasks,
       ),
     );
+
+    final futures = <Future>[];
+    for (var i = 0; i < currentTasks.length; i++) {
+      futures.add(
+        tasksRepository.updateTask(
+          currentTasks[i].copyWith(position: i),
+        ),
+      );
+    }
+    await Future.wait(futures);
   }
 
   Future<void> addTask(TaskEntity task) async {

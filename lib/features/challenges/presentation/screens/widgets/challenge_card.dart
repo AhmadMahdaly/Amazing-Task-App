@@ -95,7 +95,7 @@ class ChallengeCard extends StatelessWidget {
                   child: Icon(
                     Icons.broken_image_outlined,
                     color: AppColors.secondaryColor,
-                    size: 50.r,
+                    size: 32.r,
                   ),
                 );
               },
@@ -121,7 +121,7 @@ class ChallengeCard extends StatelessWidget {
                       ),
                       child: Text(
                         _getHaradnessText(challenge.level),
-                        style: AppTextStyle.style12Bold.copyWith(
+                        style: AppTextStyle.style9Bold.copyWith(
                           color: AppColors.white,
                         ),
                       ),
@@ -137,7 +137,7 @@ class ChallengeCard extends StatelessWidget {
                       ),
                       child: Text(
                         _getStatusText(challenge.status),
-                        style: AppTextStyle.style12Bold.copyWith(
+                        style: AppTextStyle.style9Bold.copyWith(
                           color: AppColors.white,
                         ),
                       ),

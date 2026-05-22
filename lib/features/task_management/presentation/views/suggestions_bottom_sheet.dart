@@ -6,7 +6,9 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/shared_widgets/directional_text.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
+import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
@@ -54,11 +56,35 @@ class SuggestionsBottomSheet extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final suggestedTasks = tasksState.allTasks
-                    .where((t) => !t.isCompleted && !isTaskInMyDay(t))
-                    .toList();
+                final overdueTasks = <TaskEntity>[];
+                final suggestedTasks = <TaskEntity>[];
 
-                if (suggestedTasks.isEmpty) {
+                final now = DateTime.now();
+                final today = DateTime(now.year, now.month, now.day);
+
+                for (final t in tasksState.allTasks) {
+                  if (t.isCompleted || isTaskInMyDay(t)) continue;
+
+                  var isOverdue = false;
+                  if (t.dueDate != null) {
+                    final due = DateTime(
+                      t.dueDate!.year,
+                      t.dueDate!.month,
+                      t.dueDate!.day,
+                    );
+                    if (due.isBefore(today)) {
+                      isOverdue = true;
+                    }
+                  }
+
+                  if (isOverdue) {
+                    overdueTasks.add(t);
+                  } else {
+                    suggestedTasks.add(t);
+                  }
+                }
+
+                if (overdueTasks.isEmpty && suggestedTasks.isEmpty) {
                   return Center(
                     child: Text(
                       AppTexts.noSuggestedTasksCurrently,
@@ -78,64 +104,50 @@ class SuggestionsBottomSheet extends StatelessWidget {
                       }
                     }
 
-                    return ListView.separated(
-                      itemCount: suggestedTasks.length,
-                      separatorBuilder: (context, index) => 8.verticalSpace,
-                      itemBuilder: (context, index) {
-                        final task = suggestedTasks[index];
-                        final listName = task.listId != null
-                            ? listsMap[task.listId!] ?? AppTexts.customList
-                            : AppTexts.tasks;
-
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.white,
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              task.title,
-                              style: AppTextStyle.style12W300.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.forthColor,
+                    return ListView(
+                      children: [
+                        if (overdueTasks.isNotEmpty) ...[
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.h),
+                            child: Text(
+                              AppTexts.yesterday,
+                              style: AppTextStyle.style14Bold.copyWith(
+                                color: Colors.redAccent,
                               ),
-                            ),
-                            subtitle: Text(
-                              listName,
-                              style: AppTextStyle.style9W300.copyWith(
-                                color: AppColors.secondaryColor,
-                                fontSize: 11.sp,
-                              ),
-                            ),
-                            trailing: IconButton(
-                              tooltip: AppTexts.addToMyDay,
-                              icon: Icon(
-                                Icons.add,
-                                color: AppColors.primaryColor,
-                                size: 24.r,
-                              ),
-                              onPressed: () {
-                                unawaited(
-                                  context.read<TasksCubit>().addToMyDay(task),
-                                );
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      AppTexts.addedToMyDaySuccess,
-                                      style: AppTextStyle.style9W300.copyWith(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    backgroundColor: AppColors.successColor,
-                                    duration: const Duration(seconds: 1),
-                                  ),
-                                );
-                              },
                             ),
                           ),
-                        );
-                      },
+                          ...overdueTasks.map(
+                            (task) => _buildTaskItem(
+                              context,
+                              task,
+                              listsMap,
+                              isOverdue: true,
+                            ),
+                          ),
+                          16.verticalSpace,
+                        ],
+
+                        if (suggestedTasks.isNotEmpty) ...[
+                          if (overdueTasks.isNotEmpty)
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8.h),
+                              child: Text(
+                                AppTexts.suggestions,
+                                style: AppTextStyle.style14Bold.copyWith(
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ...suggestedTasks.map(
+                            (task) => _buildTaskItem(
+                              context,
+                              task,
+                              listsMap,
+                              isOverdue: false,
+                            ),
+                          ),
+                        ],
+                      ],
                     );
                   },
                 );
@@ -143,6 +155,69 @@ class SuggestionsBottomSheet extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTaskItem(
+    BuildContext context,
+    TaskEntity task,
+    Map<String, String> listsMap, {
+    required bool isOverdue,
+  }) {
+    final listName = task.listId != null
+        ? listsMap[task.listId!] ?? AppTexts.customList
+        : AppTexts.tasks;
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 8.h),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(8.r),
+        border: isOverdue
+            ? Border.all(color: Colors.redAccent.withAlpha(50), width: 1)
+            : null,
+      ),
+      child: ListTile(
+        title: DirectionalText(
+          task.title,
+          style: AppTextStyle.style12W300.copyWith(
+            fontWeight: FontWeight.bold,
+            color: isOverdue ? Colors.redAccent : AppColors.forthColor,
+          ),
+        ),
+        subtitle: Text(
+          listName,
+          style: AppTextStyle.style9W300.copyWith(
+            color: AppColors.secondaryColor,
+            fontSize: 11.sp,
+          ),
+        ),
+        trailing: IconButton(
+          tooltip: AppTexts.addToMyDay,
+          icon: Icon(
+            Icons.add,
+            color: AppColors.primaryColor,
+            size: 24.r,
+          ),
+          onPressed: () {
+            unawaited(
+              context.read<TasksCubit>().addToMyDay(task),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  AppTexts.addedToMyDaySuccess,
+                  style: AppTextStyle.style9W300.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+                backgroundColor: AppColors.successColor,
+                duration: const Duration(seconds: 1),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

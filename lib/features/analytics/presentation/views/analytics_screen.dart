@@ -79,7 +79,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                 slivers: [
                   SliverAppBar(
                     pinned: true,
-                    expandedHeight: 110.h,
+                    expandedHeight: 100.h,
                     leading: IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () => context.pop(),
@@ -88,7 +88,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                     flexibleSpace: FlexibleSpaceBar(
                       title: Text(
                         AppTexts.analytics,
-                        style: AppTextStyle.style20Bold.copyWith(
+                        style: AppTextStyle.style16Bold.copyWith(
                           color: Colors.white,
                         ),
                       ),
@@ -114,32 +114,27 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                         children: [
                           Text(
                             AppTexts.overview,
-                            style: AppTextStyle.style9W300.copyWith(
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.bold,
+                            style: AppTextStyle.style14Bold.copyWith(
                               color: AppColors.forthColor,
                             ),
                           ),
-                          SizedBox(height: 12.h),
+                          12.verticalSpace,
                           _OverviewGrid(summary: summary),
-                          SizedBox(height: 24.h),
+                          20.verticalSpace,
                           TabBar(
                             controller: _tabController,
                             labelColor: AppColors.primaryColor,
                             unselectedLabelColor: AppColors.secondaryColor,
                             indicatorColor: AppColors.primaryColor,
-                            labelStyle: AppTextStyle.style9W300.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13.sp,
-                            ),
+                            labelStyle: AppTextStyle.style12W700,
                             tabs: [
                               Tab(text: AppTexts.dailyStats),
                               Tab(text: AppTexts.monthlyStats),
                             ],
                           ),
-                          SizedBox(height: 16.h),
+                          16.verticalSpace,
                           SizedBox(
-                            height: 420.h,
+                            height: 400.h,
                             child: TabBarView(
                               controller: _tabController,
                               children: [
@@ -148,16 +143,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                               ],
                             ),
                           ),
-                          SizedBox(height: 24.h),
+                          20.verticalSpace,
                           Text(
                             AppTexts.perListBreakdown,
-                            style: AppTextStyle.style9W300.copyWith(
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.bold,
+                            style: AppTextStyle.style14W700.copyWith(
                               color: AppColors.forthColor,
                             ),
                           ),
-                          SizedBox(height: 12.h),
+                          12.verticalSpace,
                           ...listStats.map(
                             (s) => _ListStatTile(
                               title: s.listId.isEmpty
@@ -167,7 +160,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                               icon: listIcons[s.listId] ?? 0,
                             ),
                           ),
-                          SizedBox(height: 32.h),
+                          32.verticalSpace,
                         ],
                       ),
                     ),
@@ -200,8 +193,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
               child: Text(
                 AppTexts.noAnalyticsData,
                 textAlign: TextAlign.center,
-                style: AppTextStyle.style9W300.copyWith(
-                  fontSize: 16.sp,
+                style: AppTextStyle.style14W300.copyWith(
                   color: AppColors.secondaryColor,
                 ),
               ),
@@ -308,7 +300,7 @@ class _StatCard extends StatelessWidget {
           Text(
             value,
             textAlign: TextAlign.center,
-            style: AppTextStyle.style18Bold.copyWith(
+            style: AppTextStyle.style16Bold.copyWith(
               color: AppColors.forthColor,
             ),
           ),
@@ -345,7 +337,7 @@ class _DailyStatsPanel extends StatelessWidget {
       children: [
         Text(
           AppTexts.last14Days,
-          style: AppTextStyle.style14W300.copyWith(
+          style: AppTextStyle.style12W300.copyWith(
             color: AppColors.secondaryColor,
           ),
         ),
@@ -355,7 +347,7 @@ class _DailyStatsPanel extends StatelessWidget {
         Expanded(
           child: ListView.separated(
             itemCount: stats.length,
-            separatorBuilder: (context, index) => SizedBox(height: 8.h),
+            separatorBuilder: (context, index) => 8.verticalSpace,
             itemBuilder: (context, index) {
               final reversedStats = stats.reversed.toList();
               final day = reversedStats[index];
@@ -458,16 +450,15 @@ class _MonthlyStatsPanel extends StatelessWidget {
       children: [
         Text(
           AppTexts.last6Months,
-          style: AppTextStyle.style9W300.copyWith(
-            fontSize: 14.sp,
+          style: AppTextStyle.style12W300.copyWith(
             color: AppColors.secondaryColor,
           ),
         ),
-        SizedBox(height: 12.h),
+        12.verticalSpace,
         Expanded(
           child: ListView.separated(
             itemCount: stats.length,
-            separatorBuilder: (context, index) => SizedBox(height: 12.h),
+            separatorBuilder: (context, index) => 12.verticalSpace,
             itemBuilder: (context, index) {
               final reversedStats = stats.reversed.toList();
               final month = reversedStats[index];
@@ -492,13 +483,7 @@ class _MonthlyStatsPanel extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          label,
-                          style: AppTextStyle.style9W300.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.sp,
-                          ),
-                        ),
+                        Text(label, style: AppTextStyle.style12Bold),
                         Text(
                           '$rate${AppTexts.percent}',
                           style: AppTextStyle.style9W300.copyWith(
@@ -508,13 +493,13 @@ class _MonthlyStatsPanel extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(height: 8.h),
+                    8.verticalSpace,
                     _Bar(
                       value: month.completedCount,
                       max: maxValue,
                       color: AppColors.primaryColor,
                     ),
-                    SizedBox(height: 8.h),
+                    8.verticalSpace,
                     Row(
                       children: [
                         _MiniStat(
@@ -553,13 +538,7 @@ class _MiniStat extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(
-            value,
-            style: AppTextStyle.style9W300.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 14.sp,
-            ),
-          ),
+          Text(value, style: AppTextStyle.style12Bold),
           Text(
             label,
             style: AppTextStyle.style9W300.copyWith(
@@ -691,17 +670,10 @@ class _ListStatTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: AppTextStyle.style9W300.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.sp,
-                  ),
-                ),
+                Text(title, style: AppTextStyle.style12Bold),
                 Text(
                   '${stats.completedTasks} / ${stats.totalTasks} ${AppTexts.completed}',
-                  style: AppTextStyle.style9W300.copyWith(
-                    fontSize: 12.sp,
+                  style: AppTextStyle.style12W500.copyWith(
                     color: AppColors.secondaryColor,
                   ),
                 ),

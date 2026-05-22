@@ -152,12 +152,13 @@ class MainTasksScreen extends StatelessWidget {
                           label: Text(
                             AppTexts.suggestions,
                             style: AppTextStyle.style12W400.copyWith(
+                              fontSize: 10.sp,
                               color: AppColors.primaryColor,
                             ),
                           ),
                           icon: Icon(
                             Icons.lightbulb_outline,
-                            size: 24.r,
+                            size: 22.r,
                             color: AppColors.primaryColor,
                           ),
                         ),
