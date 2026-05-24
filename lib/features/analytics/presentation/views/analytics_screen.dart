@@ -118,9 +118,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                               color: AppColors.forthColor,
                             ),
                           ),
-                          12.verticalSpace,
+                          8.verticalSpace,
                           _OverviewGrid(summary: summary),
-                          20.verticalSpace,
+                          12.verticalSpace,
                           TabBar(
                             controller: _tabController,
                             labelColor: AppColors.primaryColor,
@@ -132,7 +132,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                               Tab(text: AppTexts.monthlyStats),
                             ],
                           ),
-                          16.verticalSpace,
+                          8.verticalSpace,
                           SizedBox(
                             height: 400.h,
                             child: TabBarView(
@@ -143,14 +143,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                               ],
                             ),
                           ),
-                          20.verticalSpace,
+                          12.verticalSpace,
                           Text(
                             AppTexts.perListBreakdown,
                             style: AppTextStyle.style14W700.copyWith(
                               color: AppColors.forthColor,
                             ),
                           ),
-                          12.verticalSpace,
+                          8.verticalSpace,
                           ...listStats.map(
                             (s) => _ListStatTile(
                               title: s.listId.isEmpty
@@ -207,7 +207,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
 
 class _OverviewGrid extends StatelessWidget {
   const _OverviewGrid({required this.summary});
-
   final TaskAnalyticsSummary summary;
 
   @override
@@ -254,8 +253,8 @@ class _OverviewGrid extends StatelessWidget {
           crossAxisCount: crossAxisCount,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 10.h,
-          crossAxisSpacing: 10.w,
+          mainAxisSpacing: 8.h,
+          crossAxisSpacing: 8.w,
           childAspectRatio: 1.4,
           children: cards,
         );
@@ -343,7 +342,7 @@ class _DailyStatsPanel extends StatelessWidget {
         ),
         8.verticalSpace,
         _LegendRow(),
-        12.verticalSpace,
+        8.verticalSpace,
         Expanded(
           child: ListView.separated(
             itemCount: stats.length,
@@ -454,7 +453,7 @@ class _MonthlyStatsPanel extends StatelessWidget {
             color: AppColors.secondaryColor,
           ),
         ),
-        12.verticalSpace,
+        8.verticalSpace,
         Expanded(
           child: ListView.separated(
             itemCount: stats.length,
@@ -580,7 +579,7 @@ class _Bar extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(width: 6.w),
+        6.horizontalSpace,
         Text(
           '$value',
           style: AppTextStyle.style9W300.copyWith(fontSize: 10.sp),
@@ -596,7 +595,7 @@ class _LegendRow extends StatelessWidget {
     return Row(
       children: [
         _LegendDot(color: AppColors.thirdColor, label: AppTexts.scheduled),
-        SizedBox(width: 16.w),
+        16.horizontalSpace,
         _LegendDot(color: AppColors.successColor, label: AppTexts.completed),
       ],
     );
@@ -618,7 +617,7 @@ class _LegendDot extends StatelessWidget {
           height: 10.r,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
-        SizedBox(width: 6.w),
+        6.horizontalSpace,
         Text(
           label,
           style: AppTextStyle.style9W300.copyWith(

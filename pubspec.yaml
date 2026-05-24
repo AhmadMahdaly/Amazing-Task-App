@@ -1,7 +1,7 @@
 name: s
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.17+18
+version: 1.0.19+19
 
 environment:
   sdk: ^3.9.0
@@ -26,7 +26,6 @@ dependencies:
   uuid: ^4.5.3
   fl_chart: ^1.2.0
   audioplayers: ^6.6.0
-  home_widget: ^0.9.1
 
 dev_dependencies:
   flutter_test:

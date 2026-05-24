@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/bloc_observer.dart';
-import 'package:s/core/utils/home_widget_helper.dart';
 
 import '/../core/di.dart';
 import '../../core/routing/router_generation_config.dart';
@@ -15,7 +14,6 @@ Future<void> initializeApp() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  await HomeWidgetHelper.initialize();
   await CacheHelper.init();
   initRouter();
   await setupGetIt();

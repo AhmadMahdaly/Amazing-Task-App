@@ -32,7 +32,7 @@ class TimeInfo extends StatelessWidget {
         ),
         8.horizontalSpace,
         Text(
-          '$label: ',
+          '$label:  ',
           style: AppTextStyle.style9Bold.copyWith(
             color:
                 challenge.status == ChallengeStatus.failed ||

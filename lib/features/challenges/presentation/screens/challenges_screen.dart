@@ -69,10 +69,13 @@ class ChallengesScreen extends StatelessWidget {
                       child: Container(
                         height: 300.h,
                         width: 300.w,
-                        padding: EdgeInsets.all(16.r),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 12.h,
+                        ),
 
                         decoration: BoxDecoration(
-                          color: AppColors.errorColor.withAlpha(20),
+                          color: AppColors.errorColor.withAlpha(25),
                           borderRadius: BorderRadius.circular(16.r),
                           border: Border.all(
                             color: AppColors.errorColor.withAlpha(77),
@@ -131,8 +134,8 @@ class ChallengesScreen extends StatelessWidget {
 
                   return ListView.builder(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 24.w,
-                      vertical: 8.h,
+                      horizontal: 16.w,
+                      vertical: 6.h,
                     ),
                     itemCount: sortedChallenges.length,
                     itemBuilder: (context, index) {

@@ -34,9 +34,9 @@ class ChallengeAnalysisScreen extends StatelessWidget {
               child: Column(
                 children: [
                   StatusChart(challenges: state.challenges),
-                  32.verticalSpace,
+                  8.verticalSpace,
                   const Divider(),
-                  16.verticalSpace,
+                  8.verticalSpace,
                   LevelChart(challenges: state.challenges),
                 ],
               ),

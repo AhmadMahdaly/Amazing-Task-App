@@ -34,7 +34,7 @@ class LevelChart extends StatelessWidget {
     return Column(
       children: [
         Text(AppTexts.analysisByLevel, style: AppTextStyle.style14Bold),
-        20.verticalSpace,
+        12.verticalSpace,
         SizedBox(
           height: 200.r,
           child: PieChart(
@@ -67,7 +67,7 @@ class LevelChart extends StatelessWidget {
             ),
           ),
         ),
-        24.verticalSpace,
+        8.verticalSpace,
         Legend(
           items: [
             LegendItem(

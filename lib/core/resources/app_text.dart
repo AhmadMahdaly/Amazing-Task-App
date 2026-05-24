@@ -91,7 +91,7 @@ class AppTexts {
   static String generalTasks = 'General';
   static String total = 'Total';
   static String recurring = 'Recurring';
-  static String overview = 'Overview';
+  static String overview = "Today's Overview";
   static String completedOn = 'Completed on';
   static String percent = '%';
   static String taskDetails = 'Task Details';

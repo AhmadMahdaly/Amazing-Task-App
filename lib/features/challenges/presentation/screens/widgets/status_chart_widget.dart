@@ -33,7 +33,7 @@ class StatusChart extends StatelessWidget {
           AppTexts.analysisByStatus,
           style: AppTextStyle.style16Bold,
         ),
-        24.verticalSpace,
+        12.verticalSpace,
         SizedBox(
           height: 200.r,
           child: PieChart(
@@ -67,7 +67,7 @@ class StatusChart extends StatelessWidget {
             ),
           ),
         ),
-        24.verticalSpace,
+        8.verticalSpace,
         Legend(
           items: [
             LegendItem(

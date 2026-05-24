@@ -213,18 +213,7 @@ class TasksDrawer extends StatelessWidget {
                     );
                   } else if (state is ListsLoaded) {
                     if (state.lists.isEmpty) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 10.h,
-                        ),
-                        child: Text(
-                          AppTexts.noCustomListsYet,
-                          style: AppTextStyle.style9W300.copyWith(
-                            color: AppColors.white.withAlpha(128),
-                          ),
-                        ),
-                      );
+                      return const SizedBox.shrink();
                     }
                     return ListView.builder(
                       padding: EdgeInsets.zero,

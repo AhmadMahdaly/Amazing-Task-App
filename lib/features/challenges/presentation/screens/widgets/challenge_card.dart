@@ -79,7 +79,7 @@ class ChallengeCard extends StatelessWidget {
           ? AppColors.successColor.withAlpha(200)
           : cardColor,
       elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 4.h),
+      margin: EdgeInsets.symmetric(vertical: 2.h),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -192,7 +192,7 @@ class ChallengeCard extends StatelessWidget {
                       ),
                   ],
                 ),
-                12.verticalSpace,
+                8.verticalSpace,
                 DirectionalText(
                   challenge.title,
                   style: AppTextStyle.style14Bold,
@@ -211,7 +211,7 @@ class ChallengeCard extends StatelessWidget {
                         : AppColors.secondaryColor,
                   ),
                 ),
-                8.verticalSpace,
+                4.verticalSpace,
                 Divider(
                   color:
                       challenge.status == ChallengeStatus.failed ||
