@@ -10,6 +10,7 @@ import 'package:s/features/focus_mode/presentation/views/focus_history_screen.da
 import 'package:s/features/focus_mode/presentation/views/focus_screen.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
+import 'package:s/features/task_management/presentation/views/planner_views/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
 
 import '../../core/constants.dart';
@@ -46,6 +47,12 @@ void initRouter() {
           return TaskDetailScreen(taskId: taskId);
         },
       ),
+      GoRoute(
+        path: AppRoutes.plannerView,
+        name: AppRoutes.plannerView,
+        builder: (context, state) => const PlannerScreen(),
+      ),
+
       GoRoute(
         path: AppRoutes.challengesScreen,
         name: AppRoutes.challengesScreen,

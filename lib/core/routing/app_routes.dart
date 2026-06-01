@@ -8,6 +8,5 @@ class AppRoutes {
   static const String challengeAnalysisScreen = '/challengeAnalysisScreen';
   static const String focusScreen = '/focusScreen';
   static const String focusHistoryScreen = '/focusHistoryScreen';
-  // static const String maintenanceScreen = '/maintenanceScreen';
-  // static const String errorScreen = '/errorScreen';
+  static const String plannerView = '/plannerView';
 }

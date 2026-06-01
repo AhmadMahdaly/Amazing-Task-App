@@ -690,18 +690,115 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         itemBuilder: (context, index) {
                           final step = task.steps[index];
                           return Dismissible(
-                            key: ValueKey(step.id),
-                            direction: DismissDirection.endToStart,
+                            key: ValueKey('${step.id}_dismissible'),
+                            direction: DismissDirection.horizontal,
+
                             background: Container(
-                              alignment: Alignment.centerRight,
-                              padding: EdgeInsets.only(right: 16.w),
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsets.only(left: 16.w),
                               color: Colors.redAccent,
                               child: const Icon(
                                 Icons.delete,
                                 color: Colors.white,
                               ),
                             ),
-                            onDismissed: (_) => _deleteStep(task, index),
+
+                            secondaryBackground: Container(
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.only(right: 16.w),
+                              color: AppColors.primaryColor,
+                              child: const Icon(
+                                Icons.call_split,
+                                color: Colors.white,
+                              ),
+                            ),
+
+                            confirmDismiss: (direction) async {
+                              if (direction == DismissDirection.endToStart) {
+                                return await showDialog<bool>(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        title: Text(
+                                          AppTexts.separateStep,
+                                          style: AppTextStyle.style14Bold
+                                              .copyWith(
+                                                color: AppColors.secondaryColor,
+                                              ),
+                                        ),
+                                        content: Text(
+                                          AppTexts.convertStepToTaskQuestion,
+                                          style: AppTextStyle.style9W300
+                                              .copyWith(
+                                                color: AppColors.secondaryColor,
+                                              ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(ctx, false),
+                                            child: Text(AppTexts.cancel),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(ctx, true),
+                                            child: Text(
+                                              AppTexts.confirm,
+                                              style: AppTextStyle.style12Bold
+                                                  .copyWith(
+                                                    color:
+                                                        AppColors.primaryColor,
+                                                  ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ) ??
+                                    false;
+                              }
+                              return true;
+                            },
+
+                            onDismissed: (direction) async {
+                              if (direction == DismissDirection.endToStart) {
+                                final cubit = context.read<TasksCubit>();
+                                final originalTaskSnapshot = task;
+
+                                final newTaskId = await cubit.detachStepToTask(
+                                  task,
+                                  step,
+                                );
+
+                                if (!mounted) return;
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      AppTexts.stepConvertedToTask,
+                                      style: AppTextStyle.style12W300.copyWith(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    backgroundColor: AppColors.primaryColor,
+                                    behavior: SnackBarBehavior.floating,
+                                    duration: const Duration(seconds: 4),
+                                    action: SnackBarAction(
+                                      label: AppTexts.undo,
+                                      textColor: Colors.white,
+                                      onPressed: () {
+                                        unawaited(
+                                          cubit.undoDetachStep(
+                                            originalTaskSnapshot,
+                                            newTaskId,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                await _deleteStep(task, index);
+                              }
+                            },
                             child: ListTile(
                               contentPadding: EdgeInsets.zero,
                               leading: InkWell(

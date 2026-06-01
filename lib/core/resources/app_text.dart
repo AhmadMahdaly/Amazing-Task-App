@@ -61,6 +61,7 @@ class AppTexts {
       'Are you sure you want to delete this list? All tasks in it will also be deleted.';
   static String confirmDeleteTask =
       'Are you sure you want to delete this task?';
+  static String confirm = 'Confirm';
   static String deleteList = 'Delete List';
   static String deleteTask = 'Delete Task';
   static String noTasksInThisListYet = 'There are no tasks in this list yet';
@@ -137,8 +138,6 @@ class AppTexts {
       'Allow photo access to choose a wallpaper from your gallery.';
   static String photoPermissionDeniedSettings =
       'Photo access is disabled. Open app settings and allow photos to set a wallpaper.';
-
-  ///
   static String failedToUpdateChallengeStatus =
       'Failed to update challenge status';
   static String failedToAddChallenge = 'Failed to add challenge';
@@ -214,4 +213,15 @@ class AppTexts {
   static String focusHistory = 'Focus History';
   static String focusCycleCompleted =
       'Well done! The focus cycle has been completed and recorded';
+  static String stepConvertedToTask =
+      'Step has been converted to an independent task';
+  static String convertStepToTaskQuestion =
+      'Do you want to convert this step into an independent task?';
+
+  static String separateStep = 'Separate Step';
+  static String planning = 'Planning';
+  static String unscheduledTasks = 'Unscheduled Tasks';
+  // static String dragAndDropTasksHere = 'Drag and drop tasks here';
+  static String noTasksOnThisDay = 'There are no tasks on this day';
+  static String selectedDayTasks = 'Tasks for the Selected Day';
 }

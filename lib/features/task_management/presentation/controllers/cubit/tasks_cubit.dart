@@ -6,8 +6,10 @@ import 'package:s/core/services/notification_action_handler.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/core/services/task_notification_service.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
+import 'package:s/features/task_management/domain/entities/task_step.dart';
 import 'package:s/features/task_management/domain/repo/tasks_repository.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
+import 'package:s/features/task_management/domain/utils/task_steps_utils.dart';
 
 part 'tasks_state.dart';
 
@@ -370,5 +372,41 @@ class TasksCubit extends Cubit<TasksState> {
         : task.copyWith(clearPin: true);
     await updateTask(updated);
     return null;
+  }
+
+  Future<String> detachStepToTask(TaskEntity task, TaskStep step) async {
+    final updatedSteps = task.steps.where((s) => s.id != step.id).toList();
+    final updatedOriginalTask = syncTaskStepCounts(task, updatedSteps);
+
+    final newTaskId = DateTime.now().millisecondsSinceEpoch.toString();
+    final newTask = TaskEntity(
+      id: newTaskId,
+      title: step.title,
+      listId: task.listId,
+      position: task.position,
+    );
+
+    try {
+      await tasksRepository.updateTask(updatedOriginalTask);
+      await tasksRepository.addTask(newTask);
+      await loadTasks();
+      return newTaskId;
+    } catch (e) {
+      emit(TasksError(e.toString()));
+      return '';
+    }
+  }
+
+  Future<void> undoDetachStep(
+    TaskEntity originalTaskSnapshot,
+    String newTaskId,
+  ) async {
+    try {
+      await tasksRepository.deleteTask(newTaskId);
+      await tasksRepository.updateTask(originalTaskSnapshot);
+      await loadTasks();
+    } catch (e) {
+      emit(TasksError(e.toString()));
+    }
   }
 }

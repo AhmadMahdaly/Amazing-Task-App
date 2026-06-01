@@ -13,6 +13,7 @@ import 'package:s/core/wallpaper/wallpaper_picker_sheet.dart';
 import 'package:s/features/task_list/domain/entities/task_list_entity.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_list/presentation/views/add_list_bottom_sheet.dart';
+import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
@@ -198,30 +199,47 @@ class TasksDrawer extends StatelessWidget {
 
             Expanded(
               child: BlocBuilder<ListsCubit, ListsState>(
-                builder: (context, state) {
-                  if (state is ListsLoading) {
+                builder: (context, listsState) {
+                  if (listsState is ListsLoading) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (state is ListsError) {
+                  } else if (listsState is ListsError) {
                     return Padding(
                       padding: EdgeInsets.all(16.w),
                       child: Text(
-                        state.message,
+                        listsState.message,
                         style: AppTextStyle.style9W300.copyWith(
                           color: AppColors.errorColor,
                         ),
                       ),
                     );
-                  } else if (state is ListsLoaded) {
-                    if (state.lists.isEmpty) {
+                  } else if (listsState is ListsLoaded) {
+                    if (listsState.lists.isEmpty) {
                       return const SizedBox.shrink();
                     }
-                    return ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: state.lists.length,
-                      itemBuilder: (context, index) {
-                        final list = state.lists[index];
+                    return BlocBuilder<TasksCubit, TasksState>(
+                      builder: (context, tasksState) {
+                        final allTasks = tasksState is TasksLoaded
+                            ? tasksState.allTasks
+                            : <TaskEntity>[];
 
-                        return _buildCustomListTile(context, list);
+                        return ListView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: listsState.lists.length,
+                          itemBuilder: (context, index) {
+                            final list = listsState.lists[index];
+                            final activeTasksCount = allTasks
+                                .where(
+                                  (t) => t.listId == list.id && !t.isCompleted,
+                                )
+                                .length;
+
+                            return _buildCustomListTile(
+                              context,
+                              list,
+                              activeTasksCount,
+                            );
+                          },
+                        );
                       },
                     );
                   }
@@ -242,6 +260,12 @@ class TasksDrawer extends StatelessWidget {
                   icon: const Icon(Icons.add_task_rounded),
                   onPressed: () async {
                     await context.pushNamed(AppRoutes.challengesScreen);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.calendar_month_outlined),
+                  onPressed: () async {
+                    await context.pushNamed(AppRoutes.plannerView);
                   },
                 ),
               ],
@@ -315,6 +339,7 @@ class TasksDrawer extends StatelessWidget {
   Widget _buildCustomListTile(
     BuildContext context,
     TaskListEntity list,
+    int activeTasksCount,
   ) {
     return Material(
       color: Colors.transparent,
@@ -331,7 +356,6 @@ class TasksDrawer extends StatelessWidget {
             color: AppColors.white,
           ),
         ),
-
         onTap: () {
           if (!isPermanent) {
             Navigator.pop(context);
@@ -344,44 +368,64 @@ class TasksDrawer extends StatelessWidget {
             ),
           );
         },
-        trailing: PopupMenuButton<String>(
-          icon: Icon(
-            Icons.more_vert,
-            color: AppColors.white.withAlpha(75),
-          ),
-          color: AppColors.white,
-          onSelected: (value) async {
-            switch (value) {
-              case 'edit':
-                if (!SizeConfig.isTablet) {
-                  Navigator.pop(context);
-                }
-                await showModalBottomSheet<void>(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (ctx) => AddListBottomSheet(listToEdit: list),
-                );
-              case 'delete':
-                await _confirmDeleteCustomList(
-                  context,
-                  list: list,
-                );
-            }
-          },
-          itemBuilder: (ctx) => [
-            PopupMenuItem(
-              value: 'edit',
-              child: Text(AppTexts.edit, style: AppTextStyle.style9W300),
-            ),
-            PopupMenuItem(
-              value: 'delete',
-              child: Text(
-                AppTexts.delete,
-                style: AppTextStyle.style9W300.copyWith(
-                  color: AppColors.errorColor,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (activeTasksCount > 0)
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor.withAlpha(50),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Text(
+                  '$activeTasksCount',
+                  style: AppTextStyle.style9W300.copyWith(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
+            PopupMenuButton<String>(
+              icon: Icon(
+                Icons.more_vert,
+                color: AppColors.white.withAlpha(75),
+              ),
+              color: AppColors.white,
+              onSelected: (value) async {
+                switch (value) {
+                  case 'edit':
+                    if (!SizeConfig.isTablet) {
+                      Navigator.pop(context);
+                    }
+                    await showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (ctx) => AddListBottomSheet(listToEdit: list),
+                    );
+                  case 'delete':
+                    await _confirmDeleteCustomList(
+                      context,
+                      list: list,
+                    );
+                }
+              },
+              itemBuilder: (ctx) => [
+                PopupMenuItem(
+                  value: 'edit',
+                  child: Text(AppTexts.edit, style: AppTextStyle.style9W300),
+                ),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Text(
+                    AppTexts.delete,
+                    style: AppTextStyle.style9W300.copyWith(
+                      color: AppColors.errorColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
