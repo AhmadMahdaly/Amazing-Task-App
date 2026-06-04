@@ -130,7 +130,17 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.wb_sunny_outlined,
               title: AppTexts.myDay,
-
+              count: context.select<TasksCubit, String>((cubit) {
+                final state = cubit.state;
+                if (state is TasksLoaded) {
+                  final myDayCount = state.allTasks
+                      .where(isTaskInMyDay)
+                      .where((t) => !t.isCompleted)
+                      .length;
+                  return myDayCount > 0 ? '$myDayCount' : '';
+                }
+                return '';
+              }),
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -142,7 +152,17 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.star_border,
               title: AppTexts.important,
-
+              count: context.select<TasksCubit, String>((cubit) {
+                final state = cubit.state;
+                if (state is TasksLoaded) {
+                  final importantCount = state.allTasks
+                      .where((t) => t.isImportant)
+                      .where((t) => !t.isCompleted)
+                      .length;
+                  return importantCount > 0 ? '$importantCount' : '';
+                }
+                return '';
+              }),
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -154,7 +174,17 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.calendar_today,
               title: AppTexts.planned,
-
+              count: context.select<TasksCubit, String>((cubit) {
+                final state = cubit.state;
+                if (state is TasksLoaded) {
+                  final plannedCount = state.allTasks
+                      .where((t) => t.dueDate != null)
+                      .where((t) => !t.isCompleted)
+                      .length;
+                  return plannedCount > 0 ? '$plannedCount' : '';
+                }
+                return '';
+              }),
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -177,7 +207,16 @@ class TasksDrawer extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.home_outlined,
               title: AppTexts.tasks,
-
+              count: context.select<TasksCubit, String>((cubit) {
+                final state = cubit.state;
+                if (state is TasksLoaded) {
+                  final allCount = state.allTasks
+                      .where((t) => !t.isCompleted)
+                      .length;
+                  return allCount > 0 ? '$allCount' : '';
+                }
+                return '';
+              }),
               context: context,
               onTap: () async {
                 await context.read<TasksCubit>().loadTasks(
@@ -343,19 +382,7 @@ class TasksDrawer extends StatelessWidget {
   ) {
     return Material(
       color: Colors.transparent,
-      child: ListTile(
-        leading: Icon(
-          AppIconsHelper.getIconFromCode(list.iconCode),
-          color: Colors.white,
-          size: 24.r,
-        ),
-        title: Text(
-          list.title,
-          style: AppTextStyle.style12W300.copyWith(
-            fontSize: 10.sp,
-            color: AppColors.white,
-          ),
-        ),
+      child: InkWell(
         onTap: () {
           if (!isPermanent) {
             Navigator.pop(context);
@@ -368,12 +395,34 @@ class TasksDrawer extends StatelessWidget {
             ),
           );
         },
-        trailing: Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            20.horizontalSpace,
+
+            Icon(
+              AppIconsHelper.getIconFromCode(list.iconCode),
+              color: Colors.white,
+              size: 24.r,
+            ),
+            16.horizontalSpace,
+            Expanded(
+              child: Text(
+                overflow: TextOverflow.fade,
+                softWrap: true,
+                list.title,
+                style: AppTextStyle.style12W300.copyWith(
+                  fontSize: 10.sp,
+                  color: AppColors.white,
+                ),
+              ),
+            ),
             if (activeTasksCount > 0)
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 2.w,
+                  vertical: 2.h,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primaryColor.withAlpha(50),
                   borderRadius: BorderRadius.circular(12.r),
@@ -387,6 +436,7 @@ class TasksDrawer extends StatelessWidget {
                 ),
               ),
             PopupMenuButton<String>(
+              padding: EdgeInsets.zero,
               icon: Icon(
                 Icons.more_vert,
                 color: AppColors.white.withAlpha(75),
@@ -414,7 +464,10 @@ class TasksDrawer extends StatelessWidget {
               itemBuilder: (ctx) => [
                 PopupMenuItem(
                   value: 'edit',
-                  child: Text(AppTexts.edit, style: AppTextStyle.style9W300),
+                  child: Text(
+                    AppTexts.edit,
+                    style: AppTextStyle.style9W300,
+                  ),
                 ),
                 PopupMenuItem(
                   value: 'delete',

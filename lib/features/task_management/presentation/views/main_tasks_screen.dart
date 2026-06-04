@@ -206,18 +206,17 @@ class MainTasksScreen extends StatelessWidget {
   ) {
     if (state is TasksLoading) {
       return SizedBox(
-        height: 300.h,
+        height: 450.h,
         child: const Center(child: CircularProgressIndicator()),
       );
     } else if (state is TasksLoaded) {
       if (currentTasks.isEmpty) {
         return SizedBox(
-          height: 300.h,
+          height: 450.h,
           child: Center(
             child: Text(
               AppTexts.noTasksInThisList,
-              style: AppTextStyle.style12W300.copyWith(
-                fontSize: 10.sp,
+              style: AppTextStyle.style12W600.copyWith(
                 color: AppColors.white,
               ),
             ),

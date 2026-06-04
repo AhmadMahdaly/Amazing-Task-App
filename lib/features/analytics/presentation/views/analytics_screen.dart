@@ -112,14 +112,41 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          _ProductivityCard(summary: summary),
+                          12.verticalSpace,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _StreakCard(
+                                  icon: Icons.local_fire_department,
+                                  title: 'Current Streak',
+                                  value: '${summary.currentStreak}',
+                                ),
+                              ),
+
+                              12.horizontalSpace,
+
+                              Expanded(
+                                child: _StreakCard(
+                                  icon: Icons.emoji_events,
+                                  title: 'Best Streak',
+                                  value: '${summary.bestStreak}',
+                                ),
+                              ),
+                            ],
+                          ),
+                          32.verticalSpace,
                           Text(
                             AppTexts.overview,
                             style: AppTextStyle.style14Bold.copyWith(
                               color: AppColors.forthColor,
                             ),
                           ),
-                          8.verticalSpace,
                           _OverviewGrid(summary: summary),
+                          12.verticalSpace,
+                          _InsightsCard(
+                            summary: summary,
+                          ),
                           12.verticalSpace,
                           TabBar(
                             controller: _tabController,
@@ -232,8 +259,7 @@ class _OverviewGrid extends StatelessWidget {
           ),
           _StatCard(
             label: AppTexts.completionRate,
-            value:
-                '${(summary.todayCompletionRate * 100).round()}${AppTexts.percent}',
+            value: '${summary.todayCompleted * 100}${AppTexts.percent}',
             icon: Icons.trending_up,
           ),
           _StatCard(
@@ -684,6 +710,176 @@ class _ListStatTile extends StatelessWidget {
             style: AppTextStyle.style9W300.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.primaryColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProductivityCard extends StatelessWidget {
+  const _ProductivityCard({
+    required this.summary,
+  });
+
+  final TaskAnalyticsSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24.r),
+        gradient: const LinearGradient(
+          colors: [
+            AppColors.primaryColor,
+            AppColors.thirdColor,
+          ],
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Productivity Score',
+            style: AppTextStyle.style14Bold.copyWith(
+              color: Colors.white,
+            ),
+          ),
+
+          20.verticalSpace,
+
+          SizedBox(
+            width: 140.w,
+            height: 100.w,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                CircularProgressIndicator(
+                  value: summary.productivityScore / 100,
+                  strokeWidth: 12,
+                  color: Colors.white,
+                ),
+
+                Text(
+                  '${summary.productivityScore.round()}%',
+                  style: AppTextStyle.style16Bold.copyWith(
+                    color: Colors.white,
+                    fontSize: 28.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StreakCard extends StatelessWidget {
+  const _StreakCard({
+    required this.icon,
+    required this.title,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18.r),
+        boxShadow: const [
+          BoxShadow(
+            blurRadius: 8,
+            color: Colors.black12,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            color: AppColors.primaryColor,
+          ),
+
+          8.verticalSpace,
+
+          Text(
+            value,
+            style: AppTextStyle.style16Bold,
+          ),
+
+          Text(
+            title,
+            style: AppTextStyle.style9W300,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InsightsCard extends StatelessWidget {
+  const _InsightsCard({
+    required this.summary,
+  });
+
+  final TaskAnalyticsSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18.r),
+      ),
+      child: Column(
+        spacing: 8.h,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Insights',
+            style: AppTextStyle.style14Bold,
+          ),
+
+          4.verticalSpace,
+
+          Text(
+            '🔥 Completed ${summary.completedTasks} tasks',
+            style: AppTextStyle.style12W700.copyWith(
+              color: AppColors.forthColor,
+            ),
+          ),
+
+          Text(
+            '⭐ ${summary.importantTasks} important tasks',
+            style: AppTextStyle.style12W700.copyWith(
+              color: AppColors.forthColor,
+            ),
+          ),
+
+          Text(
+            '⚠️ ${summary.overdueCount} overdue tasks',
+            style: AppTextStyle.style12W700.copyWith(
+              color: summary.overdueCount > 0
+                  ? Colors.orange
+                  : AppColors.forthColor,
+            ),
+          ),
+
+          Text(
+            '🔁 ${summary.recurringTasks} recurring tasks',
+            style: AppTextStyle.style12W700.copyWith(
+              color: AppColors.forthColor,
             ),
           ),
         ],

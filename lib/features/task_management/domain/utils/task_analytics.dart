@@ -65,6 +65,10 @@ class TaskAnalyticsSummary {
     required this.todayScheduled,
     required this.todayCompleted,
     required this.overdueCount,
+
+    required this.currentStreak,
+    required this.bestStreak,
+    required this.productivityScore,
   });
 
   final int totalTasks;
@@ -75,11 +79,9 @@ class TaskAnalyticsSummary {
   final int todayCompleted;
   final int overdueCount;
 
-  double get overallCompletionRate =>
-      totalTasks > 0 ? completedTasks / totalTasks : 0;
-
-  double get todayCompletionRate =>
-      todayScheduled == 0 ? 0.0 : todayCompleted / todayScheduled;
+  final int currentStreak;
+  final int bestStreak;
+  final double productivityScore;
 }
 
 /// Tasks scheduled for [day] (My Day rules + due date on that day).
@@ -204,7 +206,75 @@ TaskAnalyticsSummary computeSummary(List<TaskEntity> tasks) {
     todayScheduled: todayScheduled,
     todayCompleted: todayCompleted,
     overdueCount: overdueCount,
+
+    currentStreak: calculateCurrentStreak(tasks),
+    bestStreak: calculateBestStreak(tasks),
+    productivityScore: calculateProductivityScore(tasks),
   );
+}
+
+int calculateCurrentStreak(List<TaskEntity> tasks) {
+  final completedDates = tasks
+      .where((t) => t.completedAt != null)
+      .map((t) => calendarDate(t.completedAt!))
+      .toSet();
+
+  var streak = 0;
+  var day = calendarDate(DateTime.now());
+
+  while (completedDates.contains(day)) {
+    streak++;
+    day = day.subtract(const Duration(days: 1));
+  }
+
+  return streak;
+}
+
+int calculateBestStreak(List<TaskEntity> tasks) {
+  final dates =
+      tasks
+          .where((t) => t.completedAt != null)
+          .map((t) => calendarDate(t.completedAt!))
+          .toSet()
+          .toList()
+        ..sort();
+
+  if (dates.isEmpty) return 0;
+
+  var best = 1;
+  var current = 1;
+
+  for (var i = 1; i < dates.length; i++) {
+    final diff = dates[i].difference(dates[i - 1]).inDays;
+
+    if (diff == 1) {
+      current++;
+      if (current > best) best = current;
+    } else {
+      current = 1;
+    }
+  }
+
+  return best;
+}
+
+double calculateProductivityScore(List<TaskEntity> tasks) {
+  if (tasks.isEmpty) return 0;
+
+  final completed = tasks.where((e) => e.isCompleted).length;
+
+  final overdue = tasks.where((e) {
+    if (e.isCompleted) return false;
+    if (e.dueDate == null) return false;
+
+    return e.dueDate!.isBefore(DateTime.now());
+  }).length;
+
+  final completionWeight = (completed / tasks.length) * 80;
+
+  final overduePenalty = (overdue / tasks.length) * 20;
+
+  return (completionWeight - overduePenalty).clamp(0, 100);
 }
 
 List<ListTaskStats> computeListStats(

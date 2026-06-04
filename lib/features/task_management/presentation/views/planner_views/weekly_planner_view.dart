@@ -115,7 +115,7 @@ class _WeeklyPlannerViewState extends State<WeeklyPlannerView> {
 
   Widget _buildUnscheduledSection(List<TaskEntity> tasks) {
     return ExpansionTile(
-      initiallyExpanded: tasks.isNotEmpty,
+      initiallyExpanded: false,
       title: Text(
         '${AppTexts.unscheduledTasks} (${tasks.length})',
         style: AppTextStyle.style14Bold.copyWith(
