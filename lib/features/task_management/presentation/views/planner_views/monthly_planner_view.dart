@@ -6,6 +6,7 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
+import 'package:s/features/task_management/presentation/views/widgets/add_task_bottom_sheet.dart';
 import 'package:s/features/task_management/presentation/views/widgets/task_item_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -119,6 +120,34 @@ class _MonthlyPlannerViewState extends State<MonthlyPlannerView> {
                       color: AppColors.primaryColor,
                     ),
                   ),
+                  SizedBox(width: 12.w),
+
+                  InkWell(
+                    borderRadius: BorderRadius.circular(8.r),
+                    onTap: () async {
+                      await showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => AddTaskBottomSheet(
+                          isMyDayView: false,
+                          initialDueDate: _selectedDay ?? _focusedDay,
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(4.w),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor.withAlpha(30),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Icon(
+                        Icons.add,
+                        size: 20.r,
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -133,13 +162,22 @@ class _MonthlyPlannerViewState extends State<MonthlyPlannerView> {
                         ),
                       ),
                     )
-                  : ListView.builder(
+                  : ReorderableListView.builder(
                       padding: EdgeInsets.symmetric(horizontal: 8.w),
                       itemCount: selectedDayTasks.length,
+                      onReorder: (oldIndex, newIndex) async {
+                        await context.read<TasksCubit>().reorderTasks(
+                          oldIndex,
+                          newIndex,
+                          selectedDayTasks,
+                        );
+                      },
                       itemBuilder: (context, index) {
+                        final task = selectedDayTasks[index];
                         return TaskItemWidget(
-                          key: ValueKey(selectedDayTasks[index].id),
-                          task: selectedDayTasks[index],
+                          key: ValueKey('${task.id}_calendar_item'),
+                          task: task,
+                          inCalendarView: true,
                         );
                       },
                     ),

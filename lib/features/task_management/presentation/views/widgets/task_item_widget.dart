@@ -10,6 +10,7 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/shared_widgets/directional_text.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
+import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 import 'package:s/features/task_management/domain/utils/repeat_format_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
@@ -18,11 +19,13 @@ class TaskItemWidget extends StatefulWidget {
   const TaskItemWidget({
     required this.task,
     this.showCompletedDate = false,
+    this.inCalendarView = false, // 1. أضف هذا السطر
     super.key,
   });
 
   final TaskEntity task;
   final bool showCompletedDate;
+  final bool inCalendarView; // 2. أضف هذا السطر
 
   @override
   State<TaskItemWidget> createState() => _TaskItemWidgetState();
@@ -30,6 +33,7 @@ class TaskItemWidget extends StatefulWidget {
 
 class _TaskItemWidgetState extends State<TaskItemWidget> {
   bool _isHidden = false;
+
   void _openDetail(BuildContext context) {
     unawaited(context.push('/task/${widget.task.id}'));
   }
@@ -63,26 +67,39 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
 
     final currentState = context.read<TasksCubit>().state;
     var isMyDayView = false;
-    if (currentState is TasksLoaded) {
+
+    if (!widget.inCalendarView && currentState is TasksLoaded) {
       isMyDayView = currentState.currentFilter == TaskFilter.myDay;
     }
+
+    final alreadyInMyDay = isTaskInMyDay(widget.task);
+
     if (_isHidden) {
       return const SizedBox.shrink();
     }
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
       child: Dismissible(
         key: ValueKey('${widget.task.id}_dismissible'),
         direction: DismissDirection.horizontal,
+
         background: Container(
-          color: isMyDayView ? AppColors.primaryColor : Colors.orangeAccent,
+          color: isMyDayView
+              ? AppColors.primaryColor
+              : (alreadyInMyDay ? Colors.redAccent : Colors.orangeAccent),
           alignment: Alignment.centerLeft,
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Icon(
-            isMyDayView ? Icons.next_plan_outlined : Icons.wb_sunny_outlined,
+            isMyDayView
+                ? Icons.next_plan_outlined
+                : (alreadyInMyDay
+                      ? Icons.remove_circle_outline
+                      : Icons.wb_sunny_outlined),
             color: Colors.white,
           ),
         ),
+
         secondaryBackground: Container(
           color: Colors.redAccent,
           alignment: Alignment.centerRight,
@@ -92,6 +109,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
             color: Colors.white,
           ),
         ),
+
         confirmDismiss: (direction) async {
           final cubit = context.read<TasksCubit>();
 
@@ -99,18 +117,26 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
             if (isMyDayView) {
               return true;
             } else {
-              await cubit.addToMyDay(widget.task);
+              if (alreadyInMyDay) {
+                await cubit.removeFromMyDay(widget.task);
+              } else {
+                await cubit.addToMyDay(widget.task);
+              }
 
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      AppTexts.taskAddedToMyDay,
+                      alreadyInMyDay
+                          ? AppTexts.unpinFromNotification
+                          : AppTexts.taskAddedToMyDay,
                       style: AppTextStyle.style9W300.copyWith(
                         color: Colors.white,
                       ),
                     ),
-                    backgroundColor: Colors.orangeAccent,
+                    backgroundColor: alreadyInMyDay
+                        ? Colors.redAccent
+                        : Colors.orangeAccent,
                     duration: const Duration(seconds: 1),
                   ),
                 );
@@ -121,6 +147,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
             return true;
           }
         },
+
         onDismissed: (direction) {
           setState(() {
             _isHidden = true;
@@ -129,13 +156,14 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
           final cubit = context.read<TasksCubit>();
 
           if (direction == DismissDirection.startToEnd) {
-            unawaited(cubit.postponeToTomorrow(widget.task));
+            unawaited(cubit.removeFromMyDay(widget.task));
           } else {
             if (isMyDayView) {
               unawaited(cubit.removeFromMyDay(widget.task));
             } else {
               final snapshot = widget.task;
               unawaited(cubit.deleteTask(widget.task.id));
+
               if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -193,7 +221,6 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                                                 : AppColors.secondaryColor),
                                     ),
                                     4.horizontalSpace,
-
                                     SizedBox(
                                       width: 100.w,
                                       child: DirectionalText(
@@ -211,7 +238,6 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                                     ),
                                   ],
                                 ),
-
                                 8.horizontalSpace,
                                 if (showRepeat)
                                   Padding(
@@ -242,7 +268,6 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                                   ),
                               ],
                             ),
-
                           if (stepsText.isNotEmpty) ...[
                             2.verticalSpace,
                             Row(

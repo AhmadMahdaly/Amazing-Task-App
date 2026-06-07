@@ -1,14 +1,8 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:s/core/di.dart';
 import 'package:s/features/analytics/presentation/views/analytics_screen.dart';
 import 'package:s/features/challenges/presentation/screens/add_challenge_screen.dart';
 import 'package:s/features/challenges/presentation/screens/analysis_screen.dart';
 import 'package:s/features/challenges/presentation/screens/challenges_screen.dart';
-import 'package:s/features/focus_mode/presentation/controllers/cubit/focus_cubit.dart';
-import 'package:s/features/focus_mode/presentation/views/focus_history_screen.dart';
-import 'package:s/features/focus_mode/presentation/views/focus_screen.dart';
-import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/planner_views/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
@@ -68,25 +62,7 @@ void initRouter() {
         name: AppRoutes.challengeAnalysisScreen,
         builder: (context, state) => const ChallengeAnalysisScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.focusScreen,
-        name: AppRoutes.focusScreen,
-        builder: (context, state) {
-          final task = state.extra! as TaskEntity;
-          return BlocProvider(
-            create: (context) => getIt<FocusCubit>(),
-            child: FocusScreen(task: task),
-          );
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.focusHistoryScreen,
-        name: AppRoutes.focusHistoryScreen,
-        builder: (context, state) => BlocProvider.value(
-          value: getIt<FocusCubit>(),
-          child: const FocusHistoryScreen(),
-        ),
-      ),
+
       // GoRoute(
       //   path: AppRoutes.loginScreen,
       //   name: AppRoutes.loginScreen,

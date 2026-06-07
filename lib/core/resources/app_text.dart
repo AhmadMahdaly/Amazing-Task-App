@@ -33,7 +33,7 @@ class AppTexts {
   static String tomorrow = 'Tomorrow';
   static String today = 'Today';
   static String dueDate = 'Due Date';
-  static String nextWeek = 'Next Week';
+  static String next = 'Next';
   static String nextSunday = 'Next Week (Sunday)';
   static String pickADate = 'Pick a date';
   static String removeDueDate = 'Remove due date';

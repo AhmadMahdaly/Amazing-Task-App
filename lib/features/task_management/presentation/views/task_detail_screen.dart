@@ -9,7 +9,6 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
-import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/core/shared_widgets/custom_primary_button.dart';
 import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
@@ -564,17 +563,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             title: Text(AppTexts.taskDetails, style: AppTextStyle.style16W300),
             actions: [
               IconButton(
-                icon: const Icon(
-                  Icons.timer_outlined,
-                ),
-                onPressed: () async {
-                  await context.push(
-                    AppRoutes.focusScreen,
-                    extra: task,
-                  );
-                },
-              ),
-              IconButton(
                 icon: const Icon(Icons.delete_outline),
                 onPressed: () => _confirmDelete(task),
               ),
@@ -644,7 +632,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     if (task.dueDate != null && !task.isCompleted) ...[
                       4.verticalSpace,
                       Text(
-                        '${AppTexts.nextSunday}: ${formatTaskDate(task.dueDate)}',
+                        '${AppTexts.next}: ${formatTaskDate(task.dueDate)}',
                         style: AppTextStyle.style12W300.copyWith(
                           color: AppColors.secondaryColor,
                         ),
@@ -654,20 +642,48 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 ),
               ),
               16.verticalSpace,
-              Text(AppTexts.steps, style: AppTextStyle.style16Bold),
-              if (task.hasSteps)
-                Padding(
-                  padding: EdgeInsets.only(top: 4.h, bottom: 8.h),
-                  child: Text(
-                    '${task.completedSteps}/${task.totalSteps} ${AppTexts.completed}',
-                    style: AppTextStyle.style12W300.copyWith(
-                      color: AppColors.secondaryColor,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(AppTexts.steps, style: AppTextStyle.style16Bold),
+                  if (task.hasSteps)
+                    Padding(
+                      padding: EdgeInsets.only(top: 4.h, bottom: 8.h),
+                      child: Text(
+                        '${task.completedSteps}/${task.totalSteps} ${AppTexts.completed}',
+                        style: AppTextStyle.style12W300.copyWith(
+                          color: AppColors.secondaryColor,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                ],
+              ),
+
               _SectionCard(
                 child: Column(
                   children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomPrimaryTextfield(
+                            controller: _stepController,
+                            text: AppTexts.stepHint,
+                            onChanged: (_) => setState(() {}),
+                            onFieldSubmitted: (_) =>
+                                setState(() => _addStep(task)),
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        IconButton.filled(
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
+                          ),
+                          onPressed: () => _addStep(task),
+                          icon: const Icon(Icons.add, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                    8.verticalSpace,
                     if (task.steps.isEmpty)
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -834,28 +850,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           );
                         },
                       ),
-                    8.verticalSpace,
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomPrimaryTextfield(
-                            controller: _stepController,
-                            text: AppTexts.stepHint,
-                            onChanged: (_) => setState(() {}),
-                            onFieldSubmitted: (_) =>
-                                setState(() => _addStep(task)),
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
-                        IconButton.filled(
-                          style: IconButton.styleFrom(
-                            backgroundColor: AppColors.primaryColor,
-                          ),
-                          onPressed: () => _addStep(task),
-                          icon: const Icon(Icons.add, color: Colors.white),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -870,7 +864,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   children: [
                     _SettingsTile(
                       icon: Icons.calendar_today,
-                      title: AppTexts.nextSunday,
+                      title: AppTexts.next,
                       subtitle: task.dueDate != null
                           ? formatTaskDate(task.dueDate)
                           : AppTexts.noDueDate,

@@ -19,11 +19,13 @@ class AddTaskBottomSheet extends StatefulWidget {
   const AddTaskBottomSheet({
     required this.isMyDayView,
     this.currentListId,
+    this.initialDueDate,
     super.key,
   });
 
   final String? currentListId;
   final bool isMyDayView;
+  final DateTime? initialDueDate;
 
   @override
   State<AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
@@ -35,6 +37,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   DateTime? _selectedDueDate;
   String? _selectedRepeatMode;
   bool _pinToNotification = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDueDate = widget.initialDueDate;
+  }
 
   @override
   void dispose() {
