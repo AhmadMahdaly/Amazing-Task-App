@@ -15,8 +15,9 @@ class DayTaskStats {
   final int completedCount;
   final int createdCount;
 
-  double get completionRate =>
-      scheduledCount > 0 ? completedCount / scheduledCount : 0;
+  double get completionRate => scheduledCount > 0
+      ? (completedCount / scheduledCount).clamp(0.0, 1.0)
+      : 0.0;
 }
 
 class MonthTaskStats {
@@ -36,8 +37,9 @@ class MonthTaskStats {
   final int createdCount;
   final int pendingCount;
 
-  double get completionRate =>
-      scheduledCount > 0 ? completedCount / scheduledCount : 0;
+  double get completionRate => scheduledCount > 0
+      ? (completedCount / scheduledCount).clamp(0.0, 1.0)
+      : 0.0;
 }
 
 class ListTaskStats {
@@ -53,7 +55,8 @@ class ListTaskStats {
   final int totalTasks;
   final int completedTasks;
 
-  double get completionRate => totalTasks > 0 ? completedTasks / totalTasks : 0;
+  double get completionRate =>
+      totalTasks > 0 ? (completedTasks / totalTasks).clamp(0.0, 1.0) : 0.0;
 }
 
 class TaskAnalyticsSummary {
@@ -84,12 +87,36 @@ class TaskAnalyticsSummary {
   final double productivityScore;
 }
 
-/// Tasks scheduled for [day] (My Day rules + due date on that day).
+int calculateCurrentStreak(List<TaskEntity> tasks) {
+  final completedDates = tasks
+      .where((t) => t.completedAt != null)
+      .map((t) => calendarDate(t.completedAt!))
+      .toSet();
+
+  var streak = 0;
+  var day = calendarDate(DateTime.now());
+
+  if (!completedDates.contains(day)) {
+    final yesterday = day.subtract(const Duration(days: 1));
+    if (completedDates.contains(yesterday)) {
+      day = yesterday;
+    } else {
+      return 0;
+    }
+  }
+
+  while (completedDates.contains(day)) {
+    streak++;
+    day = day.subtract(const Duration(days: 1));
+  }
+
+  return streak;
+}
+
 int countScheduledOnDay(List<TaskEntity> tasks, DateTime day) {
   return tasks.where((t) => isTaskInMyDay(t, referenceDate: day)).length;
 }
 
-/// Tasks marked completed on the given day via completedAt.
 int countCompletedOnDay(List<TaskEntity> tasks, DateTime day) {
   return tasks
       .where(
@@ -98,7 +125,6 @@ int countCompletedOnDay(List<TaskEntity> tasks, DateTime day) {
       .length;
 }
 
-/// Tasks created on [day] (from task id timestamp).
 int countCreatedOnDay(List<TaskEntity> tasks, DateTime day) {
   return tasks.where((t) {
     final created = taskCreatedAt(t);
@@ -203,7 +229,7 @@ TaskAnalyticsSummary computeSummary(List<TaskEntity> tasks) {
     completedTasks: tasks.where((t) => t.isCompleted).length,
     importantTasks: tasks.where((t) => t.isImportant).length,
     recurringTasks: tasks.where((t) => t.repeatMode != null).length,
-    todayScheduled: todayScheduled,
+    todayScheduled: todayScheduled == 0 ? 0 : todayScheduled,
     todayCompleted: todayCompleted,
     overdueCount: overdueCount,
 
@@ -211,23 +237,6 @@ TaskAnalyticsSummary computeSummary(List<TaskEntity> tasks) {
     bestStreak: calculateBestStreak(tasks),
     productivityScore: calculateProductivityScore(tasks),
   );
-}
-
-int calculateCurrentStreak(List<TaskEntity> tasks) {
-  final completedDates = tasks
-      .where((t) => t.completedAt != null)
-      .map((t) => calendarDate(t.completedAt!))
-      .toSet();
-
-  var streak = 0;
-  var day = calendarDate(DateTime.now());
-
-  while (completedDates.contains(day)) {
-    streak++;
-    day = day.subtract(const Duration(days: 1));
-  }
-
-  return streak;
 }
 
 int calculateBestStreak(List<TaskEntity> tasks) {
@@ -262,19 +271,15 @@ double calculateProductivityScore(List<TaskEntity> tasks) {
   if (tasks.isEmpty) return 0;
 
   final completed = tasks.where((e) => e.isCompleted).length;
-
   final overdue = tasks.where((e) {
-    if (e.isCompleted) return false;
-    if (e.dueDate == null) return false;
-
+    if (e.isCompleted || e.dueDate == null) return false;
     return e.dueDate!.isBefore(DateTime.now());
   }).length;
 
-  final completionWeight = (completed / tasks.length) * 80;
+  final baseScore = (completed / tasks.length) * 100.0;
+  final overduePenalty = (overdue / tasks.length) * 15.0;
 
-  final overduePenalty = (overdue / tasks.length) * 20;
-
-  return (completionWeight - overduePenalty).clamp(0, 100);
+  return (baseScore - overduePenalty).clamp(0.0, 100.0);
 }
 
 List<ListTaskStats> computeListStats(
