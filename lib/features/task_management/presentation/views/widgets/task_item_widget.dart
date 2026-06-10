@@ -19,13 +19,13 @@ class TaskItemWidget extends StatefulWidget {
   const TaskItemWidget({
     required this.task,
     this.showCompletedDate = false,
-    this.inCalendarView = false, // 1. أضف هذا السطر
+    this.inCalendarView = false,
     super.key,
   });
 
   final TaskEntity task;
   final bool showCompletedDate;
-  final bool inCalendarView; // 2. أضف هذا السطر
+  final bool inCalendarView;
 
   @override
   State<TaskItemWidget> createState() => _TaskItemWidgetState();
@@ -156,7 +156,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
           final cubit = context.read<TasksCubit>();
 
           if (direction == DismissDirection.startToEnd) {
-            unawaited(cubit.removeFromMyDay(widget.task));
+            unawaited(cubit.postponeToTomorrow(widget.task));
           } else {
             if (isMyDayView) {
               unawaited(cubit.removeFromMyDay(widget.task));

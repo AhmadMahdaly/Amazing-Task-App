@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_colors.dart';
@@ -241,11 +243,15 @@ class MainTasksScreen extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
               itemCount: activeTasks.length,
-              onReorder: (oldIndex, newIndex) async {
-                await context.read<TasksCubit>().reorderTasks(
-                  oldIndex,
-                  newIndex,
-                  activeTasks,
+              onReorder: (oldIndex, newIndex) {
+                unawaited(
+                  context.read<TasksCubit>().reorderTasks(
+                    oldIndex,
+                    newIndex,
+                    List.from(
+                      activeTasks,
+                    ),
+                  ),
                 );
               },
               itemBuilder: (context, index) {

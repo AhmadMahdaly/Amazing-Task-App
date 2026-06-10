@@ -279,34 +279,45 @@ class TasksCubit extends Cubit<TasksState> {
   Future<void> reorderTasks(
     int oldIndex,
     int newIndex,
-    List<TaskEntity> currentTasks,
+    List<TaskEntity> activeTasksList,
   ) async {
     if (newIndex > oldIndex) {
       newIndex -= 1;
     }
 
-    final task = currentTasks.removeAt(oldIndex);
-    currentTasks.insert(newIndex, task);
+    final task = activeTasksList.removeAt(oldIndex);
+    activeTasksList.insert(newIndex, task);
 
-    emit(
-      TasksLoaded(
-        tasks: currentTasks,
-        title: _currentTitle,
-        currentFilter: _currentFilter,
-        currentListId: _currentListId,
-        allTasks: (state as TasksLoaded).allTasks,
-      ),
-    );
+    if (state is TasksLoaded) {
+      final currentState = state as TasksLoaded;
 
-    final futures = <Future>[];
-    for (var i = 0; i < currentTasks.length; i++) {
-      futures.add(
-        tasksRepository.updateTask(
-          currentTasks[i].copyWith(position: i),
+      final completedTasks = currentState.tasks
+          .where((t) => t.isCompleted)
+          .toList();
+      final combinedTasks = [...activeTasksList, ...completedTasks];
+
+      emit(
+        TasksLoaded(
+          tasks: combinedTasks,
+          title: currentState.title,
+          currentFilter: currentState.currentFilter,
+          currentListId: currentState.currentListId,
+          allTasks: currentState.allTasks,
         ),
       );
     }
-    await Future.wait(futures);
+
+    for (var i = 0; i < activeTasksList.length; i++) {
+      await tasksRepository.updateTask(
+        activeTasksList[i].copyWith(position: i),
+      );
+    }
+
+    await loadTasks(
+      filter: _currentFilter,
+      title: _currentTitle,
+      customListId: _currentListId,
+    );
   }
 
   Future<void> addTask(TaskEntity task) async {
