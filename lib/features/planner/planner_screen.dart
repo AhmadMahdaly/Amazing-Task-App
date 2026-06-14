@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
-import 'package:s/core/responsive/responsive_config.dart';
-import 'package:s/features/task_management/presentation/views/planner_views/monthly_planner_view.dart';
+import 'package:s/features/planner/monthly_planner_view.dart';
 
 class PlannerScreen extends StatelessWidget {
   const PlannerScreen({super.key});
@@ -13,9 +13,11 @@ class PlannerScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
-        toolbarHeight: 50.h,
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: AppColors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () => context.pop(),
+        ),
+
         title: Text(AppTexts.planning, style: AppTextStyle.style16Bold),
         centerTitle: true,
       ),

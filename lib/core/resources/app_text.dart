@@ -221,7 +221,44 @@ class AppTexts {
   static String separateStep = 'Separate Step';
   static String planning = 'Planning';
   static String unscheduledTasks = 'Unscheduled Tasks';
-  // static String dragAndDropTasksHere = 'Drag and drop tasks here';
+  static String invalidDateCalculation = 'Invalid date calculation';
   static String noTasksOnThisDay = 'There are no tasks on this day';
   static String selectedDayTasks = 'Tasks for the Selected Day';
+  static String done = 'Done';
+  static String remaining = 'Remaining';
+  static String calculateAndStart = 'Calculate And Start';
+  static String pleaseSelectDates = 'Please select dates';
+  static String invalidNumber = 'Invalid number';
+  static String requiredField = 'Required Field';
+  static String doubtPeriodMonths = 'Doubt period months';
+  static String commitmentDate = 'Commitment Date';
+  static String birthDate = 'Birth Date';
+  static String setupTitle = 'Setup missed prayers';
+  static String trackingTitle = 'Tracking missed prayers';
+  static String isha = 'Isha';
+  static String maghrib = 'Maghrib';
+  static String asr = 'Asr';
+  static String dhuhr = 'Dhuhr';
+  static String fajr = 'Fajr';
+  static String overallProgressTitle = 'Overall progress';
+  static String remainingRatio = 'Remaining ratio';
+  static String completedRatio = 'Completed ratio';
+  static String setupMissedPrayersTitle = 'How is the calculation done?';
+  static String setupMissedPrayersSubject =
+      '• The calculation of missed prayers starts after 15 Hijri years from the date of birth (approximately 5,315 days), which is considered the age of religious accountability.\n'
+      '• Months during which you believe you were committed to praying are deducted to reduce the burden.\n'
+      '• Note: The calculation of uncertain months assumes each month is 30 days as an initial estimate and does not account for leap years or shorter months.';
+  static String editSettings = 'Edit Settings';
+  static String editSettingsDescription =
+      'Updating the dates here will automatically recalculate the total remaining prayers while preserving your completed progress.';
+  static String settingsUpdatedSuccessfully = 'Settings updated successfully';
+  static String negativeValueNotAllowed = 'Negative values are not allowed';
+
+  static String doubtPeriodExceedsAbandonmentPeriod =
+      'The doubt period exceeds the abandonment period! Maximum allowed:';
+
+  static String month = 'Month';
+
+  static String commitmentDateBeforeAccountabilityAge =
+      'The commitment date is before or equal to the age of accountability!';
 }

@@ -8,6 +8,10 @@ import 'package:s/features/challenges/data/datasource/challenges_local_datasourc
 import 'package:s/features/challenges/data/repositories/challenge_repository_impl.dart';
 import 'package:s/features/challenges/domain/repositories/challenge_repository.dart';
 import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
+import 'package:s/features/missed_prayers/data/datasource/missed_prayers_local_data_source.dart';
+import 'package:s/features/missed_prayers/data/repo/missed_prayers_repository_impl.dart';
+import 'package:s/features/missed_prayers/domain/repo/missed_prayers_repository.dart';
+import 'package:s/features/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
 import 'package:s/features/task_list/data/datasource/lists_local_data_source.dart';
 import 'package:s/features/task_list/data/repo/lists_repository_impl.dart';
 import 'package:s/features/task_list/domain/repo/lists_repository.dart';
@@ -52,5 +56,15 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<ChallengeRepository>(
       () => ChallengeRepositoryImpl(getIt()),
     )
-    ..registerFactory<ChallengeCubit>(() => ChallengeCubit(getIt()));
+    ..registerFactory<ChallengeCubit>(() => ChallengeCubit(getIt()))
+    ///
+    ..registerLazySingleton<MissedPrayersLocalDataSource>(
+      MissedPrayersLocalDataSource.new,
+    )
+    ..registerLazySingleton<MissedPrayersRepository>(
+      () => MissedPrayersRepositoryImpl(getIt()),
+    )
+    ..registerLazySingleton<MissedPrayersCubit>(
+      () => MissedPrayersCubit(getIt()),
+    );
 }

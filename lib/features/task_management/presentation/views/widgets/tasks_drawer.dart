@@ -290,21 +290,31 @@ class TasksDrawer extends StatelessWidget {
               children: [
                 8.horizontalSpace,
                 IconButton(
+                  tooltip: 'Change wallpaper',
                   icon: const Icon(Icons.wallpaper_outlined),
                   onPressed: () {
                     unawaited(showWallpaperPickerSheet(context));
                   },
                 ),
                 IconButton(
+                  tooltip: 'Add Challenge',
                   icon: const Icon(Icons.add_task_rounded),
                   onPressed: () async {
                     await context.pushNamed(AppRoutes.challengesScreen);
                   },
                 ),
                 IconButton(
+                  tooltip: 'Open a planner',
                   icon: const Icon(Icons.calendar_month_outlined),
                   onPressed: () async {
                     await context.pushNamed(AppRoutes.plannerView);
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Track missed prayers',
+                  icon: const Icon(Icons.event_available_outlined),
+                  onPressed: () async {
+                    await context.pushNamed(AppRoutes.missedPrayersScreen);
                   },
                 ),
               ],

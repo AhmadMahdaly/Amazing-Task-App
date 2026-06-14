@@ -14,6 +14,7 @@ import 'package:s/features/task_management/presentation/controllers/cubit/tasks_
 import 'package:s/features/task_management/presentation/views/suggestions_bottom_sheet.dart';
 import 'package:s/features/task_management/presentation/views/widgets/add_task_bottom_sheet.dart';
 import 'package:s/features/task_management/presentation/views/widgets/completed_tasks_section.dart';
+import 'package:s/features/task_management/presentation/views/widgets/empty_tasks_state.dart';
 import 'package:s/features/task_management/presentation/views/widgets/task_item_widget.dart';
 import 'package:s/features/task_management/presentation/views/widgets/tasks_drawer.dart';
 
@@ -213,17 +214,7 @@ class MainTasksScreen extends StatelessWidget {
       );
     } else if (state is TasksLoaded) {
       if (currentTasks.isEmpty) {
-        return SizedBox(
-          height: 450.h,
-          child: Center(
-            child: Text(
-              AppTexts.noTasksInThisList,
-              style: AppTextStyle.style12W600.copyWith(
-                color: AppColors.white,
-              ),
-            ),
-          ),
-        );
+        return SizedBox(height: 450.h, child: const EmptyTasksState());
       }
 
       final isCompletedFilter = state.currentFilter == TaskFilter.completed;

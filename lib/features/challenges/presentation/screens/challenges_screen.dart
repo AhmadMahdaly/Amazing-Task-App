@@ -75,7 +75,7 @@ class ChallengesScreen extends StatelessWidget {
                         ),
 
                         decoration: BoxDecoration(
-                          color: AppColors.errorColor.withAlpha(25),
+                          color: AppColors.buttonColor,
                           borderRadius: BorderRadius.circular(16.r),
                           border: Border.all(
                             color: AppColors.errorColor.withAlpha(77),
@@ -97,7 +97,7 @@ class ChallengesScreen extends StatelessWidget {
                                 Text(
                                   AppTexts.howChallengesWork,
                                   style: AppTextStyle.style18Bold.copyWith(
-                                    color: AppColors.buttonColor,
+                                    color: AppColors.primaryColor,
                                   ),
                                 ),
                               ],
@@ -108,7 +108,7 @@ class ChallengesScreen extends StatelessWidget {
                               AppTexts.challengeDescription,
                               style: AppTextStyle.style16W500.copyWith(
                                 height: 1.6,
-                                color: AppColors.buttonColor,
+                                color: AppColors.primaryColor,
                               ),
                             ),
                           ],

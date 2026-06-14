@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_text.dart';
-import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/features/analytics/presentation/views/widgets/empty_analytics_state.dart';
 import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
 import 'package:s/features/challenges/presentation/screens/widgets/level_chart_widget.dart';
 import 'package:s/features/challenges/presentation/screens/widgets/status_chart_widget.dart';
@@ -22,12 +22,7 @@ class ChallengeAnalysisScreen extends StatelessWidget {
         builder: (context, state) {
           if (state is ChallengeLoaded) {
             if (state.challenges.isEmpty) {
-              return Center(
-                child: Text(
-                  AppTexts.notEnoughDataForAnalysis,
-                  style: AppTextStyle.style12Bold,
-                ),
-              );
+              return const EmptyAnalyticsState();
             }
             return SingleChildScrollView(
               padding: EdgeInsets.all(16.r),

@@ -1,10 +1,16 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:s/core/di.dart';
 import 'package:s/features/analytics/presentation/views/analytics_screen.dart';
 import 'package:s/features/challenges/presentation/screens/add_challenge_screen.dart';
 import 'package:s/features/challenges/presentation/screens/analysis_screen.dart';
 import 'package:s/features/challenges/presentation/screens/challenges_screen.dart';
+import 'package:s/features/missed_prayers/domain/entities/missed_prayers_entity.dart';
+import 'package:s/features/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
+import 'package:s/features/missed_prayers/presentation/views/missed_prayers_wrapper_view.dart';
+import 'package:s/features/missed_prayers/presentation/views/settings_calculation_view.dart';
+import 'package:s/features/planner/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
-import 'package:s/features/task_management/presentation/views/planner_views/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
 
 import '../../core/constants.dart';
@@ -63,14 +69,26 @@ void initRouter() {
         builder: (context, state) => const ChallengeAnalysisScreen(),
       ),
 
-      // GoRoute(
-      //   path: AppRoutes.loginScreen,
-      //   name: AppRoutes.loginScreen,
-      //   builder: (context, state) => BlocProvider<AuthCubit>.value(
-      //     value: getIt<AuthCubit>(),
-      //     child: const AuthScreen(),
-      //   ),
-      // ),
+      GoRoute(
+        path: AppRoutes.missedPrayersScreen,
+        name: AppRoutes.missedPrayersScreen,
+        builder: (context, state) => BlocProvider<MissedPrayersCubit>.value(
+          value: getIt<MissedPrayersCubit>(),
+          child: const MissedPrayersWrapperView(),
+        ),
+      ),
+
+      GoRoute(
+        path: AppRoutes.settingsCalculationView,
+        name: AppRoutes.settingsCalculationView,
+        builder: (context, state) {
+          final currentData = state.extra! as MissedPrayersEntity;
+          return BlocProvider<MissedPrayersCubit>.value(
+            value: getIt<MissedPrayersCubit>(),
+            child: SettingsCalculationView(currentData: currentData),
+          );
+        },
+      ),
       // GoRoute(
       //   path: AppRoutes.errorScreen,
       //   name: AppRoutes.errorScreen,
