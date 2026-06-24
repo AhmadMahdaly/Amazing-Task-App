@@ -49,56 +49,62 @@ class MainTasksScreen extends StatelessWidget {
                       screenTitle = AppTexts.thereIsAnError;
                     }
 
-                    final mainContent = CustomScrollView(
-                      slivers: [
-                        SliverAppBar(
-                          expandedHeight: 110.h,
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          scrolledUnderElevation: 0,
-                          surfaceTintColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          floating: true,
-                          pinned: true,
-                          flexibleSpace: FlexibleSpaceBar(
-                            title:
-                                state is TasksLoaded &&
-                                    state.currentFilter == TaskFilter.myDay
-                                ? Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        screenTitle,
-                                        style: AppTextStyle.style18Bold
-                                            .copyWith(
-                                              color: AppColors.white,
-                                            ),
+                    final mainContent = RefreshIndicator(
+                      onRefresh: () async {
+                        await context.read<TasksCubit>().loadTasks();
+                      },
+                      child: CustomScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        slivers: [
+                          SliverAppBar(
+                            expandedHeight: 110.h,
+                            backgroundColor: Colors.transparent,
+                            elevation: 0,
+                            scrolledUnderElevation: 0,
+                            surfaceTintColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            floating: true,
+                            pinned: true,
+                            flexibleSpace: FlexibleSpaceBar(
+                              title:
+                                  state is TasksLoaded &&
+                                      state.currentFilter == TaskFilter.myDay
+                                  ? Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          screenTitle,
+                                          style: AppTextStyle.style18Bold
+                                              .copyWith(
+                                                color: AppColors.white,
+                                              ),
+                                        ),
+                                        Text(
+                                          formatFullDate(DateTime.now()),
+                                          style: AppTextStyle.style12W400
+                                              .copyWith(color: AppColors.white),
+                                        ),
+                                      ],
+                                    )
+                                  : Text(
+                                      screenTitle,
+                                      style: AppTextStyle.style18Bold.copyWith(
+                                        color: AppColors.white,
                                       ),
-                                      Text(
-                                        formatFullDate(DateTime.now()),
-                                        style: AppTextStyle.style12W400
-                                            .copyWith(color: AppColors.white),
-                                      ),
-                                    ],
-                                  )
-                                : Text(
-                                    screenTitle,
-                                    style: AppTextStyle.style18Bold.copyWith(
-                                      color: AppColors.white,
                                     ),
-                                  ),
+                            ),
                           ),
-                        ),
-                        SliverToBoxAdapter(
-                          child: _buildBodyContent(
-                            state,
-                            currentTasks,
-                            context,
+                          SliverToBoxAdapter(
+                            child: _buildBodyContent(
+                              state,
+                              currentTasks,
+                              context,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     );
 
                     if (isTablet) {
