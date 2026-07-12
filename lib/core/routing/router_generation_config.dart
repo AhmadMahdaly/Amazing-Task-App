@@ -9,6 +9,7 @@ import 'package:s/features/missed_prayers/domain/entities/missed_prayers_entity.
 import 'package:s/features/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
 import 'package:s/features/missed_prayers/presentation/views/missed_prayers_wrapper_view.dart';
 import 'package:s/features/missed_prayers/presentation/views/settings_calculation_view.dart';
+import 'package:s/features/day_schedule/presentation/views/day_schedule_screen.dart';
 import 'package:s/features/planner/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
@@ -51,6 +52,11 @@ void initRouter() {
         path: AppRoutes.plannerView,
         name: AppRoutes.plannerView,
         builder: (context, state) => const PlannerScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.dayScheduleScreen,
+        name: AppRoutes.dayScheduleScreen,
+        builder: (context, state) => const DayScheduleScreen(),
       ),
 
       GoRoute(

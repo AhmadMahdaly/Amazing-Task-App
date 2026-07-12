@@ -17,6 +17,7 @@ class TaskEntity {
     this.completedAt,
     this.isPinnedToNotification = false,
     this.position = 0,
+    this.scheduledHour,
   });
   final String id;
   final String title;
@@ -33,6 +34,7 @@ class TaskEntity {
   final DateTime? completedAt;
   final bool isPinnedToNotification;
   final int position;
+  final int? scheduledHour;
 
   bool get hasSteps => steps.isNotEmpty;
 
@@ -58,6 +60,8 @@ class TaskEntity {
     bool? isPinnedToNotification,
     bool clearPin = false,
     int? position,
+    int? scheduledHour,
+    bool clearScheduledHour = false,
   }) {
     return TaskEntity(
       id: id ?? this.id,
@@ -76,6 +80,9 @@ class TaskEntity {
       isPinnedToNotification:
           !clearPin && (isPinnedToNotification ?? this.isPinnedToNotification),
       position: position ?? this.position,
+      scheduledHour: clearScheduledHour
+          ? null
+          : (scheduledHour ?? this.scheduledHour),
     );
   }
 }

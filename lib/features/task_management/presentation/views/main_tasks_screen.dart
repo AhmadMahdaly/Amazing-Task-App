@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
@@ -65,6 +67,25 @@ class MainTasksScreen extends StatelessWidget {
                             shadowColor: Colors.transparent,
                             floating: true,
                             pinned: true,
+                            actions: [
+                              if (state is TasksLoaded &&
+                                  state.currentFilter == TaskFilter.myDay)
+                                IconButton(
+                                  tooltip: AppTexts.daySchedule,
+                                  icon: Icon(
+                                    Icons.view_timeline_outlined,
+                                    color: AppColors.white,
+                                    size: 24.r,
+                                  ),
+                                  onPressed: () {
+                                    unawaited(
+                                      context.pushNamed(
+                                        AppRoutes.dayScheduleScreen,
+                                      ),
+                                    );
+                                  },
+                                ),
+                            ],
                             flexibleSpace: FlexibleSpaceBar(
                               title:
                                   state is TasksLoaded &&

@@ -221,6 +221,12 @@ class AppTexts {
   static String separateStep = 'Separate Step';
   static String planning = 'Planning';
   static String unscheduledTasks = 'Unscheduled Tasks';
+  static String daySchedule = 'Day Schedule';
+  static String organizeYourDay = 'Organize your day by hour';
+  static String dragTasksToHours =
+      'Drag from the move icon to assign a task to an hour';
+  static String currentHour = 'Now';
+  static String dropHere = 'Drop here';
   static String invalidDateCalculation = 'Invalid date calculation';
   static String noTasksOnThisDay = 'There are no tasks on this day';
   static String selectedDayTasks = 'Tasks for the Selected Day';

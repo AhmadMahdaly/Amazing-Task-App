@@ -128,6 +128,25 @@ class TasksDrawer extends StatelessWidget {
             Divider(color: AppColors.white.withAlpha(77)),
 
             _buildDrawerItem(
+              icon: Icons.access_time,
+              title: AppTexts.daySchedule,
+              count: context.select<TasksCubit, String>((cubit) {
+                final state = cubit.state;
+                if (state is TasksLoaded) {
+                  final count = state.allTasks
+                      .where(isTaskInMyDay)
+                      .where((t) => !t.isCompleted)
+                      .length;
+                  return count > 0 ? '$count' : '';
+                }
+                return '';
+              }),
+              context: context,
+              onTap: () {
+                unawaited(context.pushNamed(AppRoutes.dayScheduleScreen));
+              },
+            ),
+            _buildDrawerItem(
               icon: Icons.wb_sunny_outlined,
               title: AppTexts.myDay,
               count: context.select<TasksCubit, String>((cubit) {

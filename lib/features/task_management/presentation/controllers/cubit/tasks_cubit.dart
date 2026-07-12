@@ -320,6 +320,57 @@ class TasksCubit extends Cubit<TasksState> {
     );
   }
 
+  Future<void> assignTaskToHour(TaskEntity task, int hour) async {
+    final now = DateTime.now();
+    var nextPosition = 0;
+
+    if (state is TasksLoaded) {
+      nextPosition = (state as TasksLoaded)
+          .allTasks
+          .where((t) => t.scheduledHour == hour && t.id != task.id)
+          .length;
+    }
+
+    await updateTask(
+      task.copyWith(
+        scheduledHour: hour,
+        myDayDate: task.myDayDate ?? formatMyDayDate(now),
+        position: nextPosition,
+      ),
+    );
+  }
+
+  Future<void> clearTaskHour(TaskEntity task) async {
+    await updateTask(task.copyWith(clearScheduledHour: true));
+  }
+
+  Future<void> reorderScheduleTasks({
+    required int? scheduledHour,
+    required int oldIndex,
+    required int newIndex,
+    required List<TaskEntity> tasksList,
+  }) async {
+    var adjustedNewIndex = newIndex;
+    if (adjustedNewIndex > oldIndex) {
+      adjustedNewIndex -= 1;
+    }
+
+    final task = tasksList.removeAt(oldIndex);
+    tasksList.insert(adjustedNewIndex, task);
+
+    for (var i = 0; i < tasksList.length; i++) {
+      await tasksRepository.updateTask(
+        tasksList[i].copyWith(position: i),
+      );
+    }
+
+    await loadTasks(
+      filter: _currentFilter,
+      title: _currentTitle,
+      customListId: _currentListId,
+    );
+  }
+
   Future<void> addTask(TaskEntity task) async {
     try {
       await tasksRepository.addTask(task);

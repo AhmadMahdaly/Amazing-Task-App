@@ -18,6 +18,7 @@ class TaskModel extends TaskEntity {
     super.completedAt,
     super.isPinnedToNotification,
     super.position,
+    super.scheduledHour,
   });
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
@@ -57,6 +58,7 @@ class TaskModel extends TaskEntity {
       isPinnedToNotification:
           json['isPinnedToNotification'] as bool? ?? false,
       position: json['position'] as int? ?? 0,
+      scheduledHour: json['scheduledHour'] as int?,
     );
   }
 
@@ -77,6 +79,7 @@ class TaskModel extends TaskEntity {
       completedAt: entity.completedAt,
       isPinnedToNotification: entity.isPinnedToNotification,
       position: entity.position,
+      scheduledHour: entity.scheduledHour,
     );
   }
 
@@ -105,6 +108,7 @@ class TaskModel extends TaskEntity {
       'completedAt': completedAt?.toIso8601String(),
       'isPinnedToNotification': isPinnedToNotification,
       'position': position,
+      'scheduledHour': scheduledHour,
     };
   }
 }

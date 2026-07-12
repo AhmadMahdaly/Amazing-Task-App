@@ -7,6 +7,7 @@ class AppRoutes {
   static const String addChallengeScreen = '/addChallengeScreen';
   static const String challengeAnalysisScreen = '/challengeAnalysisScreen';
   static const String plannerView = '/plannerView';
+  static const String dayScheduleScreen = '/dayScheduleScreen';
   static const String settingsCalculationView = '/settingsCalculationView';
   static const String missedPrayersScreen = '/missedPrayersScreen';
 }
