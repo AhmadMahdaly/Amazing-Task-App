@@ -30,87 +30,183 @@ class ScheduleTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: task.isImportant
-          ? AppColors.primaryColor.withAlpha(18)
-          : AppColors.white,
-      elevation: 1,
-      borderRadius: BorderRadius.circular(8.r),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 8.w,
-          vertical: compact ? 4.h : 6.h,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(
-            color: task.isImportant
-                ? AppColors.primaryColor.withAlpha(80)
-                : AppColors.secondaryColor.withAlpha(30),
-          ),
-        ),
-        child: Row(
-          children: [
-            InkWell(
-              onTap: () async {
-                await context.read<TasksCubit>().toggleTaskCompletion(task);
-                await playSound();
-              },
-              child: Icon(
-                task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
-                color: task.isCompleted
-                    ? AppColors.primaryColor
-                    : AppColors.secondaryColor,
-                size: compact ? 18.r : 22.r,
-              ),
-            ),
-            8.horizontalSpace,
-            Expanded(child: _buildCardBody(compact: compact)),
-            if (enableScheduleDrag)
-              _ScheduleDragHandle(
-                task: task,
-                compact: compact,
-                onDragStarted: onDragStarted,
-                onDragEnded: onDragEnded,
-              ),
-            if (enableReorder) ...[
-              4.horizontalSpace,
-              ReorderableDragStartListener(
-                index: index,
-                child: Icon(
-                  Icons.drag_handle,
-                  size: compact ? 18.r : 22.r,
-                  color: AppColors.secondaryColor,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
 
-  Widget _buildCardBody({required bool compact}) {
-    return Row(
-      children: [
-        Expanded(
-          child: DirectionalText(
-            task.title,
-            maxLines: compact ? 1 : 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyle.style12W300.copyWith(
-              fontSize: compact ? 10.sp : 11.sp,
-              color: AppColors.forthColor,
+      decoration: BoxDecoration(
+        color: Colors.white,
+
+        borderRadius: BorderRadius.circular(18),
+
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: .05),
+          ),
+        ],
+      ),
+
+      child: Row(
+        children: [
+          /// اللون الجانبي
+          Container(
+            width: 6,
+            height: compact ? 60 : 78,
+
+            decoration: BoxDecoration(
+              color: task.isImportant ? Colors.orange : AppColors.primaryColor,
+
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(18),
+                bottomLeft: Radius.circular(18),
+              ),
             ),
           ),
-        ),
-        if (task.isImportant)
-          Icon(
-            Icons.star,
-            size: 14.r,
-            color: AppColors.primaryColor,
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      await context.read<TasksCubit>().toggleTaskCompletion(
+                        task,
+                      );
+
+                      await playSound();
+                    },
+
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+
+                      width: 28,
+                      height: 28,
+
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+
+                        color: task.isCompleted
+                            ? AppColors.primaryColor
+                            : Colors.transparent,
+
+                        border: Border.all(
+                          color: task.isCompleted
+                              ? AppColors.primaryColor
+                              : Colors.grey,
+                          width: 2,
+                        ),
+                      ),
+
+                      child: task.isCompleted
+                          ? const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 18,
+                            )
+                          : null,
+                    ),
+                  ),
+
+                  const SizedBox(width: 14),
+
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      children: [
+                        DirectionalText(
+                          task.title,
+
+                          maxLines: compact ? 1 : 2,
+
+                          overflow: TextOverflow.ellipsis,
+
+                          style: AppTextStyle.style12Bold.copyWith(
+                            fontSize: compact ? 12 : 14,
+
+                            decoration: task.isCompleted
+                                ? TextDecoration.lineThrough
+                                : null,
+
+                            color: task.isCompleted
+                                ? Colors.grey
+                                : AppColors.forthColor,
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        Row(
+                          children: [
+                            if (task.isImportant)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.withValues(alpha: .15),
+
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+
+                                child: const Text(
+                                  'Important',
+
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+
+                            const Spacer(),
+
+                            if (enableScheduleDrag)
+                              _ScheduleDragHandle(
+                                task: task,
+                                compact: compact,
+                                onDragStarted: onDragStarted,
+                                onDragEnded: onDragEnded,
+                              ),
+
+                            if (enableReorder)
+                              ReorderableDragStartListener(
+                                index: index,
+
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+
+                                    shape: BoxShape.circle,
+                                  ),
+
+                                  child: const Icon(
+                                    Icons.drag_indicator,
+                                    size: 18,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -130,8 +226,11 @@ class _ScheduleDragHandle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Draggable<TaskEntity>(
+    // تم التغيير هنا من Draggable إلى LongPressDraggable
+    return LongPressDraggable<TaskEntity>(
       data: task,
+      // يمكنك إضافة delay للتحكم في وقت الضغطة المطولة قبل بدء السحب (اختياري)
+      delay: const Duration(milliseconds: 250),
       rootOverlay: true,
       onDragStarted: onDragStarted,
       onDragEnd: (_) => onDragEnded?.call(),

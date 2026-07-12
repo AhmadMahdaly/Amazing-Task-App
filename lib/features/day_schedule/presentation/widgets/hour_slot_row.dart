@@ -1,15 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_colors.dart';
-import 'package:s/core/resources/app_text.dart';
-import 'package:s/core/resources/app_text_style.dart';
-import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/utils/task_format_utils.dart';
 import 'package:s/features/day_schedule/presentation/widgets/schedule_task_card.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
-import 'package:s/features/task_management/domain/utils/day_schedule_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
+import 'package:s/features/task_management/presentation/views/widgets/add_task_bottom_sheet.dart';
 
 class HourSlotRow extends StatelessWidget {
   const HourSlotRow({
@@ -17,148 +13,237 @@ class HourSlotRow extends StatelessWidget {
     required this.tasks,
     required this.isCurrentHour,
     required this.rowKey,
+    super.key,
     this.onDragStarted,
     this.onDragEnded,
-    super.key,
   });
 
   final int hour;
   final List<TaskEntity> tasks;
   final bool isCurrentHour;
   final GlobalKey rowKey;
+
   final VoidCallback? onDragStarted;
   final VoidCallback? onDragEnded;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return DragTarget<TaskEntity>(
       key: rowKey,
-      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 3.h),
-      child: DragTarget<TaskEntity>(
-        onWillAcceptWithDetails: (_) => true,
-        onAcceptWithDetails: (details) {
-          unawaited(
-            context.read<TasksCubit>().assignTaskToHour(details.data, hour),
-          );
-        },
-        builder: (context, candidateData, rejectedData) {
-          final isHighlighted = candidateData.isNotEmpty;
 
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            constraints: BoxConstraints(minHeight: 56.h),
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
-            decoration: BoxDecoration(
-              color: isHighlighted
-                  ? AppColors.thirdColor.withAlpha(40)
-                  : (isCurrentHour
-                        ? AppColors.primaryColor.withAlpha(22)
-                        : AppColors.white),
-              borderRadius: BorderRadius.circular(10.r),
-              border: Border.all(
-                color: isHighlighted
-                    ? AppColors.thirdColor
-                    : (isCurrentHour
-                          ? AppColors.primaryColor
-                          : AppColors.secondaryColor.withAlpha(35)),
-                width: isHighlighted || isCurrentHour ? 2 : 1,
-              ),
-            ),
+      onWillAcceptWithDetails: (_) => true,
+
+      onAcceptWithDetails: (details) async {
+        await context.read<TasksCubit>().assignTaskToHour(
+          details.data,
+          hour,
+        );
+      },
+
+      builder: (context, candidateData, rejectedData) {
+        final highlight = candidateData.isNotEmpty;
+
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+
+          color: highlight
+              ? AppColors.primaryColor.withValues(alpha: .05)
+              : Colors.transparent,
+
+          padding: const EdgeInsets.symmetric(
+            horizontal: 18,
+            vertical: 6,
+          ),
+
+          child: IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               children: [
+                /// الوقت
                 SizedBox(
-                  width: 72.w,
+                  width: 65,
+
+                  child: Text(
+                    TaskFormatUtils.formatHour(hour),
+
+                    style: TextStyle(
+                      fontSize: 15,
+
+                      fontWeight: isCurrentHour
+                          ? FontWeight.bold
+                          : FontWeight.w500,
+
+                      color: isCurrentHour
+                          ? AppColors.primaryColor
+                          : Colors.grey.shade700,
+                    ),
+                  ),
+                ),
+                // if (isCurrentHour)
+                //   Padding(
+                //     padding: const EdgeInsets.only(top: 6),
+                //     child: Row(
+                //       children: [
+                //         Container(
+                //           width: 8,
+                //           height: 8,
+                //           decoration: const BoxDecoration(
+                //             color: Colors.red,
+                //             shape: BoxShape.circle,
+                //           ),
+                //         ),
+                //         const SizedBox(width: 6),
+                //         const Expanded(
+                //           child: Divider(
+                //             thickness: 2,
+                //             color: Colors.red,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+
+                /// الـ Timeline
+                SizedBox(
+                  width: 34,
+
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        formatHourLabel(hour),
-                        style: AppTextStyle.style12Bold.copyWith(
-                          fontSize: 10.sp,
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+
+                        width: isCurrentHour ? 16 : 12,
+
+                        height: isCurrentHour ? 16 : 12,
+
+                        decoration: BoxDecoration(
                           color: isCurrentHour
                               ? AppColors.primaryColor
-                              : AppColors.forthColor,
+                              : Colors.grey.shade400,
+
+                          shape: BoxShape.circle,
                         ),
                       ),
-                      if (isCurrentHour)
-                        Container(
-                          margin: EdgeInsets.only(top: 4.h),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 6.w,
-                            vertical: 2.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryColor,
-                            borderRadius: BorderRadius.circular(6.r),
-                          ),
-                          child: Text(
-                            AppTexts.currentHour,
-                            style: AppTextStyle.style9W300.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+
+                      Expanded(
+                        child: Container(
+                          width: 2,
+                          color: Colors.grey.shade300,
                         ),
+                      ),
                     ],
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: 40.h,
-                  color: AppColors.secondaryColor.withAlpha(40),
-                ),
-                10.horizontalSpace,
+
+                /// المحتوى
                 Expanded(
-                  child: tasks.isEmpty
-                      ? Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8.h),
-                            child: Text(
-                              isHighlighted
-                                  ? AppTexts.dropHere
-                                  : AppTexts.dragTasksToHours,
-                              style: AppTextStyle.style9W300.copyWith(
-                                color: AppColors.secondaryColor.withAlpha(
-                                  isHighlighted ? 200 : 120,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+
+                    padding: const EdgeInsets.all(14),
+
+                    margin: const EdgeInsets.only(bottom: 12),
+
+                    decoration: BoxDecoration(
+                      color: highlight
+                          ? AppColors.primaryColor.withValues(alpha: .06)
+                          : Colors.white,
+
+                      borderRadius: BorderRadius.circular(18),
+
+                      border: Border.all(
+                        color: highlight
+                            ? AppColors.primaryColor
+                            : Colors.grey.shade200,
+                      ),
+
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 10,
+                          color: Colors.black.withValues(alpha: .04),
+                        ),
+                      ],
+                    ),
+
+                    child: tasks.isEmpty
+                        ?
+                          /// ساعة فارغة
+                          InkWell(
+                            borderRadius: BorderRadius.circular(18),
+
+                            onTap: () async {
+                              final selectedDate = DateTime(
+                                DateTime.now().year,
+                                DateTime.now().month,
+                                DateTime.now().day,
+                                hour,
+                              );
+                              await showModalBottomSheet<void>(
+                                context: context,
+
+                                isScrollControlled: true,
+
+                                backgroundColor: Colors.transparent,
+
+                                builder: (_) => AddTaskBottomSheet(
+                                  isMyDayView: true,
+
+                                  initialDueDate: selectedDate,
                                 ),
-                              ),
+                              );
+                            },
+
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.add_circle_outline,
+                                  color: Colors.grey.shade500,
+                                ),
+
+                                const SizedBox(width: 10),
+
+                                Text(
+                                  'Add task',
+
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        :
+                          /// المهام
+                          Column(
+                            children: List.generate(
+                              tasks.length,
+                              (index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 8,
+                                  ),
+
+                                  child: ScheduleTaskCard(
+                                    task: tasks[index],
+
+                                    index: index,
+
+                                    onDragStarted: onDragStarted,
+
+                                    onDragEnded: onDragEnded,
+                                  ),
+                                );
+                              },
                             ),
                           ),
-                        )
-                      : ReorderableListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          buildDefaultDragHandles: false,
-                          itemCount: tasks.length,
-                          onReorder: (oldIndex, newIndex) {
-                            unawaited(
-                              context.read<TasksCubit>().reorderScheduleTasks(
-                                scheduledHour: hour,
-                                oldIndex: oldIndex,
-                                newIndex: newIndex,
-                                tasksList: List<TaskEntity>.from(tasks),
-                              ),
-                            );
-                          },
-                          itemBuilder: (context, index) {
-                            return ScheduleTaskCard(
-                              key: ValueKey(tasks[index].id),
-                              task: tasks[index],
-                              index: index,
-                              compact: true,
-                              onDragStarted: onDragStarted,
-                              onDragEnded: onDragEnded,
-                            );
-                          },
-                        ),
+                  ),
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

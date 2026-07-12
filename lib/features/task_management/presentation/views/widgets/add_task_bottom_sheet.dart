@@ -595,6 +595,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     repeatMode: _selectedRepeatMode,
                     isPinnedToNotification: _pinToNotification,
                     position: 0,
+                    scheduledHour: widget.initialDueDate?.hour,
                   );
 
                   await context.read<TasksCubit>().addTask(newTask);

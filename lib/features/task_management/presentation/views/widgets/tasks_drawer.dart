@@ -331,7 +331,7 @@ class TasksDrawer extends StatelessWidget {
                 ),
                 IconButton(
                   tooltip: 'Track missed prayers',
-                  icon: const Icon(Icons.event_available_outlined),
+                  icon: const Icon(Icons.mosque_outlined),
                   onPressed: () async {
                     await context.pushNamed(AppRoutes.missedPrayersScreen);
                   },
