@@ -6,10 +6,13 @@ import 'package:s/features/challenges/presentation/screens/add_challenge_screen.
 import 'package:s/features/challenges/presentation/screens/analysis_screen.dart';
 import 'package:s/features/challenges/presentation/screens/challenges_screen.dart';
 import 'package:s/features/day_schedule/presentation/views/day_schedule_screen.dart';
-import 'package:s/features/missed_prayers/domain/entities/missed_prayers_entity.dart';
-import 'package:s/features/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
-import 'package:s/features/missed_prayers/presentation/views/missed_prayers_wrapper_view.dart';
-import 'package:s/features/missed_prayers/presentation/views/settings_calculation_view.dart';
+import 'package:s/features/islamic_section/islamic_home/presentation/controllers/cubit/azkar_cubit.dart';
+import 'package:s/features/islamic_section/islamic_home/presentation/views/azkar_view.dart';
+import 'package:s/features/islamic_section/islamic_home/presentation/views/islamic_home.dart';
+import 'package:s/features/islamic_section/missed_prayers/domain/entities/missed_prayers_entity.dart';
+import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
+import 'package:s/features/islamic_section/missed_prayers/presentation/views/missed_prayers_wrapper_view.dart';
+import 'package:s/features/islamic_section/missed_prayers/presentation/views/settings_calculation_view.dart';
 import 'package:s/features/planner/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
@@ -74,7 +77,25 @@ void initRouter() {
         name: AppRoutes.challengeAnalysisScreen,
         builder: (context, state) => const ChallengeAnalysisScreen(),
       ),
-
+      GoRoute(
+        path: AppRoutes.islamicHomeView,
+        name: AppRoutes.islamicHomeView,
+        builder: (context, state) => const IslamicHomeView(),
+      ),
+      GoRoute(
+        path: AppRoutes.azkarView,
+        name: AppRoutes.azkarView,
+        builder: (context, state) {
+          final data = state.extra! as Map;
+          return BlocProvider.value(
+            value: getIt<AzkarCubit>(),
+            child: AzkarView(
+              azkarType: data['azkarType'] as AzkarType,
+              title: data['title'] as String,
+            ),
+          );
+        },
+      ),
       GoRoute(
         path: AppRoutes.missedPrayersScreen,
         name: AppRoutes.missedPrayersScreen,

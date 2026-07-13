@@ -9,5 +9,7 @@ class AppRoutes {
   static const String plannerView = '/plannerView';
   static const String dayScheduleScreen = '/dayScheduleScreen';
   static const String settingsCalculationView = '/settingsCalculationView';
+  static const String azkarView = '/azkarView';
+  static const String islamicHomeView = '/islamicHomeView';
   static const String missedPrayersScreen = '/missedPrayersScreen';
 }

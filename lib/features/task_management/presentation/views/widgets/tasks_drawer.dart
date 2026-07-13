@@ -330,10 +330,10 @@ class TasksDrawer extends StatelessWidget {
                   },
                 ),
                 IconButton(
-                  tooltip: 'Track missed prayers',
+                  tooltip: 'Islamic section',
                   icon: const Icon(Icons.mosque_outlined),
                   onPressed: () async {
-                    await context.pushNamed(AppRoutes.missedPrayersScreen);
+                    await context.pushNamed(AppRoutes.islamicHomeView);
                   },
                 ),
               ],

@@ -8,10 +8,14 @@ import 'package:s/features/challenges/data/datasource/challenges_local_datasourc
 import 'package:s/features/challenges/data/repositories/challenge_repository_impl.dart';
 import 'package:s/features/challenges/domain/repositories/challenge_repository.dart';
 import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
-import 'package:s/features/missed_prayers/data/datasource/missed_prayers_local_data_source.dart';
-import 'package:s/features/missed_prayers/data/repo/missed_prayers_repository_impl.dart';
-import 'package:s/features/missed_prayers/domain/repo/missed_prayers_repository.dart';
-import 'package:s/features/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
+import 'package:s/features/islamic_section/islamic_home/data/data_sources/base_azkar_data_source.dart';
+import 'package:s/features/islamic_section/islamic_home/data/repository/azkar_repository_impl.dart';
+import 'package:s/features/islamic_section/islamic_home/domain/repositories/base_azkar_repository.dart';
+import 'package:s/features/islamic_section/islamic_home/presentation/controllers/cubit/azkar_cubit.dart';
+import 'package:s/features/islamic_section/missed_prayers/data/datasource/missed_prayers_local_data_source.dart';
+import 'package:s/features/islamic_section/missed_prayers/data/repo/missed_prayers_repository_impl.dart';
+import 'package:s/features/islamic_section/missed_prayers/domain/repo/missed_prayers_repository.dart';
+import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
 import 'package:s/features/task_list/data/datasource/lists_local_data_source.dart';
 import 'package:s/features/task_list/data/repo/lists_repository_impl.dart';
 import 'package:s/features/task_list/domain/repo/lists_repository.dart';
@@ -66,5 +70,15 @@ Future<void> setupGetIt() async {
     )
     ..registerLazySingleton<MissedPrayersCubit>(
       () => MissedPrayersCubit(getIt()),
+    )
+    ///
+    ..registerLazySingleton<BaseAzkarDataSource>(
+      AzkarLocalDataSourceImpl.new,
+    )
+    ..registerLazySingleton<BaseAzkarRepository>(
+      () => AzkarRepositoryImpl(getIt()),
+    )
+    ..registerLazySingleton<AzkarCubit>(
+      () => AzkarCubit(getIt()),
     );
 }
