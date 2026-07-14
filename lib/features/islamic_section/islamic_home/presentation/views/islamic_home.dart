@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text_style.dart';
+import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
@@ -21,9 +22,9 @@ class IslamicHomeView extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               title: Text(
-                'إن الدين عند الله الإسلام',
-                style: AppTextStyle.style16Bold.copyWith(
-                  fontFamily: kPrimaryArFont,
+                'فَقُلْ أَسْلَمْتُ وَجْهِيَ لِلَّهِ',
+                style: AppTextStyle.style18Bold.copyWith(
+                  fontFamily: AppFonts.amiri,
                 ),
               ),
               backgroundColor: AppColors.primaryColor,
@@ -106,7 +107,7 @@ class IslamicHomeView extends StatelessWidget {
 
                         if (constraints.maxWidth >= 900) {
                           crossAxisCount = 4;
-                        } else if (constraints.maxWidth >= 600) {
+                        } else if (SizeConfig.isTablet) {
                           crossAxisCount = 3;
                         } else {
                           crossAxisCount = 2;
@@ -126,31 +127,33 @@ class IslamicHomeView extends StatelessWidget {
                             final item = items[index];
 
                             return InkWell(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(20.r),
                               onTap: item.onTap,
                               child: Card(
                                 elevation: 6,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(20.r),
                                 ),
                                 color: Colors.white.withValues(alpha: .92),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(20),
+                                  padding: EdgeInsets.all(20.r),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(
                                         item.icon,
-                                        size: 50,
-                                        color: AppColors.primaryColor,
+                                        size: 40.r,
+                                        color: AppColors.primaryColor.withAlpha(
+                                          200,
+                                        ),
                                       ),
-                                      const SizedBox(height: 16),
+                                      16.verticalSpace,
                                       Text(
                                         item.title,
                                         textAlign: TextAlign.center,
-                                        style: AppTextStyle.style18Bold
+                                        style: AppTextStyle.style18W600
                                             .copyWith(
-                                              fontFamily: kPrimaryArFont,
+                                              fontFamily: AppFonts.amiri,
                                             ),
                                       ),
                                     ],

@@ -13,6 +13,7 @@ class ZekrItemWidget extends StatelessWidget {
     required this.onTap,
     super.key,
   });
+
   final String zekrText;
   final String benefit;
   final int totalCount;
@@ -21,11 +22,12 @@ class ZekrItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // التحقق مما إذا كان الذكر قد اكتمل
     final isCompleted = currentCount == 0;
 
+    final progress = totalCount > 0 ? currentCount / totalCount : 0.0;
+
     return GestureDetector(
-      onTap: isCompleted ? null : onTap, // تعطيل الضغط إذا انتهى العدد
+      onTap: isCompleted ? null : onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         padding: EdgeInsets.all(16.r),
@@ -36,7 +38,7 @@ class ZekrItemWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isCompleted ? Colors.green : AppColors.thirdColor,
-            width: isCompleted ? 2 : 1,
+            width: 1,
           ),
           boxShadow: [
             BoxShadow(
@@ -49,71 +51,118 @@ class ZekrItemWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // نص الذكر
             Text(
               zekrText,
-              style: AppTextStyle.style14W500.copyWith(
-                color: isCompleted
-                    ? Colors.grey.shade700
-                    : AppColors.primaryColor,
-                fontFamily: kPrimaryArFont,
-                height: 1.5, // مسافة بين السطور لسهولة القراءة
+              style: AppTextStyle.style18W500.copyWith(
+                color: AppColors.primaryColor,
+                fontFamily: AppFonts.amiri,
+                height: 2,
               ),
               textAlign: TextAlign.justify,
             ),
 
-            // فضل الذكر (إن وجد)
-            if (benefit.isNotEmpty) ...[
-              10.verticalSpace,
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.r, vertical: 4.r),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryColor.withAlpha(20),
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-                child: Text(
-                  benefit,
-                  style: AppTextStyle.style12W500.copyWith(
-                    color: AppColors.secondaryColor,
-                    fontFamily: kPrimaryArFont,
-                  ),
-                ),
-              ),
-            ],
-
             16.verticalSpace,
 
-            // قسم العداد
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Container(
-                  width: 50.r,
-                  height: 50.r,
-                  decoration: BoxDecoration(
-                    color: isCompleted ? Colors.green : AppColors.primaryColor,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color:
-                            (isCompleted
-                                    ? Colors.green
-                                    : AppColors.primaryColor)
-                                .withAlpha(50),
-                        blurRadius: 8,
-                        spreadRadius: 2,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (benefit.isNotEmpty) ...[
+                        24.verticalSpace,
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.r,
+                            vertical: 4.r,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryColor.withAlpha(10),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Text(
+                            benefit,
+                            style: AppTextStyle.style9W500.copyWith(
+                              color: AppColors.secondaryColor,
+                              fontFamily: kPrimaryArFont,
+                            ),
+                          ),
+                        ),
+                      ],
+                      8.verticalSpace,
+                    ],
+                  ),
+                ),
+                20.horizontalSpace,
+                SizedBox(
+                  width: 56.r,
+                  height: 56.r,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      TweenAnimationBuilder<double>(
+                        tween: Tween<double>(begin: 1, end: progress),
+                        duration: const Duration(milliseconds: 300),
+                        builder: (context, value, _) {
+                          return CircularProgressIndicator(
+                            value: value,
+                            strokeWidth: 3.r,
+                            backgroundColor: Colors.grey.withAlpha(50),
+                            color: isCompleted
+                                ? Colors.green
+                                : AppColors.primaryColor,
+                          );
+                        },
+                      ),
+
+                      Center(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          width: 46.r,
+                          height: 46.r,
+                          decoration: BoxDecoration(
+                            color: isCompleted
+                                ? Colors.green
+                                : AppColors.primaryColor,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    (isCompleted
+                                            ? Colors.green
+                                            : AppColors.primaryColor)
+                                        .withAlpha(50),
+                                blurRadius: 8,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: isCompleted
+                                ? Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 22.r,
+                                  )
+                                : Text(
+                                    '$currentCount',
+                                    style: AppTextStyle.style16Bold.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  child: Center(
-                    child: isCompleted
-                        ? Icon(Icons.check, color: Colors.white, size: 24.r)
-                        : Text(
-                            '$currentCount',
-                            style: AppTextStyle.style16Bold.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
+                ),
+                Text(
+                  '$totalCount',
+                  style: AppTextStyle.style9W500.copyWith(
+                    color: AppColors.secondaryColor.withAlpha(20),
+                    fontFamily: kPrimaryArFont,
                   ),
                 ),
               ],

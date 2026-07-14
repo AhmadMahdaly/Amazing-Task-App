@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/utils/task_format_utils.dart';
-import 'package:s/features/day_schedule/presentation/widgets/schedule_task_card.dart';
+import 'package:s/features/day_schedule/presentation/views/widgets/schedule_task_card.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 import 'package:s/features/task_management/presentation/views/widgets/add_task_bottom_sheet.dart';
@@ -75,7 +75,7 @@ class HourSlotRow extends StatelessWidget {
                           : FontWeight.w500,
 
                       color: isCurrentHour
-                          ? AppColors.primaryColor
+                          ? AppColors.thirdColor
                           : Colors.grey.shade700,
                     ),
                   ),
@@ -119,7 +119,7 @@ class HourSlotRow extends StatelessWidget {
 
                         decoration: BoxDecoration(
                           color: isCurrentHour
-                              ? AppColors.primaryColor
+                              ? AppColors.thirdColor
                               : Colors.grey.shade400,
 
                           shape: BoxShape.circle,

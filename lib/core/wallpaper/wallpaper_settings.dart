@@ -49,7 +49,4 @@ const List<String> wallpaperPresetImages = [
   'assets/images/wallpapers/wellpaper1.jpeg',
   'assets/images/wallpapers/wellpaper3.jpeg',
   'assets/images/wallpapers/wellpaper4.jpeg',
-  'assets/images/wallpapers/wellpaper2.jpeg',
-  'assets/images/wallpapers/wellpaper5.jpeg',
-  'assets/images/wallpapers/wellpaper6.jpeg',
 ];

@@ -8,6 +8,7 @@ import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
+import 'package:s/core/shared_widgets/app_version_widget.dart';
 import 'package:s/core/utils/app_icons_helper.dart';
 import 'package:s/core/wallpaper/wallpaper_picker_sheet.dart';
 import 'package:s/features/task_list/domain/entities/task_list_entity.dart';
@@ -127,25 +128,25 @@ class TasksDrawer extends StatelessWidget {
             ),
             Divider(color: AppColors.white.withAlpha(77)),
 
-            _buildDrawerItem(
-              icon: Icons.access_time,
-              title: AppTexts.daySchedule,
-              count: context.select<TasksCubit, String>((cubit) {
-                final state = cubit.state;
-                if (state is TasksLoaded) {
-                  final count = state.allTasks
-                      .where(isTaskInMyDay)
-                      .where((t) => !t.isCompleted)
-                      .length;
-                  return count > 0 ? '$count' : '';
-                }
-                return '';
-              }),
-              context: context,
-              onTap: () {
-                unawaited(context.pushNamed(AppRoutes.dayScheduleScreen));
-              },
-            ),
+            // _buildDrawerItem(
+            //   icon: Icons.access_time,
+            //   title: AppTexts.daySchedule,
+            //   count: context.select<TasksCubit, String>((cubit) {
+            //     final state = cubit.state;
+            //     if (state is TasksLoaded) {
+            //       final count = state.allTasks
+            //           .where(isTaskInMyDay)
+            //           .where((t) => !t.isCompleted)
+            //           .length;
+            //       return count > 0 ? '$count' : '';
+            //     }
+            //     return '';
+            //   }),
+            //   context: context,
+            //   onTap: () {
+            //     unawaited(context.pushNamed(AppRoutes.dayScheduleScreen));
+            //   },
+            // ),
             _buildDrawerItem(
               icon: Icons.wb_sunny_outlined,
               title: AppTexts.myDay,
@@ -305,7 +306,27 @@ class TasksDrawer extends StatelessWidget {
                 },
               ),
             ),
+
+            // Divider(color: AppColors.white.withAlpha(55)),
+            _buildDrawerItem(
+              icon: Icons.add,
+              title: AppTexts.newList,
+              iconColor: AppColors.white,
+              textColor: AppColors.white,
+              isBold: true,
+              context: context,
+              onTap: () async {
+                await showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (ctx) => const AddListBottomSheet(),
+                );
+              },
+            ),
+            Divider(color: AppColors.white.withAlpha(40)),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 8.horizontalSpace,
                 IconButton(
@@ -338,24 +359,7 @@ class TasksDrawer extends StatelessWidget {
                 ),
               ],
             ),
-            Divider(color: AppColors.white.withAlpha(55)),
-
-            _buildDrawerItem(
-              icon: Icons.add,
-              title: AppTexts.newList,
-              iconColor: AppColors.white,
-              textColor: AppColors.white,
-              isBold: true,
-              context: context,
-              onTap: () async {
-                await showModalBottomSheet<void>(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (ctx) => const AddListBottomSheet(),
-                );
-              },
-            ),
+            16.verticalSpace, const AppVersionWidget(), 12.verticalSpace,
           ],
         ),
       ),

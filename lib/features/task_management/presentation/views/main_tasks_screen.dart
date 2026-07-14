@@ -241,7 +241,10 @@ class MainTasksScreen extends StatelessWidget {
       );
     } else if (state is TasksLoaded) {
       if (currentTasks.isEmpty) {
-        return SizedBox(height: 450.h, child: const EmptyTasksState());
+        return SizedBox(
+          height: SizeConfig.screenHeight / 2 + 100,
+          child: const EmptyTasksState(),
+        );
       }
 
       final isCompletedFilter = state.currentFilter == TaskFilter.completed;

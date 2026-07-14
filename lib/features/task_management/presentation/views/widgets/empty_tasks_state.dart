@@ -17,14 +17,14 @@ class EmptyTasksState extends StatelessWidget {
       children: [
         Icon(
           Icons.add_task_rounded,
-          color: AppColors.white,
+          color: AppColors.white.withAlpha(150),
           size: 50.r,
         ),
-        8.verticalSpace,
+        12.verticalSpace,
         Text(
           AppTexts.noTasksInThisList,
-          style: AppTextStyle.style14Bold.copyWith(
-            color: AppColors.white,
+          style: AppTextStyle.style16W600.copyWith(
+            color: AppColors.white.withAlpha(150),
           ),
           textAlign: TextAlign.center,
         ),

@@ -45,6 +45,7 @@ class _AzkarViewState extends State<AzkarView> {
           backgroundColor: AppColors.primaryColor,
           centerTitle: true,
           elevation: 0,
+          toolbarHeight: 70.h,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new),
             onPressed: () => context.pop(),

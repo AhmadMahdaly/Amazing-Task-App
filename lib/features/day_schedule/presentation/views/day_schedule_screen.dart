@@ -9,8 +9,8 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
-import 'package:s/features/day_schedule/presentation/widgets/hour_slot_row.dart';
-import 'package:s/features/day_schedule/presentation/widgets/schedule_task_card.dart';
+import 'package:s/features/day_schedule/presentation/views/widgets/hour_slot_row.dart';
+import 'package:s/features/day_schedule/presentation/views/widgets/schedule_task_card.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/day_schedule_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
@@ -100,12 +100,12 @@ class _DayScheduleScreenState extends State<DayScheduleScreen> {
   void _onDragEnded() {
     if (!_isDragging) return;
     setState(() => _isDragging = false);
-    _stopAutoScroll(); // 👈 سطر جديد
+    _stopAutoScroll(); 
   }
 
   @override
   void dispose() {
-    _stopAutoScroll(); // 👈 سطر جديد
+    _stopAutoScroll(); 
     _clockTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
