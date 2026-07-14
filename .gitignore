@@ -48,3 +48,4 @@ macos/Flutter/GeneratedPluginRegistrant.swift
 windows/flutter/generated_plugin_registrant.cc
 linux/flutter/generated_plugin_registrant.cc
 linux/flutter/generated_plugins.cmake
+.dart_tool/hooks_runner/shared/objective_c/.lock
