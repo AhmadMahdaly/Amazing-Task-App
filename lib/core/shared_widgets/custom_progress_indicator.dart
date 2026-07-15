@@ -11,7 +11,7 @@ class LoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SpinKitSquareCircle(
+      child: SpinKitWaveSpinner(
         size: size.sp,
         color: color ?? AppColors.primaryColor, //.withAlpha(100),
       ),

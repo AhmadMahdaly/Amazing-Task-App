@@ -9,6 +9,7 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
+import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
@@ -237,7 +238,7 @@ class MainTasksScreen extends StatelessWidget {
     if (state is TasksLoading) {
       return SizedBox(
         height: 450.h,
-        child: const Center(child: CircularProgressIndicator()),
+        child: const Center(child: LoadingWidget()),
       );
     } else if (state is TasksLoaded) {
       if (currentTasks.isEmpty) {

@@ -1,7 +1,7 @@
 name: s
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.32+32
+version: 1.0.33+33
 
 environment:
   sdk: ^3.9.0
@@ -45,9 +45,9 @@ flutter:
     - assets/images/png/
     - assets/images/wallpapers/
     - assets/audio/notification.mp3
-    - assets/json/morning_zekr.json
-    - assets/json/evening_zekr.json
-    - assets/json/sleeping_zekr.json
+    - assets/json/
+    - assets/text/quran-uthmani-min.txt
+
   fonts:
     - family: Almarai
       fonts:
@@ -61,6 +61,10 @@ flutter:
     - family: Amiri
       fonts:
         - asset: assets/fonts/AmiriQuran-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+    - family: UthmanicHafs
+      fonts:
+        - asset: assets/fonts/UthmanicHafs.otf
 
 icons_launcher:
   image_path: "assets/images/png/logo.png"

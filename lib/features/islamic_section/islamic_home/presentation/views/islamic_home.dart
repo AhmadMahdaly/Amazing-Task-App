@@ -8,7 +8,7 @@ import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
-import 'package:s/features/islamic_section/islamic_home/presentation/controllers/cubit/azkar_cubit.dart';
+import 'package:s/features/islamic_section/azkar/presentation/controllers/cubit/azkar_cubit.dart';
 
 class IslamicHomeView extends StatelessWidget {
   const IslamicHomeView({super.key});
@@ -23,7 +23,7 @@ class IslamicHomeView extends StatelessWidget {
             appBar: AppBar(
               title: Text(
                 'فَقُلْ أَسْلَمْتُ وَجْهِيَ لِلَّهِ',
-                style: AppTextStyle.style18Bold.copyWith(
+                style: AppTextStyle.style20W900.copyWith(
                   fontFamily: AppFonts.amiri,
                 ),
               ),
@@ -87,8 +87,15 @@ class IslamicHomeView extends StatelessWidget {
                     _IslamicItem(
                       title: 'القرآن الكريم',
                       icon: Icons.menu_book_rounded,
-                      onTap: () {
-                        // انتقل لصفحة القرآن الكريم
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.quranIndexView);
+                      },
+                    ),
+                    _IslamicItem(
+                      title: 'حصن المسلم',
+                      icon: Icons.my_library_books_outlined,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.hisnIndexView);
                       },
                     ),
                     _IslamicItem(
@@ -151,7 +158,7 @@ class IslamicHomeView extends StatelessWidget {
                                       Text(
                                         item.title,
                                         textAlign: TextAlign.center,
-                                        style: AppTextStyle.style18W600
+                                        style: AppTextStyle.style18W900
                                             .copyWith(
                                               fontFamily: AppFonts.amiri,
                                             ),

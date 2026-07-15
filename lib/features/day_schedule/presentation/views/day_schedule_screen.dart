@@ -8,6 +8,7 @@ import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
+import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/day_schedule/presentation/views/widgets/hour_slot_row.dart';
 import 'package:s/features/day_schedule/presentation/views/widgets/schedule_task_card.dart';
@@ -100,12 +101,12 @@ class _DayScheduleScreenState extends State<DayScheduleScreen> {
   void _onDragEnded() {
     if (!_isDragging) return;
     setState(() => _isDragging = false);
-    _stopAutoScroll(); 
+    _stopAutoScroll();
   }
 
   @override
   void dispose() {
-    _stopAutoScroll(); 
+    _stopAutoScroll();
     _clockTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
@@ -166,7 +167,7 @@ class _DayScheduleScreenState extends State<DayScheduleScreen> {
                 builder: (context, state) {
                   if (state is TasksLoading) {
                     return const Center(
-                      child: CircularProgressIndicator(),
+                      child: LoadingWidget(),
                     );
                   }
 

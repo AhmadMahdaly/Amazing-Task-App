@@ -14,4 +14,5 @@ class AppFonts {
   static String en = kPrimaryEnFont;
   static String ar = kPrimaryArFont;
   static String amiri = 'Amiri';
+  static String quran = 'UthmanicHafs';
 }

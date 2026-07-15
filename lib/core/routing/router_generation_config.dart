@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/di.dart';
@@ -6,13 +8,21 @@ import 'package:s/features/challenges/presentation/screens/add_challenge_screen.
 import 'package:s/features/challenges/presentation/screens/analysis_screen.dart';
 import 'package:s/features/challenges/presentation/screens/challenges_screen.dart';
 import 'package:s/features/day_schedule/presentation/views/day_schedule_screen.dart';
-import 'package:s/features/islamic_section/islamic_home/presentation/controllers/cubit/azkar_cubit.dart';
-import 'package:s/features/islamic_section/islamic_home/presentation/views/azkar_view.dart';
+import 'package:s/features/islamic_section/azkar/presentation/controllers/cubit/azkar_cubit.dart';
+import 'package:s/features/islamic_section/azkar/presentation/views/azkar_view.dart';
+import 'package:s/features/islamic_section/hisn_azkar/domain/entities/hisn_chapter_entity.dart';
+import 'package:s/features/islamic_section/hisn_azkar/presentation/cubit/hisn_cubit.dart';
+import 'package:s/features/islamic_section/hisn_azkar/presentation/views/hisn_index_view.dart';
+import 'package:s/features/islamic_section/hisn_azkar/presentation/views/hisn_reading_view.dart';
 import 'package:s/features/islamic_section/islamic_home/presentation/views/islamic_home.dart';
 import 'package:s/features/islamic_section/missed_prayers/domain/entities/missed_prayers_entity.dart';
 import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
 import 'package:s/features/islamic_section/missed_prayers/presentation/views/missed_prayers_wrapper_view.dart';
 import 'package:s/features/islamic_section/missed_prayers/presentation/views/settings_calculation_view.dart';
+import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
+import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/views/quran_index_view.dart';
+import 'package:s/features/islamic_section/quran/presentation/views/surah_reading_view.dart';
 import 'package:s/features/planner/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
@@ -113,6 +123,52 @@ void initRouter() {
           return BlocProvider<MissedPrayersCubit>.value(
             value: getIt<MissedPrayersCubit>(),
             child: SettingsCalculationView(currentData: currentData),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.quranIndexView,
+        name: AppRoutes.quranIndexView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<QuranCubit>()..loadSurahs(),
+            child: const QuranIndexView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.surahReadingView,
+        name: AppRoutes.surahReadingView,
+        builder: (context, state) {
+          final surah = state.extra! as SurahEntity;
+          return BlocProvider.value(
+            value: getIt<QuranCubit>(),
+            child: SurahReadingView(
+              surah: surah,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.hisnIndexView,
+        name: AppRoutes.hisnIndexView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<HisnCubit>()..loadHisnData(),
+            child: const HisnIndexView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.hisnReadingView,
+        name: AppRoutes.hisnReadingView,
+        builder: (context, state) {
+          final chapter = state.extra! as HisnChapterEntity;
+          return BlocProvider.value(
+            value: getIt<HisnCubit>(),
+            child: HisnReadingView(
+              chapter: chapter,
+            ),
           );
         },
       ),

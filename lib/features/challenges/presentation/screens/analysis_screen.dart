@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/features/analytics/presentation/views/widgets/empty_analytics_state.dart';
 import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
 import 'package:s/features/challenges/presentation/screens/widgets/level_chart_widget.dart';
@@ -37,7 +38,7 @@ class ChallengeAnalysisScreen extends StatelessWidget {
               ),
             );
           }
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: LoadingWidget());
         },
       ),
     );

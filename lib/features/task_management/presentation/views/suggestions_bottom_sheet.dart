@@ -6,6 +6,7 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/shared_widgets/directional_text.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
@@ -53,7 +54,7 @@ class SuggestionsBottomSheet extends StatelessWidget {
             child: BlocBuilder<TasksCubit, TasksState>(
               builder: (context, tasksState) {
                 if (tasksState is! TasksLoaded) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: LoadingWidget());
                 }
 
                 final overdueTasks = <TaskEntity>[];

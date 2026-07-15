@@ -9,6 +9,7 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
+import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/challenges/data/models/challenge_model.dart';
 import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
@@ -61,7 +62,7 @@ class ChallengesScreen extends StatelessWidget {
             child: BlocBuilder<ChallengeCubit, ChallengeState>(
               builder: (context, state) {
                 if (state is ChallengeLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: LoadingWidget());
                 }
                 if (state is ChallengeLoaded) {
                   if (state.challenges.isEmpty) {

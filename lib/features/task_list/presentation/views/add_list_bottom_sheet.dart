@@ -5,6 +5,7 @@ import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
+import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/utils/app_icons_helper.dart';
 import 'package:s/features/task_list/domain/entities/task_list_entity.dart';
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
@@ -254,9 +255,8 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
                     ? SizedBox(
                         width: 20.r,
                         height: 20.r,
-                        child: const CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
+                        child: const LoadingWidget(
+                          color: AppColors.white,
                         ),
                       )
                     : Text(

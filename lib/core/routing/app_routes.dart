@@ -12,4 +12,8 @@ class AppRoutes {
   static const String azkarView = '/azkarView';
   static const String islamicHomeView = '/islamicHomeView';
   static const String missedPrayersScreen = '/missedPrayersScreen';
+  static const String surahReadingView = '/surahReadingView';
+  static const String quranIndexView = '/quranIndexView';
+  static const String hisnIndexView = '/hisnIndexView';
+  static const String hisnReadingView = '/hisnReadingView';
 }
