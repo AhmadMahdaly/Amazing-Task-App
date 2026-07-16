@@ -74,15 +74,13 @@ class MainTasksScreen extends StatelessWidget {
                                 IconButton(
                                   tooltip: AppTexts.daySchedule,
                                   icon: Icon(
-                                    Icons.view_timeline_outlined,
+                                    Icons.mosque_outlined,
                                     color: AppColors.white,
                                     size: 24.r,
                                   ),
-                                  onPressed: () {
-                                    unawaited(
-                                      context.pushNamed(
-                                        AppRoutes.dayScheduleScreen,
-                                      ),
+                                  onPressed: () async {
+                                    await context.pushNamed(
+                                      AppRoutes.islamicHomeView,
                                     );
                                   },
                                 ),

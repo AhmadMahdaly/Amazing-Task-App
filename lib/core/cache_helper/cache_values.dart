@@ -3,5 +3,7 @@ class CacheKeys {
   static const String cachedTasks = 'CACHED_TASKS';
   static const String cachedChallenges = 'cachedChallenges';
   static const String quranFontSize = 'quran_font_size';
+  static const String screenOpacity = 'screen_opacity';
+  static const String quranTextColor = 'quran_text_color';
   static const String lastReadSurah = 'last_read_surah';
 }

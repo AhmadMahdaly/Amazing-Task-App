@@ -34,4 +34,17 @@ class HisnCubit extends Cubit<HisnState> {
       emit(HisnError('حدث خطأ أثناء تحميل حصن المسلم'));
     }
   }
+
+  void search(String query) {
+    if (query.trim().isEmpty) {
+      emit(HisnLoaded(allChapters));
+      return;
+    }
+
+    final result = allChapters.where((chapter) {
+      return chapter.title.toLowerCase().contains(query.trim().toLowerCase());
+    }).toList();
+
+    emit(HisnLoaded(result));
+  }
 }

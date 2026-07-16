@@ -16,4 +16,5 @@ class AppRoutes {
   static const String quranIndexView = '/quranIndexView';
   static const String hisnIndexView = '/hisnIndexView';
   static const String hisnReadingView = '/hisnReadingView';
+  static const String sunanView = '/sunanView';
 }

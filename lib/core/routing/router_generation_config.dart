@@ -23,6 +23,8 @@ import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.da
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
 import 'package:s/features/islamic_section/quran/presentation/views/quran_index_view.dart';
 import 'package:s/features/islamic_section/quran/presentation/views/surah_reading_view.dart';
+import 'package:s/features/islamic_section/sunan/presentation/cubit/sunan_cubit.dart';
+import 'package:s/features/islamic_section/sunan/presentation/views/sunan_view.dart';
 import 'package:s/features/planner/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
@@ -169,6 +171,16 @@ void initRouter() {
             child: HisnReadingView(
               chapter: chapter,
             ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.sunanView,
+        name: AppRoutes.sunanView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<SunanCubit>()..loadSunanData(),
+            child: const SunanView(),
           );
         },
       ),

@@ -25,7 +25,7 @@ class AppVersionWidget extends StatelessWidget {
               return Text(
                 '${snapshot.data}',
                 style: AppTextStyle.style12W600.copyWith(
-                  color: AppColors.white.withAlpha(50),
+                  color: AppColors.white.withAlpha(75),
                 ),
               );
             }

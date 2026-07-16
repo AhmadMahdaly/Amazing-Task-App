@@ -93,9 +93,16 @@ class IslamicHomeView extends StatelessWidget {
                     ),
                     _IslamicItem(
                       title: 'حصن المسلم',
-                      icon: Icons.my_library_books_outlined,
+                      icon: Icons.auto_stories_rounded,
                       onTap: () async {
                         await context.pushNamed(AppRoutes.hisnIndexView);
+                      },
+                    ),
+                    _IslamicItem(
+                      title: 'السنن',
+                      icon: Icons.mosque_rounded,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.sunanView);
                       },
                     ),
                     _IslamicItem(
@@ -126,8 +133,8 @@ class IslamicHomeView extends StatelessWidget {
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: crossAxisCount,
-                                crossAxisSpacing: 16,
-                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 12.w,
+                                mainAxisSpacing: 12.h,
                                 childAspectRatio: 1,
                               ),
                           itemBuilder: (context, index) {
