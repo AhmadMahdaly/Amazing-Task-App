@@ -29,6 +29,7 @@ dependencies:
   table_calendar: ^3.2.0
   dartz: ^0.10.1
   package_info_plus: ^10.2.0
+  window_manager: ^0.5.2
 
 dev_dependencies:
   flutter_test:
@@ -73,7 +74,8 @@ icons_launcher:
       enable: true
     ios:
       enable: true
-
+    windows:
+      enable: true
 
 # dart run icons_launcher:create
 # flutter gen-l10n

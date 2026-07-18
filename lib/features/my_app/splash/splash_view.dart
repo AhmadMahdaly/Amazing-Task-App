@@ -1,8 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '/../core/responsive/responsive_config.dart';
-import '/../core/routing/app_routes.dart';
+import '/core/responsive/responsive_config.dart';
+import '/core/routing/app_routes.dart';
 import '../../../core/resources/app_images.dart';
 
 class SplashView extends StatefulWidget {
@@ -27,7 +29,11 @@ class _SplashViewState extends State<SplashView> {
     _hasRedirected = true;
     await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
-    context.go(AppRoutes.mainTasksScreen);
+    if (Platform.isWindows) {
+      context.go(AppRoutes.islamicHomeView);
+    } else {
+      context.go(AppRoutes.mainTasksScreen);
+    }
   }
 
   @override
