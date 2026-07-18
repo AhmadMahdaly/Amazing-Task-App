@@ -8,6 +8,10 @@ import 'package:s/features/challenges/presentation/screens/add_challenge_screen.
 import 'package:s/features/challenges/presentation/screens/analysis_screen.dart';
 import 'package:s/features/challenges/presentation/screens/challenges_screen.dart';
 import 'package:s/features/day_schedule/presentation/views/day_schedule_screen.dart';
+import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_lesson.dart';
+import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
+import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_index_view.dart';
+import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_reading_view.dart';
 import 'package:s/features/islamic_section/azkar/presentation/controllers/cubit/azkar_cubit.dart';
 import 'package:s/features/islamic_section/azkar/presentation/views/azkar_view.dart';
 import 'package:s/features/islamic_section/hisn_azkar/domain/entities/hisn_chapter_entity.dart';
@@ -29,9 +33,9 @@ import 'package:s/features/planner/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
 
-import '../../core/constants.dart';
-import '../../core/routing/app_routes.dart';
 import '../../features/my_app/splash/splash_view.dart';
+import '../constants.dart';
+import 'app_routes.dart';
 
 late final GoRouter appRouter;
 
@@ -181,6 +185,30 @@ void initRouter() {
           return BlocProvider.value(
             value: getIt<SunanCubit>()..loadSunanData(),
             child: const SunanView(),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.asmaaIndexView,
+        name: AppRoutes.asmaaIndexView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<AsmaaCubit>()..loadLessons(),
+            child: const AsmaaIndexView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.asmaaReadingView,
+        name: AppRoutes.asmaaReadingView,
+        builder: (context, state) {
+          final lesson = state.extra! as AsmaaLesson;
+          return BlocProvider.value(
+            value: getIt<AsmaaCubit>(),
+            child: AsmaaReadingView(
+              lesson: lesson,
+            ),
           );
         },
       ),

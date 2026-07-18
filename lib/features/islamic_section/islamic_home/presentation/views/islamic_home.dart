@@ -97,6 +97,13 @@ class IslamicHomeView extends StatelessWidget {
                       },
                     ),
                     _IslamicItem(
+                      title: 'أسماء الله الحسنى',
+                      icon: Icons.all_inclusive_rounded,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.asmaaIndexView);
+                      },
+                    ),
+                    _IslamicItem(
                       title: 'حصن المسلم',
                       icon: Icons.auto_stories_rounded,
                       onTap: () async {

@@ -1,0 +1,201 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:s/core/constants.dart';
+import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_text_style.dart';
+import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/routing/app_routes.dart';
+import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
+
+import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_lesson.dart';
+import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
+
+class AsmaaIndexView extends StatelessWidget {
+  const AsmaaIndexView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'أسماء الله الحسنى',
+            style: AppTextStyle.style20W900.copyWith(
+              fontFamily: AppFonts.amiri,
+            ),
+          ),
+          backgroundColor: AppColors.primaryColor,
+          elevation: 0,
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: BlocBuilder<AsmaaCubit, AsmaaState>(
+          builder: (context, state) {
+            if (state is AsmaaLoading) {
+              return const Center(
+                child: LoadingWidget(
+                  color: AppColors.primaryColor,
+                ),
+              );
+            }
+
+            if (state is AsmaaError) {
+              return Center(
+                child: Text(
+                  state.message,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              );
+            }
+
+            if (state is AsmaaLoaded) {
+              return Column(
+                children: [
+                  if (state.lastReadLessonId != null)
+                    _buildContinueReadingCard(
+                      context,
+                      state.lessons,
+                      state.lastReadLessonId!,
+                    ),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: state.lessons.length,
+                      separatorBuilder: (context, index) => const Divider(
+                        color: AppColors.thirdColor,
+                        height: 1,
+                      ),
+                      itemBuilder: (context, index) {
+                        final lesson = state.lessons[index];
+                        final isLastRead = lesson.id == state.lastReadLessonId;
+
+                        return ListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16.r,
+                            vertical: 4.r,
+                          ),
+                          leading: Container(
+                            width: 40.r,
+                            height: 40.r,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isLastRead
+                                  ? AppColors.primaryColor
+                                  : AppColors.primaryColor.withAlpha(20),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${lesson.id}',
+                                style: AppTextStyle.style14W500.copyWith(
+                                  color: isLastRead
+                                      ? Colors.white
+                                      : AppColors.primaryColor,
+                                  fontFamily: AppFonts.amiri,
+                                ),
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            lesson.title, // مثل "اسم الله الملك"
+                            style: AppTextStyle.style18W900.copyWith(
+                              fontFamily: AppFonts.amiri,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'شرح وتأملات في اسم الله',
+                            style: AppTextStyle.style12W800.copyWith(
+                              color: AppColors.secondaryColor,
+                              fontFamily: AppFonts.amiri,
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 14,
+                            color: AppColors.secondaryColor,
+                          ),
+                          onTap: () async {
+                            await _navigateToReading(context, lesson);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContinueReadingCard(
+    BuildContext context,
+    List<AsmaaLesson> lessons,
+    int lastReadId,
+  ) {
+    final lastLesson = lessons.firstWhere((s) => s.id == lastReadId);
+
+    return GestureDetector(
+      onTap: () => _navigateToReading(context, lastLesson),
+      child: Container(
+        margin: EdgeInsets.all(16.r),
+        padding: EdgeInsets.all(20.r),
+        decoration: BoxDecoration(
+          color: AppColors.buttonColor,
+          borderRadius: BorderRadius.circular(16.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(20),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'العودة للقراءة',
+                    style: AppTextStyle.style12W500.copyWith(
+                      color: AppColors.secondaryColor,
+                      fontFamily: AppFonts.amiri,
+                    ),
+                  ),
+                  8.verticalSpace,
+                  Text(
+                    lastLesson.title,
+                    style: AppTextStyle.style20W800.copyWith(
+                      color: AppColors.primaryColor,
+                      fontFamily: AppFonts.amiri,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.menu_book, color: AppColors.primaryColor, size: 40.r),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _navigateToReading(
+    BuildContext context,
+    AsmaaLesson lesson,
+  ) async {
+    await context.pushNamed(
+      AppRoutes.asmaaReadingView, // تأكد من إضافة هذا الراوت
+      extra: lesson,
+    );
+  }
+}

@@ -17,4 +17,6 @@ class AppRoutes {
   static const String hisnIndexView = '/hisnIndexView';
   static const String hisnReadingView = '/hisnReadingView';
   static const String sunanView = '/sunanView';
+  static const String asmaaIndexView = '/asmaaIndexView';
+  static const String asmaaReadingView = '/asmaaReadingView';
 }

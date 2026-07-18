@@ -8,6 +8,10 @@ import 'package:s/features/challenges/data/datasource/challenges_local_datasourc
 import 'package:s/features/challenges/data/repositories/challenge_repository_impl.dart';
 import 'package:s/features/challenges/domain/repositories/challenge_repository.dart';
 import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
+import 'package:s/features/islamic_section/asmaa/data/datasources/asmaa_local_data_source.dart';
+import 'package:s/features/islamic_section/asmaa/data/repositories/asmaa_repository_impl.dart';
+import 'package:s/features/islamic_section/asmaa/domain/repositories/asmaa_repository.dart';
+import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
 import 'package:s/features/islamic_section/azkar/data/data_sources/base_azkar_data_source.dart';
 import 'package:s/features/islamic_section/azkar/data/repository/azkar_repository_impl.dart';
 import 'package:s/features/islamic_section/azkar/domain/repositories/base_azkar_repository.dart';
@@ -84,5 +88,12 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<AzkarCubit>(() => AzkarCubit(getIt()))
     ..registerLazySingleton<QuranCubit>(QuranCubit.new)
     ..registerLazySingleton<HisnCubit>(HisnCubit.new)
-    ..registerLazySingleton<SunanCubit>(SunanCubit.new);
+    ..registerLazySingleton<SunanCubit>(SunanCubit.new)
+    ..registerLazySingleton<AsmaaLocalDataSource>(
+      AsmaaLocalDataSource.new,
+    )
+    ..registerLazySingleton<AsmaaRepository>(
+      () => AsmaaRepositoryImpl(getIt()),
+    )
+    ..registerLazySingleton<AsmaaCubit>(() => AsmaaCubit(getIt()));
 }
