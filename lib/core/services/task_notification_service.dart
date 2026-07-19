@@ -1,6 +1,7 @@
-// ignore_for_file: prefer_constructors_over_static_methods, use_setters_to_change_properties, unreachable_from_main
+// ignore_for_file: prefer_constructors_over_static_methods, use_setters_to_change_properties
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:s/core/resources/app_text.dart';
@@ -162,24 +163,40 @@ class TaskNotificationService {
       _channelId,
       _channelName,
       channelDescription: AppTexts.pinnedTasksChannelDesc,
-      importance: Importance.defaultImportance,
-      priority: Priority.defaultPriority,
+      color: const Color(0xFF2E7D32),
+      colorized: true,
+
+      importance: Importance.high,
+      priority: Priority.high,
+
       ongoing: true,
-      enableVibration: false,
-      playSound: false,
       autoCancel: false,
       silent: true,
-      category: AndroidNotificationCategory.status,
-      actions: <AndroidNotificationAction>[
+      onlyAlertOnce: true,
+
+      visibility: NotificationVisibility.public,
+      category: AndroidNotificationCategory.reminder,
+
+      showWhen: true,
+
+      showProgress: task.hasSteps,
+      maxProgress: task.totalSteps,
+      progress: task.completedSteps,
+
+      styleInformation: BigTextStyleInformation(
+        body,
+        contentTitle: task.title,
+        summaryText: AppTexts.pinnedTaskLabel,
+      ),
+
+      actions: [
         AndroidNotificationAction(
           actionUnpin,
           AppTexts.unpin,
-          showsUserInterface: true,
         ),
         AndroidNotificationAction(
           actionDelete,
           AppTexts.delete,
-          showsUserInterface: true,
           cancelNotification: true,
         ),
       ],

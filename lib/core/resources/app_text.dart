@@ -96,6 +96,7 @@ class AppTexts {
   static String completedOn = 'Completed on';
   static String percent = '%';
   static String taskDetails = 'Task Details';
+  static String addNote = 'Add note';
   static String steps = 'Steps';
   static String addStep = 'Add step';
   static String stepHint = 'Step title';

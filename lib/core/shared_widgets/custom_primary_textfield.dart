@@ -9,6 +9,7 @@ import '../responsive/responsive_config.dart';
 
 class CustomPrimaryTextfield extends StatelessWidget {
   const CustomPrimaryTextfield({
+    this.onEditingComplete,
     this.onFieldSubmitted,
     this.controller,
     this.focusNode,
@@ -51,10 +52,12 @@ class CustomPrimaryTextfield extends StatelessWidget {
   final bool? enabled;
   final int? maxLines;
   final void Function(String)? onFieldSubmitted;
+  final void Function()? onEditingComplete;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: TextFormField(
+        onEditingComplete: onEditingComplete,
         onFieldSubmitted: onFieldSubmitted,
         textAlign:
             textAlign ??

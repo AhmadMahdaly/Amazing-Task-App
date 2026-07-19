@@ -18,9 +18,11 @@ class TaskEntity {
     this.isPinnedToNotification = false,
     this.position = 0,
     this.scheduledHour,
+    this.note,
   });
   final String id;
   final String title;
+  final String? note;
   final bool isCompleted;
   final bool isImportant;
   final DateTime? dueDate;
@@ -41,6 +43,7 @@ class TaskEntity {
   TaskEntity copyWith({
     String? id,
     String? title,
+    String? note,
     bool? isCompleted,
     bool? isImportant,
     DateTime? dueDate,
@@ -62,6 +65,7 @@ class TaskEntity {
     int? position,
     int? scheduledHour,
     bool clearScheduledHour = false,
+    bool clearNote = false,
   }) {
     return TaskEntity(
       id: id ?? this.id,
@@ -83,6 +87,7 @@ class TaskEntity {
       scheduledHour: clearScheduledHour
           ? null
           : (scheduledHour ?? this.scheduledHour),
+      note: clearNote ? '' : (note ?? this.note),
     );
   }
 }

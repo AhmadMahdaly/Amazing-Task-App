@@ -19,23 +19,26 @@ class TaskModel extends TaskEntity {
     super.isPinnedToNotification,
     super.position,
     super.scheduledHour,
+    super.note,
   });
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
     final stepsJson = json['steps'] as List<dynamic>?;
     final steps = stepsJson != null
         ? stepsJson
-            .map((e) => TaskStepModel.fromJson(e as Map<String, dynamic>))
-            .toList()
+              .map((e) => TaskStepModel.fromJson(e as Map<String, dynamic>))
+              .toList()
         : <TaskStepModel>[];
 
     final completedSteps = steps.isNotEmpty
         ? steps.where((s) => s.isCompleted).length
         : (json['completedSteps'] as int? ?? 0);
-    final totalSteps =
-        steps.isNotEmpty ? steps.length : (json['totalSteps'] as int? ?? 0);
+    final totalSteps = steps.isNotEmpty
+        ? steps.length
+        : (json['totalSteps'] as int? ?? 0);
 
     return TaskModel(
+      note: json['note'] as String? ?? '',
       id: json['id'] as String,
       title: json['title'] as String,
       isCompleted: json['isCompleted'] as bool? ?? false,
@@ -55,8 +58,7 @@ class TaskModel extends TaskEntity {
       completedAt: json['completedAt'] != null
           ? DateTime.parse(json['completedAt'] as String)
           : null,
-      isPinnedToNotification:
-          json['isPinnedToNotification'] as bool? ?? false,
+      isPinnedToNotification: json['isPinnedToNotification'] as bool? ?? false,
       position: json['position'] as int? ?? 0,
       scheduledHour: json['scheduledHour'] as int?,
     );
@@ -64,6 +66,7 @@ class TaskModel extends TaskEntity {
 
   factory TaskModel.fromEntity(TaskEntity entity) {
     return TaskModel(
+      note: entity.note,
       id: entity.id,
       title: entity.title,
       isCompleted: entity.isCompleted,
@@ -85,6 +88,7 @@ class TaskModel extends TaskEntity {
 
   Map<String, dynamic> toJson() {
     return {
+      'note': note,
       'id': id,
       'title': title,
       'isCompleted': isCompleted,

@@ -74,7 +74,7 @@ class MainTasksScreen extends StatelessWidget {
                                 IconButton(
                                   tooltip: AppTexts.daySchedule,
                                   icon: Icon(
-                                    Icons.mosque_outlined,
+                                    Icons.mosque,
                                     color: AppColors.white,
                                     size: 24.r,
                                   ),
@@ -84,6 +84,7 @@ class MainTasksScreen extends StatelessWidget {
                                     );
                                   },
                                 ),
+                              12.horizontalSpace,
                             ],
                             flexibleSpace: FlexibleSpaceBar(
                               title:

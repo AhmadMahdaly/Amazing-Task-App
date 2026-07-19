@@ -35,12 +35,14 @@ class TaskDetailScreen extends StatefulWidget {
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
   final _titleController = TextEditingController();
   final _stepController = TextEditingController();
+  final _noteController = TextEditingController();
   bool _titleDirty = false;
 
   @override
   void dispose() {
     _titleController.dispose();
     _stepController.dispose();
+    _noteController.dispose();
     super.dispose();
   }
 
@@ -515,6 +517,16 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return formatRepeatMode(mode);
   }
 
+  Future<void> _saveNote(TaskEntity task) async {
+    final note = _noteController.text.trim();
+
+    if (note == task.note) return;
+
+    await _persist(
+      task.copyWith(note: note),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TasksCubit, TasksState>(
@@ -545,7 +557,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         if (!_titleDirty && _titleController.text != task.title) {
           _titleController.text = task.title;
         }
-
+        if (_noteController.text != task.note) {
+          _noteController.text = task.note ?? '';
+        }
         final inMyDay = isTaskInMyDay(task);
         final listsState = context.watch<ListsCubit>().state;
         var listName = AppTexts.generalTasks;
@@ -959,6 +973,48 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 ),
               ),
               24.verticalSpace,
+
+              Text(
+                AppTexts.notes,
+                style: AppTextStyle.style16Bold,
+              ),
+
+              8.verticalSpace,
+
+              _SectionCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomPrimaryTextfield(
+                      controller: _noteController,
+                      text: AppTexts.addNote,
+                      maxLines: 6,
+
+                      onFieldSubmitted: (_) => _saveNote(task),
+                      onEditingComplete: () => _saveNote(task),
+                    ),
+
+                    12.verticalSpace,
+
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.primaryColor,
+                        ),
+                        onPressed: () async {
+                          await _saveNote(task);
+                          context.pop();
+                        },
+                        icon: const Icon(Icons.save),
+                        label: Text(AppTexts.save),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              24.verticalSpace,
+
               if (_titleDirty)
                 CustomPrimaryButton(
                   width: double.infinity,
