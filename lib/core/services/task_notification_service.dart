@@ -4,11 +4,14 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/services/notification_action_handler.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 const String actionUnpin = 'unpin';
 const String actionDelete = 'delete';
@@ -38,9 +41,9 @@ class TaskNotificationService {
 
   static const _channelId = 'pinned_tasks';
   static const _channelName = 'Pinned Tasks';
-
+  static const _scheduledChannelId = 'scheduled_tasks';
+  static const _scheduledChannelName = 'Scheduled Tasks';
   static TaskNotificationService? _instance;
-
   static TaskNotificationService get instance {
     return _instance ??= TaskNotificationService();
   }
@@ -53,6 +56,20 @@ class TaskNotificationService {
   Future<void> initialize() async {
     if (_initialized) return;
 
+    tz.initializeTimeZones();
+
+    try {
+      // 1. الحصول على كائن المنطقة الزمنية
+      final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+
+      // 2. استخراج النص الصحيح باستخدام identifier
+      final timeZoneName = timezoneInfo.identifier;
+
+      tz.setLocalLocation(tz.getLocation(timeZoneName));
+    } catch (e) {
+      // حل بديل آمن لمنع انهيار التطبيق إذا فشل جلب التوقيت المحلي
+      tz.setLocalLocation(tz.getLocation('Africa/Cairo'));
+    }
     const androidSettings = AndroidInitializationSettings(
       '@drawable/image',
     );
@@ -76,6 +93,7 @@ class TaskNotificationService {
     );
 
     await _createAndroidChannel();
+    await _createScheduledAndroidChannel();
     _initialized = true;
   }
 
@@ -193,10 +211,13 @@ class TaskNotificationService {
         AndroidNotificationAction(
           actionUnpin,
           AppTexts.unpin,
+          showsUserInterface: true,
         ),
         AndroidNotificationAction(
           actionDelete,
           AppTexts.delete,
+          showsUserInterface: true,
+
           cancelNotification: true,
         ),
       ],
@@ -238,5 +259,71 @@ class TaskNotificationService {
       parts.add('${task.completedSteps}/${task.totalSteps} ${AppTexts.steps}');
     }
     return parts.join(' • ');
+  }
+
+  Future<void> _createScheduledAndroidChannel() async {
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (androidPlugin == null) return;
+
+    const channel = AndroidNotificationChannel(
+      _scheduledChannelId,
+      _scheduledChannelName,
+      description: 'Notifications for scheduled reminders',
+      importance: Importance.high,
+      playSound: true,
+    );
+    await androidPlugin.createNotificationChannel(channel);
+  }
+
+  // نحتاج إلى ID مختلف للإشعارات المجدولة حتى لا تتعارض مع الإشعارات المثبتة (Pinned)
+  int scheduledNotificationIdFor(String taskId) =>
+      (taskId.hashCode.abs() % 2147483646) + 100000;
+
+  /// جدولة إشعار لتاريخ ووقت معين
+  Future<void> scheduleReminder(TaskEntity task, DateTime scheduledTime) async {
+    if (!await hasPermission()) return;
+
+    // لا تقم بجدولة إشعار في الماضي
+    if (scheduledTime.isBefore(DateTime.now())) return;
+
+    final id = scheduledNotificationIdFor(task.id);
+
+    const androidDetails = AndroidNotificationDetails(
+      _scheduledChannelId,
+      _scheduledChannelName,
+      importance: Importance.high,
+      priority: Priority.high,
+      category: AndroidNotificationCategory.reminder,
+    );
+
+    const darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    await _plugin.zonedSchedule(
+      id: id,
+      title: task.title,
+      body: task.note ?? AppTexts.taskReminder, // أو أي نص تفضله
+      scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
+      notificationDetails: const NotificationDetails(
+        android: androidDetails,
+        iOS: darwinDetails,
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      // uiLocalNotificationDateInterpretation:
+      //     UILocalNotificationDateInterpretation.absoluteTime,
+      payload: task.id,
+    );
+  }
+
+  /// إلغاء الإشعار المجدول (مثلاً عند حذف المهمة أو اكتمالها)
+  Future<void> cancelScheduledReminder(String taskId) async {
+    final id = scheduledNotificationIdFor(taskId);
+    await _plugin.cancel(id: id);
   }
 }

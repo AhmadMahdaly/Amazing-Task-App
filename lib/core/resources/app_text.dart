@@ -151,6 +151,8 @@ class AppTexts {
   static String challengePeriod = 'Challenge Period';
   static String timeIsUp = 'Time is up';
   static String status = 'Status';
+  static String noReminder = 'No reminder.';
+  static String remindMe = 'Remind me';
   static String expirationDate = 'Expiration Date';
   static String remainingTime = 'Remaining Time';
   static String failed = 'Failed';
@@ -218,7 +220,7 @@ class AppTexts {
       'Step has been converted to an independent task';
   static String convertStepToTaskQuestion =
       'Do you want to convert this step into an independent task?';
-
+  static String taskReminder = 'Task reminder';
   static String separateStep = 'Separate Step';
   static String planning = 'Planning';
   static String unscheduledTasks = 'Unscheduled Tasks';

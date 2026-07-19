@@ -511,7 +511,37 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       if (mounted) context.pop();
     }
   }
+Future<void> _showReminderOptions(TaskEntity task) async {
+    final now = DateTime.now();
 
+    // يمكنك فتح DatePicker و TimePicker لاختيار الوقت والتاريخ
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: task.reminderDate ?? now,
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 365 * 5)),
+    );
+
+    if (selectedDate == null || !mounted) return;
+
+    final selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(task.reminderDate ?? now),
+    );
+
+    if (selectedTime == null || !mounted) return;
+
+    final reminderDateTime = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    );
+
+    // تحديث المهمة بالوقت الجديد
+    await _persist(task.copyWith(reminderDate: reminderDateTime));
+  }
   String _repeatLabel(String? mode) {
     if (mode == null) return AppTexts.removeRepeat;
     return formatRepeatMode(mode);
@@ -932,6 +962,17 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           }
                         },
                       ),
+                    ),
+                    const Divider(height: 1),
+                    _SettingsTile(
+                      icon: Icons.alarm,
+                      title: AppTexts.remindMe,
+                      subtitle: task.reminderDate != null
+                          ? formatTaskDate(
+                              task.reminderDate!,
+                            ) // أضف دالة لتنسيق الوقت إذا لزم الأمر
+                          : AppTexts.noReminder,
+                      onTap: () => _showReminderOptions(task),
                     ),
                     const Divider(height: 1),
                     _SettingsTile(

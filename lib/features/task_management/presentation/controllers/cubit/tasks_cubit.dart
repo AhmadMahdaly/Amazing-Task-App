@@ -325,8 +325,7 @@ class TasksCubit extends Cubit<TasksState> {
     var nextPosition = 0;
 
     if (state is TasksLoaded) {
-      nextPosition = (state as TasksLoaded)
-          .allTasks
+      nextPosition = (state as TasksLoaded).allTasks
           .where((t) => t.scheduledHour == hour && t.id != task.id)
           .length;
     }
@@ -383,6 +382,11 @@ class TasksCubit extends Cubit<TasksState> {
   Future<void> updateTask(TaskEntity task) async {
     try {
       await tasksRepository.updateTask(task);
+      if (!task.isCompleted && task.reminderDate != null) {
+        await notificationService.scheduleReminder(task, task.reminderDate!);
+      } else {
+        await notificationService.cancelScheduledReminder(task.id);
+      }
       await loadTasks();
     } catch (e) {
       emit(TasksError(e.toString()));

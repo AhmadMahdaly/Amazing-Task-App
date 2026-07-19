@@ -51,6 +51,27 @@ class IslamicHomeView extends StatelessWidget {
                 builder: (context) {
                   final items = [
                     _IslamicItem(
+                      title: 'القرآن الكريم',
+                      icon: Icons.menu_book_rounded,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.quranIndexView);
+                      },
+                    ),
+                    _IslamicItem(
+                      title: 'تفسير القرآن',
+                      icon: Icons.auto_stories_rounded,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.tafsirIndexView);
+                      },
+                    ),
+                    _IslamicItem(
+                      title: 'أسماء الله الحسنى',
+                      icon: Icons.all_inclusive_rounded,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.asmaaIndexView);
+                      },
+                    ),
+                    _IslamicItem(
                       title: 'أذكار الصباح',
                       icon: Icons.wb_sunny_outlined,
                       onTap: () async {
@@ -89,27 +110,7 @@ class IslamicHomeView extends StatelessWidget {
                         );
                       },
                     ),
-                    _IslamicItem(
-                      title: 'القرآن الكريم',
-                      icon: Icons.menu_book_rounded,
-                      onTap: () async {
-                        await context.pushNamed(AppRoutes.quranIndexView);
-                      },
-                    ),
-                    _IslamicItem(
-                      title: 'تفسير القرآن',
-                      icon: Icons.auto_stories_rounded,
-                      onTap: () async {
-                        await context.pushNamed(AppRoutes.tafsirIndexView);
-                      },
-                    ),
-                    _IslamicItem(
-                      title: 'أسماء الله الحسنى',
-                      icon: Icons.all_inclusive_rounded,
-                      onTap: () async {
-                        await context.pushNamed(AppRoutes.asmaaIndexView);
-                      },
-                    ),
+
                     _IslamicItem(
                       title: 'حصن المسلم',
                       icon: Icons.auto_stories_rounded,
