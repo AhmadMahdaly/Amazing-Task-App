@@ -60,8 +60,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
           }
 
           final summary = computeSummary(tasks);
-          final dailyStats = computeDailyStats(tasks);
-          final monthlyStats = computeMonthlyStats(tasks);
+          // final dailyStats = computeDailyStats(tasks);
+          // final monthlyStats = computeMonthlyStats(tasks);
 
           return BlocBuilder<ListsCubit, ListsState>(
             builder: (context, listsState) {
@@ -151,46 +151,46 @@ class _AnalyticsScreenState extends State<AnalyticsScreen>
                           16.verticalSpace,
                           _OverviewGrid(summary: summary),
 
-                          32.verticalSpace,
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12.r),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withAlpha(5),
-                                  blurRadius: 10.r,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: TabBar(
-                              controller: _tabController,
-                              labelColor: AppColors.primaryColor,
-                              unselectedLabelColor: AppColors.secondaryColor,
-                              indicatorColor: AppColors.primaryColor,
-                              indicatorWeight: 3,
-                              indicatorSize: TabBarIndicatorSize.tab,
-                              labelStyle: AppTextStyle.style12W700,
-                              dividerColor: Colors.transparent,
-                              tabs: [
-                                Tab(text: AppTexts.dailyStats),
-                                Tab(text: AppTexts.monthlyStats),
-                              ],
-                            ),
-                          ),
-                          16.verticalSpace,
-                          SizedBox(
-                            height: 450.h,
-                            child: TabBarView(
-                              physics: const BouncingScrollPhysics(),
-                              controller: _tabController,
-                              children: [
-                                _DailyStatsPanel(stats: dailyStats),
-                                _MonthlyStatsPanel(stats: monthlyStats),
-                              ],
-                            ),
-                          ),
+                          // 32.verticalSpace,
+                          // Container(
+                          //   decoration: BoxDecoration(
+                          //     color: Colors.white,
+                          //     borderRadius: BorderRadius.circular(12.r),
+                          //     boxShadow: [
+                          //       BoxShadow(
+                          //         color: Colors.black.withAlpha(5),
+                          //         blurRadius: 10.r,
+                          //         offset: const Offset(0, 4),
+                          //       ),
+                          //     ],
+                          //   ),
+                          //   child: TabBar(
+                          //     controller: _tabController,
+                          //     labelColor: AppColors.primaryColor,
+                          //     unselectedLabelColor: AppColors.secondaryColor,
+                          //     indicatorColor: AppColors.primaryColor,
+                          //     indicatorWeight: 3,
+                          //     indicatorSize: TabBarIndicatorSize.tab,
+                          //     labelStyle: AppTextStyle.style12W700,
+                          //     dividerColor: Colors.transparent,
+                          //     tabs: [
+                          //       Tab(text: AppTexts.dailyStats),
+                          //       Tab(text: AppTexts.monthlyStats),
+                          //     ],
+                          //   ),
+                          // ),
+                          // 16.verticalSpace,
+                          // SizedBox(
+                          //   height: 450.h,
+                          //   child: TabBarView(
+                          //     physics: const BouncingScrollPhysics(),
+                          //     controller: _tabController,
+                          //     children: [
+                          //       _DailyStatsPanel(stats: dailyStats),
+                          //       _MonthlyStatsPanel(stats: monthlyStats),
+                          //     ],
+                          //   ),
+                          // ),
                           24.verticalSpace,
                           if (listStats.isNotEmpty) ...[
                             Text(
@@ -516,405 +516,6 @@ class _StreakCard extends StatelessWidget {
   }
 }
 
-class _DailyStatsPanel extends StatelessWidget {
-  const _DailyStatsPanel({required this.stats});
-
-  final List<DayTaskStats> stats;
-
-  @override
-  Widget build(BuildContext context) {
-    final maxScheduled = stats
-        .map((s) => s.scheduledCount)
-        .fold(0, (a, b) => a > b ? a : b);
-    final maxCompleted = stats
-        .map((s) => s.completedCount)
-        .fold(0, (a, b) => a > b ? a : b);
-    final maxValue = (maxScheduled > maxCompleted
-        ? maxScheduled
-        : maxCompleted);
-    final safeMax = maxValue > 0 ? maxValue : 1;
-
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(5),
-            blurRadius: 15.r,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                AppTexts.last14Days,
-                style: AppTextStyle.style14Bold.copyWith(
-                  color: AppColors.forthColor,
-                ),
-              ),
-              _LegendRow(),
-            ],
-          ),
-          24.verticalSpace,
-          Expanded(
-            child: ListView.separated(
-              physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-
-              itemCount: stats.length,
-              separatorBuilder: (context, index) => 16.horizontalSpace,
-              itemBuilder: (context, index) {
-                final day = stats.reversed.toList()[index];
-                return _VerticalDayBar(day: day, maxValue: safeMax);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _VerticalDayBar extends StatelessWidget {
-  const _VerticalDayBar({required this.day, required this.maxValue});
-
-  final DayTaskStats day;
-  final int maxValue;
-
-  @override
-  Widget build(BuildContext context) {
-    final label = '${day.date.day}/${day.date.month}';
-    final rate = (day.completionRate * 100).round();
-
-    final scheduledFraction = (day.scheduledCount / maxValue).clamp(0.0, 1.0);
-    final completedFraction = (day.completedCount / maxValue).clamp(0.0, 1.0);
-
-    return SizedBox(
-      width: 45.w,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            '$rate%',
-            style: AppTextStyle.style9W300.copyWith(
-              fontSize: 10.sp,
-              fontWeight: FontWeight.bold,
-              color: rate >= 80
-                  ? AppColors.successColor
-                  : AppColors.secondaryColor,
-            ),
-          ),
-          8.verticalSpace,
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _AnimatedVerticalBar(
-                  fraction: scheduledFraction,
-                  color: AppColors.thirdColor,
-                ),
-                4.horizontalSpace,
-
-                _AnimatedVerticalBar(
-                  fraction: completedFraction,
-                  color: AppColors.successColor,
-                ),
-              ],
-            ),
-          ),
-          12.verticalSpace,
-
-          Text(
-            label,
-            style: AppTextStyle.style9W300.copyWith(
-              fontSize: 11.sp,
-              color: AppColors.secondaryColor,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AnimatedVerticalBar extends StatelessWidget {
-  const _AnimatedVerticalBar({required this.fraction, required this.color});
-  final double fraction;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: fraction),
-      duration: const Duration(milliseconds: 1200),
-      curve: Curves.easeOutCubic,
-      builder: (context, value, child) {
-        return FractionallySizedBox(
-          heightFactor: value,
-          child: Container(
-            width: 12.w,
-            decoration: BoxDecoration(
-              color: value > 0 ? color : Colors.transparent,
-              borderRadius: BorderRadius.circular(6.r),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _MonthlyStatsPanel extends StatelessWidget {
-  const _MonthlyStatsPanel({required this.stats});
-
-  final List<MonthTaskStats> stats;
-
-  static const _monthNames = [
-    '',
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4.w),
-          child: Text(
-            AppTexts.last6Months,
-            style: AppTextStyle.style14Bold.copyWith(
-              color: AppColors.forthColor,
-            ),
-          ),
-        ),
-        16.verticalSpace,
-        Expanded(
-          child: ListView.separated(
-            physics: const BouncingScrollPhysics(),
-            itemCount: stats.length,
-            separatorBuilder: (context, index) => 16.verticalSpace,
-            itemBuilder: (context, index) {
-              final month = stats.reversed.toList()[index];
-              return _MonthStatCard(
-                month: month,
-                monthName: _monthNames[month.month],
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _MonthStatCard extends StatelessWidget {
-  const _MonthStatCard({required this.month, required this.monthName});
-
-  final MonthTaskStats month;
-  final String monthName;
-
-  @override
-  Widget build(BuildContext context) {
-    final rate = (month.completionRate * 100).round();
-    final isCurrentMonth =
-        month.year == DateTime.now().year &&
-        month.month == DateTime.now().month;
-
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: isCurrentMonth
-            ? AppColors.primaryColor.withAlpha(10)
-            : Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        border: isCurrentMonth
-            ? Border.all(color: AppColors.primaryColor.withAlpha(50), width: 1)
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(5),
-            blurRadius: 15.r,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 70.w,
-            height: 70.w,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                TweenAnimationBuilder<double>(
-                  tween: Tween<double>(begin: 0, end: month.completionRate),
-                  duration: const Duration(milliseconds: 1500),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, value, _) {
-                    return SizedBox(
-                      width: 70.w,
-                      height: 70.w,
-                      child: CircularProgressIndicator(
-                        value: value,
-                        strokeWidth: 6.w,
-                        backgroundColor: AppColors.secondaryColor.withAlpha(20),
-                        color: AppColors.primaryColor,
-                        strokeCap: StrokeCap.round,
-                      ),
-                    );
-                  },
-                ),
-                Text(
-                  '$rate%',
-                  style: AppTextStyle.style14Bold.copyWith(
-                    color: AppColors.primaryColor,
-                    fontSize: 16.sp,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          20.horizontalSpace,
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$monthName ${month.year}',
-                  style: AppTextStyle.style16Bold.copyWith(
-                    color: AppColors.forthColor,
-                  ),
-                ),
-                12.verticalSpace,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _MiniStat(
-                      label: AppTexts.scheduled,
-                      value: '${month.scheduledCount}',
-                      color: AppColors.thirdColor,
-                    ),
-                    _MiniStat(
-                      label: AppTexts.completed,
-                      value: '${month.completedCount}',
-                      color: AppColors.successColor,
-                    ),
-                    _MiniStat(
-                      label: AppTexts.created,
-                      value: '${month.createdCount}',
-                      color: Colors.blueAccent,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MiniStat extends StatelessWidget {
-  const _MiniStat({
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  final String label;
-  final String value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          value,
-          style: AppTextStyle.style14Bold.copyWith(
-            color: color,
-            fontSize: 16.sp,
-          ),
-        ),
-        2.verticalSpace,
-        Text(
-          label,
-          style: AppTextStyle.style9W300.copyWith(
-            fontSize: 10.sp,
-            color: AppColors.secondaryColor,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _LegendRow extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        _LegendDot(color: AppColors.thirdColor, label: AppTexts.scheduled),
-        16.horizontalSpace,
-        _LegendDot(color: AppColors.successColor, label: AppTexts.completed),
-      ],
-    );
-  }
-}
-
-class _LegendDot extends StatelessWidget {
-  const _LegendDot({required this.color, required this.label});
-
-  final Color color;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 10.r,
-          height: 10.r,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        6.horizontalSpace,
-        Text(
-          label,
-          style: AppTextStyle.style9W300.copyWith(
-            fontSize: 11.sp,
-            color: AppColors.secondaryColor,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _ListStatTile extends StatelessWidget {
   const _ListStatTile({
     required this.icon,
@@ -976,3 +577,373 @@ class _ListStatTile extends StatelessWidget {
     );
   }
 }
+
+// class _DailyStatsPanel extends StatelessWidget {
+//   const _DailyStatsPanel({required this.stats});
+//   final List<DayTaskStats> stats;
+//   @override
+//   Widget build(BuildContext context) {
+//     final maxScheduled = stats
+//         .map((s) => s.scheduledCount)
+//         .fold(0, (a, b) => a > b ? a : b);
+//     final maxCompleted = stats
+//         .map((s) => s.completedCount)
+//         .fold(0, (a, b) => a > b ? a : b);
+//     final maxValue = (maxScheduled > maxCompleted
+//         ? maxScheduled
+//         : maxCompleted);
+//     final safeMax = maxValue > 0 ? maxValue : 1;
+//     return Container(
+//       padding: EdgeInsets.all(20.w),
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: BorderRadius.circular(20.r),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black.withAlpha(5),
+//             blurRadius: 15.r,
+//             offset: const Offset(0, 5),
+//           ),
+//         ],
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               Text(
+//                 AppTexts.last14Days,
+//                 style: AppTextStyle.style14Bold.copyWith(
+//                   color: AppColors.forthColor,
+//                 ),
+//               ),
+//               _LegendRow(),
+//             ],
+//           ),
+//           24.verticalSpace,
+//           Expanded(
+//             child: ListView.separated(
+//               physics: const BouncingScrollPhysics(),
+//               scrollDirection: Axis.horizontal,
+//               itemCount: stats.length,
+//               separatorBuilder: (context, index) => 16.horizontalSpace,
+//               itemBuilder: (context, index) {
+//                 final day = stats.reversed.toList()[index];
+//                 return _VerticalDayBar(day: day, maxValue: safeMax);
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+// class _VerticalDayBar extends StatelessWidget {
+//   const _VerticalDayBar({required this.day, required this.maxValue});
+//   final DayTaskStats day;
+//   final int maxValue;
+//   @override
+//   Widget build(BuildContext context) {
+//     final label = '${day.date.day}/${day.date.month}';
+//     final rate = (day.completionRate * 100).round();
+//     final scheduledFraction = (day.scheduledCount / maxValue).clamp(0.0, 1.0);
+//     final completedFraction = (day.completedCount / maxValue).clamp(0.0, 1.0);
+//     return SizedBox(
+//       width: 45.w,
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.end,
+//         children: [
+//           Text(
+//             '$rate%',
+//             style: AppTextStyle.style9W300.copyWith(
+//               fontSize: 10.sp,
+//               fontWeight: FontWeight.bold,
+//               color: rate >= 80
+//                   ? AppColors.successColor
+//                   : AppColors.secondaryColor,
+//             ),
+//           ),
+//           8.verticalSpace,
+//           Expanded(
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               crossAxisAlignment: CrossAxisAlignment.end,
+//               children: [
+//                 _AnimatedVerticalBar(
+//                   fraction: scheduledFraction,
+//                   color: AppColors.thirdColor,
+//                 ),
+//                 4.horizontalSpace,
+//                 _AnimatedVerticalBar(
+//                   fraction: completedFraction,
+//                   color: AppColors.successColor,
+//                 ),
+//               ],
+//             ),
+//           ),
+//           12.verticalSpace,
+//           Text(
+//             label,
+//             style: AppTextStyle.style9W300.copyWith(
+//               fontSize: 11.sp,
+//               color: AppColors.secondaryColor,
+//               fontWeight: FontWeight.w600,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+// class _AnimatedVerticalBar extends StatelessWidget {
+//   const _AnimatedVerticalBar({required this.fraction, required this.color});
+//   final double fraction;
+//   final Color color;
+//   @override
+//   Widget build(BuildContext context) {
+//     return TweenAnimationBuilder<double>(
+//       tween: Tween<double>(begin: 0, end: fraction),
+//       duration: const Duration(milliseconds: 1200),
+//       curve: Curves.easeOutCubic,
+//       builder: (context, value, child) {
+//         return FractionallySizedBox(
+//           heightFactor: value,
+//           child: Container(
+//             width: 12.w,
+//             decoration: BoxDecoration(
+//               color: value > 0 ? color : Colors.transparent,
+//               borderRadius: BorderRadius.circular(6.r),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
+// class _MonthlyStatsPanel extends StatelessWidget {
+//   const _MonthlyStatsPanel({required this.stats});
+//   final List<MonthTaskStats> stats;
+//   static const _monthNames = [
+//     '',
+//     'Jan',
+//     'Feb',
+//     'Mar',
+//     'Apr',
+//     'May',
+//     'Jun',
+//     'Jul',
+//     'Aug',
+//     'Sep',
+//     'Oct',
+//     'Nov',
+//     'Dec',
+//   ];
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Padding(
+//           padding: EdgeInsets.symmetric(horizontal: 4.w),
+//           child: Text(
+//             AppTexts.last6Months,
+//             style: AppTextStyle.style14Bold.copyWith(
+//               color: AppColors.forthColor,
+//             ),
+//           ),
+//         ),
+//         16.verticalSpace,
+//         Expanded(
+//           child: ListView.separated(
+//             physics: const BouncingScrollPhysics(),
+//             itemCount: stats.length,
+//             separatorBuilder: (context, index) => 16.verticalSpace,
+//             itemBuilder: (context, index) {
+//               final month = stats.reversed.toList()[index];
+//               return _MonthStatCard(
+//                 month: month,
+//                 monthName: _monthNames[month.month],
+//               );
+//             },
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+// class _MonthStatCard extends StatelessWidget {
+//   const _MonthStatCard({required this.month, required this.monthName});
+//   final MonthTaskStats month;
+//   final String monthName;
+//   @override
+//   Widget build(BuildContext context) {
+//     final rate = (month.completionRate * 100).round();
+//     final isCurrentMonth =
+//         month.year == DateTime.now().year &&
+//         month.month == DateTime.now().month;
+//     return Container(
+//       padding: EdgeInsets.all(20.w),
+//       decoration: BoxDecoration(
+//         color: isCurrentMonth
+//             ? AppColors.primaryColor.withAlpha(10)
+//             : Colors.white,
+//         borderRadius: BorderRadius.circular(20.r),
+//         border: isCurrentMonth
+//             ? Border.all(color: AppColors.primaryColor.withAlpha(50), width: 1)
+//             : null,
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black.withAlpha(5),
+//             blurRadius: 15.r,
+//             offset: const Offset(0, 5),
+//           ),
+//         ],
+//       ),
+//       child: Row(
+//         children: [
+//           SizedBox(
+//             width: 70.w,
+//             height: 70.w,
+//             child: Stack(
+//               alignment: Alignment.center,
+//               children: [
+//                 TweenAnimationBuilder<double>(
+//                   tween: Tween<double>(begin: 0, end: month.completionRate),
+//                   duration: const Duration(milliseconds: 1500),
+//                   curve: Curves.easeOutCubic,
+//                   builder: (context, value, _) {
+//                     return SizedBox(
+//                       width: 70.w,
+//                       height: 70.w,
+//                       child: CircularProgressIndicator(
+//                         value: value,
+//                         strokeWidth: 6.w,
+//                         backgroundColor: AppColors.secondaryColor.withAlpha(20),
+//                         color: AppColors.primaryColor,
+//                         strokeCap: StrokeCap.round,
+//                       ),
+//                     );
+//                   },
+//                 ),
+//                 Text(
+//                   '$rate%',
+//                   style: AppTextStyle.style14Bold.copyWith(
+//                     color: AppColors.primaryColor,
+//                     fontSize: 16.sp,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           20.horizontalSpace,
+//           Expanded(
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   '$monthName ${month.year}',
+//                   style: AppTextStyle.style16Bold.copyWith(
+//                     color: AppColors.forthColor,
+//                   ),
+//                 ),
+//                 12.verticalSpace,
+//                 Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                   children: [
+//                     _MiniStat(
+//                       label: AppTexts.scheduled,
+//                       value: '${month.scheduledCount}',
+//                       color: AppColors.thirdColor,
+//                     ),
+//                     _MiniStat(
+//                       label: AppTexts.completed,
+//                       value: '${month.completedCount}',
+//                       color: AppColors.successColor,
+//                     ),
+//                     _MiniStat(
+//                       label: AppTexts.created,
+//                       value: '${month.createdCount}',
+//                       color: Colors.blueAccent,
+//                     ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+// class _MiniStat extends StatelessWidget {
+//   const _MiniStat({
+//     required this.label,
+//     required this.value,
+//     required this.color,
+//   });
+//   final String label;
+//   final String value;
+//   final Color color;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(
+//           value,
+//           style: AppTextStyle.style14Bold.copyWith(
+//             color: color,
+//             fontSize: 16.sp,
+//           ),
+//         ),
+//         2.verticalSpace,
+//         Text(
+//           label,
+//           style: AppTextStyle.style9W300.copyWith(
+//             fontSize: 10.sp,
+//             color: AppColors.secondaryColor,
+//             fontWeight: FontWeight.w500,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+// class _LegendRow extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       children: [
+//         _LegendDot(color: AppColors.thirdColor, label: AppTexts.scheduled),
+//         16.horizontalSpace,
+//         _LegendDot(color: AppColors.successColor, label: AppTexts.completed),
+//       ],
+//     );
+//   }
+// }
+// class _LegendDot extends StatelessWidget {
+//   const _LegendDot({required this.color, required this.label});
+//   final Color color;
+//   final String label;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       children: [
+//         Container(
+//           width: 10.r,
+//           height: 10.r,
+//           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+//         ),
+//         6.horizontalSpace,
+//         Text(
+//           label,
+//           style: AppTextStyle.style9W300.copyWith(
+//             fontSize: 11.sp,
+//             color: AppColors.secondaryColor,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }

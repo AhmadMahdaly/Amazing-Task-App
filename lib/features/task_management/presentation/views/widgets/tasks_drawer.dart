@@ -38,11 +38,10 @@ class TasksDrawer extends StatelessWidget {
                 var progress = 0.0;
                 var completedToday = 0;
                 var totalToday = 0;
-
+                // TaskAnalyticsSummary? summary;
                 if (state is TasksLoaded) {
-                  final todayTasks = state.allTasks
-                      .where(isTaskInMyDay)
-                      .toList();
+                  final tasks = state.allTasks;
+                  final todayTasks = tasks.where(isTaskInMyDay).toList();
 
                   totalToday = todayTasks.length;
                   completedToday = todayTasks
@@ -52,6 +51,7 @@ class TasksDrawer extends StatelessWidget {
                   if (totalToday > 0) {
                     progress = completedToday / totalToday;
                   }
+                  // summary = computeSummary(tasks);
                 }
 
                 return InkWell(
@@ -89,6 +89,15 @@ class TasksDrawer extends StatelessWidget {
                                   size: 20.r,
                                 ),
                               ),
+                              // Center(
+                              //   child: Text(
+                              //     summary?.currentStreak.toString() ?? '0',
+                              //     style: AppTextStyle.style16Bold.copyWith(
+                              //       fontSize: 20.sp,
+                              //       color: AppColors.white,
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),

@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "My Task"
-#define MyAppVersion "1.0.34"
+#define MyAppVersion "1.0.36"
 #define MyAppPublisher "AM, Inc."
 #define MyAppURL "https://a-eg.com/en"
 #define MyAppExeName "my_task.exe"
