@@ -1,5 +1,6 @@
-// ignore_for_file: cascade_invocations, discarded_futures
+// ignore_for_file: discarded_futures, cascade_invocations
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,8 +11,10 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
+import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
+import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_highlight.dart';
 import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_lesson.dart';
 import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
 
@@ -35,7 +38,14 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
     Colors.green.shade100,
     Colors.brown.shade100,
   ];
-
+  List<AsmaaHighlight> _highlights = [];
+  final List<Color> _highlightColors = [
+    Colors.orange,
+    Colors.green,
+    Colors.blue,
+    Colors.redAccent,
+    Colors.purple,
+  ];
   late AsmaaCubit _asmaaCubit;
   double _readingProgress = 0;
   final ScrollController _scrollController = ScrollController();
@@ -45,7 +55,6 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
     super.initState();
     _asmaaCubit = context.read<AsmaaCubit>();
 
-    // يمكن استخدام مفاتيح الكاش القديمة أو تعريف مفاتيح خاصة للأسماء
     _fontSize =
         (CacheHelper.getData('asmaa_font_size') as num?)?.toDouble() ?? 24;
     _screenOpacity =
@@ -71,6 +80,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
     });
 
     _scrollController.addListener(_onScroll);
+    _loadHighlights();
   }
 
   @override
@@ -114,6 +124,23 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
     _saveOffset();
   }
 
+  void _loadHighlights() {
+    final savedData =
+        CacheHelper.getData('asmaa_highlights_${widget.lesson.id}') as String?;
+    if (savedData != null) {
+      setState(() {
+        _highlights = AsmaaHighlight.decode(savedData);
+      });
+    }
+  }
+
+  void _saveHighlights() {
+    CacheHelper.saveData(
+      key: 'asmaa_highlights_${widget.lesson.id}',
+      value: AsmaaHighlight.encode(_highlights),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WallpaperCubit, WallpaperState>(
@@ -153,26 +180,6 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text('حجم الخط'),
-                                  Slider(
-                                    activeColor: AppColors.primaryColor,
-                                    value: _fontSize,
-                                    min: 16,
-                                    max: 48,
-                                    divisions: 16,
-                                    label: _fontSize.round().toString(),
-                                    onChanged: (value) {
-                                      setState(() => _fontSize = value);
-                                      setModalState(() {});
-                                    },
-                                    onChangeEnd: (value) {
-                                      CacheHelper.saveData(
-                                        key: 'asmaa_font_size',
-                                        value: value,
-                                      );
-                                    },
-                                  ),
-                                  10.verticalSpace,
                                   const Text('لون الخط'),
                                   8.verticalSpace,
                                   Wrap(
@@ -206,27 +213,134 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                     }).toList(),
                                   ),
                                   10.verticalSpace,
-                                  const Text('شفافية الشاشة'),
-                                  Slider(
-                                    activeColor: AppColors.primaryColor,
-                                    value: _screenOpacity.toDouble(),
-                                    min: 50,
-                                    max: 255,
-                                    divisions: 20,
-                                    label: _screenOpacity.toString(),
-                                    onChanged: (value) {
-                                      setState(
-                                        () => _screenOpacity = value.toInt(),
-                                      );
-                                      setModalState(() {});
-                                    },
-                                    onChangeEnd: (value) {
-                                      CacheHelper.saveData(
-                                        key: 'asmaa_screen_opacity',
-                                        value: value,
-                                      );
-                                    },
+                                  const Text('حجم الخط'),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          if (_fontSize > 18) {
+                                            setState(() => _fontSize -= 2);
+                                            setModalState(() {});
+                                            CacheHelper.saveData(
+                                              key: 'asmaa_font_size',
+                                              value: _fontSize,
+                                            );
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.remove_circle_outline,
+                                          color: AppColors.primaryColor
+                                              .withAlpha(100),
+                                        ),
+                                      ),
+                                      Slider(
+                                        activeColor: AppColors.primaryColor,
+                                        value: _fontSize,
+                                        min: 16,
+                                        max: 48,
+                                        divisions: 16,
+                                        label: _fontSize.round().toString(),
+                                        onChanged: (value) {
+                                          setState(() => _fontSize = value);
+                                          setModalState(() {});
+                                        },
+                                        onChangeEnd: (value) {
+                                          CacheHelper.saveData(
+                                            key: 'asmaa_font_size',
+                                            value: value,
+                                          );
+                                        },
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          if (_fontSize < 48) {
+                                            setState(() => _fontSize += 2);
+                                            setModalState(() {});
+                                            CacheHelper.saveData(
+                                              key: 'asmaa_font_size',
+                                              value: _fontSize,
+                                            );
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.add_circle_outline,
+                                          color: AppColors.primaryColor
+                                              .withAlpha(100),
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                  10.verticalSpace,
+
+                                  const Text('شفافية الشاشة'),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          if (_screenOpacity > 50) {
+                                            setState(
+                                              () => _screenOpacity -= 20,
+                                            );
+                                            setModalState(() {});
+                                            CacheHelper.saveData(
+                                              key: 'asmaa_screen_opacity',
+                                              value: _screenOpacity,
+                                            );
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.remove_circle_outline,
+                                          color: AppColors.primaryColor
+                                              .withAlpha(100),
+                                        ),
+                                      ),
+                                      Slider(
+                                        activeColor: AppColors.primaryColor,
+                                        value: _screenOpacity
+                                            .clamp(50, 250)
+                                            .toDouble(),
+                                        min: 50,
+                                        max: 250,
+                                        divisions: 10,
+                                        label: _screenOpacity.toString(),
+                                        onChanged: (value) {
+                                          setState(
+                                            () =>
+                                                _screenOpacity = value.toInt(),
+                                          );
+                                          setModalState(() {});
+                                        },
+                                        onChangeEnd: (value) {
+                                          CacheHelper.saveData(
+                                            key: 'asmaa_screen_opacity',
+                                            value: value,
+                                          );
+                                        },
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          if (_screenOpacity < 250) {
+                                            setState(
+                                              () => _screenOpacity += 20,
+                                            );
+                                            setModalState(() {});
+                                            CacheHelper.saveData(
+                                              key: 'asmaa_screen_opacity',
+                                              value: _screenOpacity,
+                                            );
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.add_circle_outline,
+                                          color: AppColors.primaryColor
+                                              .withAlpha(100),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
                                   10.verticalSpace,
                                   FilledButton.icon(
                                     style: const ButtonStyle(
@@ -349,18 +463,60 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                         padding: EdgeInsets.all(16.r),
                         child: Column(
                           children: [
-                            Text(
-                              widget.lesson.content,
+                            SelectableText.rich(
+                              TextSpan(
+                                children: _buildHighlightedSpans(
+                                  widget.lesson.content,
+                                ),
+                                style: AppTextStyle.style20W900.copyWith(
+                                  fontFamily: AppFonts.amiri,
+                                  color: _textColor,
+                                  height: 1.8,
+                                  fontSize: _fontSize.sp,
+                                ),
+                              ),
                               textAlign: TextAlign.justify,
                               textDirection: TextDirection.rtl,
-                              style: AppTextStyle.style20W900.copyWith(
-                                fontFamily: AppFonts.amiri,
-                                color: _textColor,
-                                height: 1.8,
-                                fontSize: _fontSize.sp,
-                              ),
+                              contextMenuBuilder: (context, editableTextState) {
+                                final buttonItems =
+                                    editableTextState.contextMenuButtonItems;
+
+                                buttonItems.insert(
+                                  0,
+                                  ContextMenuButtonItem(
+                                    label: 'Highlight / Note',
+                                    type: ContextMenuButtonType.liveTextInput,
+                                    onPressed: () {
+                                      final selection = editableTextState
+                                          .textEditingValue
+                                          .selection;
+                                      if (!selection.isCollapsed) {
+                                        final selectedText = editableTextState
+                                            .textEditingValue
+                                            .text
+                                            .substring(
+                                              selection.start,
+                                              selection.end,
+                                            );
+
+                                        ContextMenuController.removeAny();
+
+                                        _showHighlightBottomSheet(
+                                          selection.start,
+                                          selection.end,
+                                          selectedText,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                );
+
+                                return AdaptiveTextSelectionToolbar.buttonItems(
+                                  anchors: editableTextState.contextMenuAnchors,
+                                  buttonItems: buttonItems,
+                                );
+                              },
                             ),
-                            // التحقق مما إذا كان هناك درس تالي في القائمة لإظهار الزر
                             if (widget.lesson.id <
                                 _asmaaCubit.allLessons.length) ...[
                               40.verticalSpace,
@@ -393,6 +549,271 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
               ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  List<InlineSpan> _buildHighlightedSpans(String text) {
+    _highlights.sort((a, b) => a.startOffset.compareTo(b.startOffset));
+
+    final spans = <InlineSpan>[];
+    var currentIndex = 0;
+
+    for (final h in _highlights) {
+      if (h.startOffset < currentIndex) continue;
+
+      if (h.startOffset > currentIndex) {
+        spans.add(TextSpan(text: text.substring(currentIndex, h.startOffset)));
+      }
+
+      spans.add(
+        TextSpan(
+          text: text.substring(h.startOffset, h.endOffset),
+          style: TextStyle(
+            color: Color(h.colorValue),
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              _showEditHighlightBottomSheet(h);
+            },
+        ),
+      );
+      currentIndex = h.endOffset;
+    }
+
+    if (currentIndex < text.length) {
+      spans.add(TextSpan(text: text.substring(currentIndex)));
+    }
+
+    return spans;
+  }
+
+  void _showHighlightBottomSheet(int start, int end, String text) {
+    var selectedColor = _highlightColors.first;
+    final noteController = TextEditingController();
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 16,
+                right: 16,
+                top: 16,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'تحديد النص وإضافة ملاحظة',
+                    style: AppTextStyle.style18W900.copyWith(
+                      fontFamily: AppFonts.amiri,
+                    ),
+                  ),
+                  16.verticalSpace,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: _highlightColors.map((color) {
+                      return GestureDetector(
+                        onTap: () => setSheetState(() => selectedColor = color),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: selectedColor == color
+                                  ? Colors.black
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  16.verticalSpace,
+                  CustomPrimaryTextfield(
+                    controller: noteController,
+                    text: 'اكتب ملاحظتك هنا (اختياري)',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyle.style16W600.copyWith(
+                      fontFamily: AppFonts.amiri,
+                      color: AppColors.secondaryColor,
+                    ),
+
+                    maxLines: 3,
+                  ),
+                  16.verticalSpace,
+                  FilledButton(
+                    style: const ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(
+                        AppColors.primaryColor,
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _highlights.add(
+                          AsmaaHighlight(
+                            id: DateTime.now().millisecondsSinceEpoch
+                                .toString(),
+                            lessonId: widget.lesson.id,
+                            startOffset: start,
+                            endOffset: end,
+                            selectedText: text,
+                            colorValue: selectedColor.toARGB32(),
+                            note: noteController.text,
+                          ),
+                        );
+                      });
+                      _saveHighlights();
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'حفظ',
+                      style: AppTextStyle.style18W900.copyWith(
+                        fontFamily: AppFonts.amiri,
+                      ),
+                    ),
+                  ),
+                  20.verticalSpace,
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showEditHighlightBottomSheet(AsmaaHighlight highlight) {
+    var selectedColor = Color(highlight.colorValue);
+    final noteController = TextEditingController(
+      text: highlight.note,
+    );
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 16,
+                right: 16,
+                top: 16,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          color: Colors.red,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _highlights.removeWhere(
+                              (h) => h.id == highlight.id,
+                            );
+                          });
+                          _saveHighlights();
+                          Navigator.pop(context);
+                        },
+                      ),
+                      Text(
+                        'تعديل أو إزالة التحديد',
+                        style: AppTextStyle.style18W900.copyWith(
+                          fontFamily: AppFonts.amiri,
+                        ),
+                      ),
+                    ],
+                  ),
+                  16.verticalSpace,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: _highlightColors.map((color) {
+                      return GestureDetector(
+                        onTap: () => setSheetState(() => selectedColor = color),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color:
+                                  selectedColor.toARGB32() == color.toARGB32()
+                                  ? Colors.black
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  16.verticalSpace,
+                  CustomPrimaryTextfield(
+                    controller: noteController,
+                    text: 'اكتب ملاحظتك هنا (اختياري)',
+                    style: AppTextStyle.style16W600.copyWith(
+                      fontFamily: AppFonts.amiri,
+                    ),
+                    maxLines: 3,
+                  ),
+                  16.verticalSpace,
+                  FilledButton(
+                    style: const ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(
+                        AppColors.primaryColor,
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        final index = _highlights.indexWhere(
+                          (h) => h.id == highlight.id,
+                        );
+                        if (index != -1) {
+                          _highlights[index] = AsmaaHighlight(
+                            id: highlight.id,
+                            lessonId: highlight.lessonId,
+                            startOffset: highlight.startOffset,
+                            endOffset: highlight.endOffset,
+                            selectedText: highlight.selectedText,
+                            colorValue: selectedColor.toARGB32(),
+                            note: noteController.text,
+                          );
+                        }
+                      });
+                      _saveHighlights();
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'حفظ التعديلات',
+                      style: AppTextStyle.style18W900.copyWith(
+                        fontFamily: AppFonts.amiri,
+                      ),
+                    ),
+                  ),
+                  20.verticalSpace,
+                ],
+              ),
+            );
+          },
         );
       },
     );

@@ -12,6 +12,7 @@ import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_lesson.da
 import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
 import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_index_view.dart';
 import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_reading_view.dart';
+import 'package:s/features/islamic_section/asmaa/presentation/views/highlights_and_notes_view.dart';
 import 'package:s/features/islamic_section/azkar/presentation/controllers/cubit/azkar_cubit.dart';
 import 'package:s/features/islamic_section/azkar/presentation/views/azkar_view.dart';
 import 'package:s/features/islamic_section/hisn_azkar/domain/entities/hisn_chapter_entity.dart';
@@ -26,9 +27,11 @@ import 'package:s/features/islamic_section/missed_prayers/presentation/views/set
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
 import 'package:s/features/islamic_section/quran/presentation/views/quran_index_view.dart';
+import 'package:s/features/islamic_section/quran/presentation/views/saved_ayahs_and_notes_view.dart';
 import 'package:s/features/islamic_section/quran/presentation/views/surah_reading_view.dart';
-import 'package:s/features/islamic_section/sunan/presentation/cubit/sunan_cubit.dart';
-import 'package:s/features/islamic_section/sunan/presentation/views/sunan_view.dart';
+import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
+import 'package:s/features/islamic_section/tafsir/presentation/views/tafsir_index_view.dart';
+import 'package:s/features/islamic_section/tafsir/presentation/views/tafsir_reading_view.dart';
 import 'package:s/features/planner/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
@@ -178,17 +181,17 @@ void initRouter() {
           );
         },
       ),
-      GoRoute(
-        path: AppRoutes.sunanView,
-        name: AppRoutes.sunanView,
-        builder: (context, state) {
-          return BlocProvider.value(
-            value: getIt<SunanCubit>()..loadSunanData(),
-            child: const SunanView(),
-          );
-        },
-      ),
 
+      // GoRoute(
+      //   path: AppRoutes.sunanView,
+      //   name: AppRoutes.sunanView,
+      //   builder: (context, state) {
+      //     return BlocProvider.value(
+      //       value: getIt<SunanCubit>()..loadSunanData(),
+      //       child: const SunanView(),
+      //     );
+      //   },
+      // ),
       GoRoute(
         path: AppRoutes.asmaaIndexView,
         name: AppRoutes.asmaaIndexView,
@@ -208,6 +211,59 @@ void initRouter() {
             value: getIt<AsmaaCubit>(),
             child: AsmaaReadingView(
               lesson: lesson,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.highlightsAndNotesView,
+        name: AppRoutes.highlightsAndNotesView,
+        builder: (context, state) {
+          return const HighlightsAndNotesView();
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.savedAyahsAndNotesView,
+        name: AppRoutes.savedAyahsAndNotesView,
+        builder: (context, state) {
+          return const SavedAyahsAndNotesView();
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.tafsirIndexView,
+        name: AppRoutes.tafsirIndexView,
+        builder: (context, state) {
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: getIt<TafsirCubit>()..loadTafsirData(),
+              ),
+              BlocProvider.value(
+                value: getIt<QuranCubit>()..loadSurahs(),
+              ),
+            ],
+            child: const TafsirIndexView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.tafsirReadingView,
+        name: AppRoutes.tafsirReadingView,
+        builder: (context, state) {
+          final surah = state.extra! as SurahEntity;
+
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: getIt<TafsirCubit>(),
+              ),
+              BlocProvider.value(
+                value: getIt<QuranCubit>(),
+              ),
+            ],
+            child: TafsirReadingView(
+              surah: surah,
             ),
           );
         },

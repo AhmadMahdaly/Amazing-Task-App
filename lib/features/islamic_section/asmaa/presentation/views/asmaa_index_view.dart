@@ -7,7 +7,6 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
-
 import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_lesson.dart';
 import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
 
@@ -33,6 +32,19 @@ class AsmaaIndexView extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_ios_new),
             onPressed: () => context.pop(),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.highlight_alt_rounded,
+                color: AppColors.buttonColor.withAlpha(150),
+                size: 24.r,
+              ),
+              onPressed: () async {
+                await context.pushNamed(AppRoutes.highlightsAndNotesView);
+              },
+            ),
+            20.horizontalSpace,
+          ],
         ),
         body: BlocBuilder<AsmaaCubit, AsmaaState>(
           builder: (context, state) {

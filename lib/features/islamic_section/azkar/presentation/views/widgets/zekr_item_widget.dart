@@ -6,6 +6,7 @@ import 'package:s/core/responsive/responsive_config.dart';
 
 class ZekrItemWidget extends StatelessWidget {
   const ZekrItemWidget({
+    required this.fontSize,
     required this.zekrText,
     required this.benefit,
     required this.totalCount,
@@ -19,7 +20,7 @@ class ZekrItemWidget extends StatelessWidget {
   final int totalCount;
   final int currentCount;
   final VoidCallback onTap;
-
+  final double fontSize;
   @override
   Widget build(BuildContext context) {
     final isCompleted = currentCount == 0;
@@ -57,6 +58,7 @@ class ZekrItemWidget extends StatelessWidget {
                 color: AppColors.primaryColor,
                 fontFamily: AppFonts.amiri,
                 height: 2,
+                fontSize: fontSize,
               ),
               textAlign: TextAlign.justify,
             ),

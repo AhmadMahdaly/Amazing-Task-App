@@ -1,14 +1,46 @@
+// ignore_for_file: discarded_futures
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:s/core/cache_helper/cache_helper.dart';
 import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/features/islamic_section/hisn_azkar/domain/entities/hisn_chapter_entity.dart';
 
-class HisnReadingView extends StatelessWidget {
+class HisnReadingView extends StatefulWidget {
   const HisnReadingView({required this.chapter, super.key});
   final HisnChapterEntity chapter;
+
+  @override
+  State<HisnReadingView> createState() => _HisnReadingViewState();
+}
+
+class _HisnReadingViewState extends State<HisnReadingView> {
+  double _fontSize = 18;
+  @override
+  void initState() {
+    super.initState();
+    _fontSize =
+        (CacheHelper.getData('hist_font_size') as num?)?.toDouble() ?? 18;
+  }
+
+  void _updateFontSize(
+    double value,
+    void Function(void Function()) setModalState,
+  ) {
+    setState(() {
+      _fontSize = value.clamp(18, 48);
+    });
+
+    setModalState(() {});
+
+    CacheHelper.saveData(
+      key: 'hist_font_size',
+      value: _fontSize,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +50,7 @@ class HisnReadingView extends StatelessWidget {
         appBar: AppBar(
           toolbarHeight: 75.h,
           title: Text(
-            chapter.title,
+            widget.chapter.title,
             style: AppTextStyle.style20W900.copyWith(
               fontFamily: AppFonts.amiri,
             ),
@@ -30,30 +62,122 @@ class HisnReadingView extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_ios_new),
             onPressed: () => context.pop(),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.text_fields_rounded,
+                color: AppColors.buttonColor.withAlpha(150),
+                size: 24.r,
+              ),
+              onPressed: () async {
+                await showModalBottomSheet<void>(
+                  context: context,
+                  builder: (_) {
+                    return StatefulBuilder(
+                      builder: (context, setModalState) {
+                        return Padding(
+                          padding: EdgeInsets.all(16.r),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('حجم الخط'),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      _updateFontSize(
+                                        _fontSize - 2,
+                                        setModalState,
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.remove_circle_outline,
+                                      color: AppColors.primaryColor.withAlpha(
+                                        100,
+                                      ),
+                                    ),
+                                  ),
+
+                                  Expanded(
+                                    child: Slider(
+                                      activeColor: AppColors.primaryColor,
+                                      value: _fontSize,
+                                      min: 18,
+                                      max: 48,
+                                      divisions: 15,
+                                      label: _fontSize.toString(),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _fontSize = value;
+                                        });
+                                        setModalState(() {});
+                                      },
+                                      onChangeEnd: (value) {
+                                        _updateFontSize(
+                                          value,
+                                          setModalState,
+                                        );
+                                      },
+                                    ),
+                                  ),
+
+                                  IconButton(
+                                    onPressed: () {
+                                      _updateFontSize(
+                                        _fontSize + 2,
+                                        setModalState,
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.add_circle_outline,
+                                      color: AppColors.primaryColor.withAlpha(
+                                        100,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              20.verticalSpace,
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+
+            20.horizontalSpace,
+          ],
         ),
         body: SafeArea(
           child: ListView.separated(
             padding: EdgeInsets.all(16.r),
-            itemCount: chapter.texts.length,
+            itemCount: widget.chapter.texts.length,
             separatorBuilder: (context, index) => 16.verticalSpace,
             itemBuilder: (context, index) {
-              final text = chapter.texts[index];
+              final text = widget.chapter.texts[index];
 
-              final footnote = (index < chapter.footnotes.length)
-                  ? chapter.footnotes[index]
+              final footnote = (index < widget.chapter.footnotes.length)
+                  ? widget.chapter.footnotes[index]
                   : null;
 
               return Container(
                 padding: EdgeInsets.all(16.r),
                 decoration: BoxDecoration(
-                  color: AppColors.buttonColor.withAlpha(100),
+                  color: AppColors.buttonColor,
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: AppColors.thirdColor),
+                  border: Border.all(
+                    color: AppColors.thirdColor,
+                    width: 1,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withAlpha(10),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      color: Colors.black.withAlpha(15),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -64,6 +188,7 @@ class HisnReadingView extends StatelessWidget {
                       text,
                       style: AppTextStyle.style18W800.copyWith(
                         fontFamily: AppFonts.amiri,
+                        fontSize: _fontSize.sp,
                         color: AppColors.primaryColor,
                         height: 1.8,
                       ),
@@ -77,13 +202,15 @@ class HisnReadingView extends StatelessWidget {
                         padding: EdgeInsets.all(8.r),
                         decoration: BoxDecoration(
                           color: AppColors.primaryColor.withAlpha(10),
-                          borderRadius: BorderRadius.circular(8.r),
+                          borderRadius: BorderRadius.circular(4.r),
                         ),
                         child: Text(
                           footnote,
-                          style: AppTextStyle.style9W500.copyWith(
-                            color: AppColors.thirdColor,
+                          style: AppTextStyle.style9W300.copyWith(
+                            color: AppColors.primaryColor,
                             fontFamily: kPrimaryArFont,
+
+                            fontSize: (_fontSize - 10).sp,
                             height: 1.5,
                           ),
                         ),

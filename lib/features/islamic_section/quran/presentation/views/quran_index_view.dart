@@ -1,6 +1,9 @@
+// ignore_for_file: discarded_futures
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:s/core/cache_helper/cache_helper.dart';
 import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text_style.dart';
@@ -32,6 +35,19 @@ class QuranIndexView extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_ios_new),
             onPressed: () => context.pop(),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.highlight_alt_rounded,
+                color: AppColors.buttonColor.withAlpha(150),
+                size: 24.r,
+              ),
+              onPressed: () async {
+                await context.pushNamed(AppRoutes.savedAyahsAndNotesView);
+              },
+            ),
+            20.horizontalSpace,
+          ],
         ),
         body: BlocBuilder<QuranCubit, QuranState>(
           builder: (context, state) {
@@ -53,14 +69,32 @@ class QuranIndexView extends StatelessWidget {
             }
 
             if (state is QuranLoaded) {
+              final bookmarkedSurahNumber =
+                  CacheHelper.getData('bookmarked_surah') as int?;
+              final bookmarkedAyah =
+                  CacheHelper.getData('bookmarked_ayah') as int?;
+
               return Column(
                 children: [
-                  if (state.lastReadSurahNumber != null)
-                    _buildContinueReadingCard(
-                      context,
-                      state.surahs,
-                      state.lastReadSurahNumber!,
-                    ),
+                  Column(
+                    children: [
+                      16.verticalSpace,
+                      if (bookmarkedSurahNumber != null &&
+                          bookmarkedAyah != null)
+                        _buildBookmarkCard(
+                          context,
+                          state.surahs,
+                          bookmarkedSurahNumber,
+                          bookmarkedAyah,
+                        ),
+                      if (state.lastReadSurahNumber != null)
+                        _buildContinueReadingCard(
+                          context,
+                          state.surahs,
+                          state.lastReadSurahNumber!,
+                        ),
+                    ],
+                  ),
 
                   Expanded(
                     child: ListView.separated(
@@ -186,6 +220,124 @@ class QuranIndexView extends StatelessWidget {
               ),
             ),
             Icon(Icons.menu_book, color: AppColors.primaryColor, size: 40.r),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBookmarkCard(
+    BuildContext context,
+    List<SurahEntity> surahs,
+    int surahNumber,
+    int ayahNumber,
+  ) {
+    final bookmarkedSurah = surahs.firstWhere((s) => s.number == surahNumber);
+
+    return GestureDetector(
+      onLongPress: () {
+        showDialog<void>(
+          context: context,
+          builder: (context) => Directionality(
+            textDirection: TextDirection.rtl,
+            child: AlertDialog(
+              title: Text(
+                'حذف العلامة المرجعية',
+                style: AppTextStyle.style18W900.copyWith(
+                  fontFamily: AppFonts.amiri,
+                  color: AppColors.primaryColor,
+                ),
+              ),
+              content: Text(
+                'هل أنت متأكد من حذف هذه العلامة المرجعية؟',
+                style: AppTextStyle.style14W500.copyWith(
+                  fontFamily: AppFonts.amiri,
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    CacheHelper.removeData('bookmarked_surah');
+                    CacheHelper.removeData('bookmarked_ayah');
+                    CacheHelper.removeData('bookmarked_offset');
+
+                    (context as Element).markNeedsBuild();
+
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('تم حذف العلامة المرجعية')),
+                    );
+                  },
+                  child: Text(
+                    'حذف',
+                    style: AppTextStyle.style14W500.copyWith(
+                      color: AppColors.errorColor,
+                      fontFamily: AppFonts.amiri,
+                    ),
+                  ),
+                ),
+
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'إلغاء',
+                    style: AppTextStyle.style14W500.copyWith(
+                      color: Colors.grey,
+                      fontFamily: AppFonts.amiri,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      onTap: () async {
+        await CacheHelper.saveData(key: 'is_from_bookmark', value: true);
+        if (context.mounted) {
+          await _navigateToReading(context, bookmarkedSurah);
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: AppColors.primaryColor.withAlpha(20),
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'العلامة المرجعية:',
+                  style: AppTextStyle.style14W300.copyWith(
+                    color: AppColors.secondaryColor,
+                    fontFamily: AppFonts.amiri,
+                  ),
+                ),
+                4.horizontalSpace,
+                Text(
+                  'سورة ${bookmarkedSurah.name}',
+                  style: AppTextStyle.style16W500.copyWith(
+                    color: AppColors.primaryColor,
+                    fontFamily: AppFonts.amiri,
+                  ),
+                ),
+                Text(
+                  ' - آية رقم: $ayahNumber',
+                  style: AppTextStyle.style16W500.copyWith(
+                    color: AppColors.primaryColor,
+                    fontFamily: AppFonts.amiri,
+                  ),
+                ),
+              ],
+            ),
+
+            Icon(Icons.bookmark, color: AppColors.primaryColor, size: 24.r),
           ],
         ),
       ),

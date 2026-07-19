@@ -88,6 +88,7 @@ class CustomPrimaryTextfield extends StatelessWidget {
         obscureText: isPassword ?? false,
         decoration: InputDecoration(
           hint: Text(
+            textAlign: textAlign,
             text ?? '',
             style:
                 style ??

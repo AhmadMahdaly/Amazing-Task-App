@@ -22,7 +22,7 @@ import 'package:s/features/islamic_section/missed_prayers/data/repo/missed_praye
 import 'package:s/features/islamic_section/missed_prayers/domain/repo/missed_prayers_repository.dart';
 import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
-import 'package:s/features/islamic_section/sunan/presentation/cubit/sunan_cubit.dart';
+import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
 import 'package:s/features/task_list/data/datasource/lists_local_data_source.dart';
 import 'package:s/features/task_list/data/repo/lists_repository_impl.dart';
 import 'package:s/features/task_list/domain/repo/lists_repository.dart';
@@ -88,7 +88,8 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<AzkarCubit>(() => AzkarCubit(getIt()))
     ..registerLazySingleton<QuranCubit>(QuranCubit.new)
     ..registerLazySingleton<HisnCubit>(HisnCubit.new)
-    ..registerLazySingleton<SunanCubit>(SunanCubit.new)
+    // ..registerLazySingleton<SunanCubit>(SunanCubit.new)
+    ..registerLazySingleton<TafsirCubit>(TafsirCubit.new)
     ..registerLazySingleton<AsmaaLocalDataSource>(
       AsmaaLocalDataSource.new,
     )

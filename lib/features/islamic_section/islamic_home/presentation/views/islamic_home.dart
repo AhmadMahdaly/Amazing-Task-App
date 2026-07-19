@@ -97,6 +97,13 @@ class IslamicHomeView extends StatelessWidget {
                       },
                     ),
                     _IslamicItem(
+                      title: 'تفسير القرآن',
+                      icon: Icons.auto_stories_rounded,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.tafsirIndexView);
+                      },
+                    ),
+                    _IslamicItem(
                       title: 'أسماء الله الحسنى',
                       icon: Icons.all_inclusive_rounded,
                       onTap: () async {
@@ -110,13 +117,13 @@ class IslamicHomeView extends StatelessWidget {
                         await context.pushNamed(AppRoutes.hisnIndexView);
                       },
                     ),
-                    _IslamicItem(
-                      title: 'السنن',
-                      icon: Icons.mosque_rounded,
-                      onTap: () async {
-                        await context.pushNamed(AppRoutes.sunanView);
-                      },
-                    ),
+                    // _IslamicItem(
+                    //   title: 'السنن',
+                    //   icon: Icons.mosque_rounded,
+                    //   onTap: () async {
+                    //     await context.pushNamed(AppRoutes.sunanView);
+                    //   },
+                    // ),
                     _IslamicItem(
                       title: 'حسبة الصلوات الفائتة',
                       icon: Icons.calculate_outlined,

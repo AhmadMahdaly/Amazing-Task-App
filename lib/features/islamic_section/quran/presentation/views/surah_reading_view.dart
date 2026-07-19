@@ -14,6 +14,7 @@ import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
+import 'package:s/features/islamic_section/quran/domain/entities/saved_ayah_note_entity.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
 
@@ -51,14 +52,24 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     _screenOpacity =
         (CacheHelper.getData(CacheKeys.screenOpacity) as num?)?.toInt() ?? 200;
     final colorValue = CacheHelper.getData(CacheKeys.quranTextColor) as int?;
-
     if (colorValue != null) {
       _textColor = Color(colorValue);
     }
-    final offset =
-        (CacheHelper.getData('surah_${widget.surah.number}_offset') as num?)
-            ?.toDouble() ??
-        0;
+
+    final isFromBookmark =
+        CacheHelper.getData('is_from_bookmark') as bool? ?? false;
+    CacheHelper.removeData('is_from_bookmark');
+
+    double offset = 0;
+    if (isFromBookmark) {
+      offset =
+          (CacheHelper.getData('bookmarked_offset') as num?)?.toDouble() ?? 0;
+    } else {
+      offset =
+          (CacheHelper.getData('surah_${widget.surah.number}_offset') as num?)
+              ?.toDouble() ??
+          0;
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -111,12 +122,110 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     }
   }
 
+  void _saveBookmark(int ayah) {
+    CacheHelper.saveData(key: 'bookmarked_surah', value: widget.surah.number);
+    CacheHelper.saveData(key: 'bookmarked_ayah', value: ayah);
+
+    CacheHelper.saveData(
+      key: 'bookmarked_offset',
+      value: _scrollController.offset,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('تم حفظ الموضع عند الآية $ayah بنجاح'),
+        backgroundColor: AppColors.primaryColor,
+      ),
+    );
+  }
+
+  void _showAyahOptions(int ayah) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (_) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.r),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(
+                    Icons.menu_book,
+                    color: AppColors.primaryColor,
+                  ),
+                  title: Text(
+                    'عرض تفسير الآية',
+                    style: AppTextStyle.style18W900.copyWith(
+                      fontFamily: AppFonts.amiri,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openTafsir(ayah);
+                  },
+                ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(
+                    Icons.bookmark_add,
+                    color: AppColors.primaryColor,
+                  ),
+                  title: Text(
+                    'حفظ الموضع (علامة مرجعية)',
+                    style: AppTextStyle.style18W900.copyWith(
+                      fontFamily: AppFonts.amiri,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _saveBookmark(ayah);
+                  },
+                ),
+                const Divider(),
+
+                ListTile(
+                  leading: const Icon(
+                    Icons.edit_note,
+                    color: AppColors.primaryColor,
+                  ),
+                  title: Text(
+                    'إضافة ملاحظة وحفظ الآية',
+                    style: AppTextStyle.style18W900.copyWith(
+                      fontFamily: AppFonts.amiri,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showAddNoteBottomSheet(ayah);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _goToNextSurah() {
     final nextSurah = _quranCubit.allSurahs[widget.surah.number];
 
     context.pushReplacement(
       AppRoutes.surahReadingView,
       extra: nextSurah,
+    );
+  }
+
+  void _goToPreviousSurah() {
+    final prevSurah = _quranCubit.allSurahs[widget.surah.number - 2];
+    context.pushReplacement(
+      AppRoutes.surahReadingView,
+      extra: prevSurah,
     );
   }
 
@@ -130,6 +239,40 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     });
 
     _saveOffset();
+  }
+
+  void _updateFontSize(
+    double value,
+    void Function(void Function()) setModalState,
+  ) {
+    setState(() {
+      _fontSize = value.clamp(18, 48);
+    });
+
+    setModalState(() {});
+
+    CacheHelper.saveData(
+      key: CacheKeys.quranFontSize,
+      value: _fontSize,
+    );
+  }
+
+  void _updateOpacity(
+    int value,
+    void Function(void Function()) setModalState,
+  ) {
+    final newValue = value.clamp(50, 250);
+
+    setState(() {
+      _screenOpacity = newValue;
+    });
+
+    setModalState(() {});
+
+    CacheHelper.saveData(
+      key: CacheKeys.screenOpacity,
+      value: newValue,
+    );
   }
 
   @override
@@ -167,32 +310,14 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                         return StatefulBuilder(
                           builder: (context, setModalState) {
                             return Padding(
-                              padding: EdgeInsets.all(16.r),
+                              padding: EdgeInsets.symmetric(vertical: 16.h),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text('حجم الخط'),
-                                  Slider(
-                                    activeColor: AppColors.primaryColor,
-
-                                    value: _fontSize,
-                                    min: 18,
-                                    max: 48,
-                                    divisions: 15,
-                                    label: _fontSize.round().toString(),
-                                    onChanged: (value) {
-                                      setState(() => _fontSize = value);
-                                      setModalState(() {});
-                                    },
-                                    onChangeEnd: (value) {
-                                      CacheHelper.saveData(
-                                        key: CacheKeys.quranFontSize,
-                                        value: value,
-                                      );
-                                    },
+                                  Text(
+                                    'لون الخط',
+                                    style: AppTextStyle.style14W500,
                                   ),
-                                  10.verticalSpace,
-                                  const Text('لون الخط'),
                                   8.verticalSpace,
                                   Wrap(
                                     spacing: 12,
@@ -227,29 +352,129 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                     }).toList(),
                                   ),
                                   10.verticalSpace,
-                                  const Text('شفافية الشاشة'),
-                                  Slider(
-                                    activeColor: AppColors.primaryColor,
-                                    value: _screenOpacity.toDouble(),
-                                    min: 50,
-                                    max: 255,
-                                    divisions: 20,
-                                    label: _screenOpacity
-                                        .toDouble()
-                                        .round()
-                                        .toString(),
-                                    onChanged: (value) {
-                                      setState(
-                                        () => _screenOpacity = value.toInt(),
-                                      );
-                                      setModalState(() {});
-                                    },
-                                    onChangeEnd: (value) {
-                                      CacheHelper.saveData(
-                                        key: CacheKeys.screenOpacity,
-                                        value: value,
-                                      );
-                                    },
+
+                                  Text(
+                                    'حجم الخط',
+                                    style: AppTextStyle.style14W500,
+                                  ),
+                                  8.verticalSpace,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          _updateFontSize(
+                                            _fontSize - 2,
+                                            setModalState,
+                                          );
+                                        },
+                                        icon: Icon(
+                                          Icons.remove_circle_outline,
+                                          color: AppColors.primaryColor
+                                              .withAlpha(100),
+                                        ),
+                                      ),
+
+                                      Expanded(
+                                        child: Slider(
+                                          activeColor: AppColors.primaryColor,
+                                          value: _fontSize,
+                                          min: 18,
+                                          max: 48,
+                                          divisions: 15,
+                                          label: _fontSize.toString(),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _fontSize = value;
+                                            });
+                                            setModalState(() {});
+                                          },
+                                          onChangeEnd: (value) {
+                                            _updateFontSize(
+                                              value,
+                                              setModalState,
+                                            );
+                                          },
+                                        ),
+                                      ),
+
+                                      IconButton(
+                                        onPressed: () {
+                                          _updateFontSize(
+                                            _fontSize + 2,
+                                            setModalState,
+                                          );
+                                        },
+                                        icon: Icon(
+                                          Icons.add_circle_outline,
+                                          color: AppColors.primaryColor
+                                              .withAlpha(100),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  10.verticalSpace,
+                                  Text(
+                                    'شفافية الشاشة',
+                                    style: AppTextStyle.style14W500,
+                                  ),
+                                  8.verticalSpace,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          _updateOpacity(
+                                            _screenOpacity - 20,
+                                            setModalState,
+                                          );
+                                        },
+                                        icon: Icon(
+                                          Icons.remove_circle_outline,
+                                          color: AppColors.primaryColor
+                                              .withAlpha(100),
+                                        ),
+                                      ),
+
+                                      Expanded(
+                                        child: Slider(
+                                          activeColor: AppColors.primaryColor,
+                                          value: _screenOpacity
+                                              .clamp(50, 250)
+                                              .toDouble(),
+                                          min: 50,
+                                          max: 250,
+                                          divisions: 10,
+                                          label: _screenOpacity.toString(),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _screenOpacity = value.toInt();
+                                            });
+                                            setModalState(() {});
+                                          },
+                                          onChangeEnd: (value) {
+                                            _updateOpacity(
+                                              value.toInt(),
+                                              setModalState,
+                                            );
+                                          },
+                                        ),
+                                      ),
+
+                                      IconButton(
+                                        onPressed: () {
+                                          _updateOpacity(
+                                            _screenOpacity + 20,
+                                            setModalState,
+                                          );
+                                        },
+                                        icon: Icon(
+                                          Icons.add_circle_outline,
+                                          color: AppColors.primaryColor
+                                              .withAlpha(100),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   10.verticalSpace,
                                   FilledButton.icon(
@@ -351,6 +576,112 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                       );
                                     },
                                   ),
+                                  8.verticalSpace,
+
+                                  Row(
+                                    children: [
+                                      if (widget.surah.number <
+                                          _quranCubit.allSurahs.length)
+                                        Expanded(
+                                          child: InkWell(
+                                            onTap: _goToNextSurah,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons
+                                                      .arrow_back_ios_new_outlined,
+                                                  size: 14.r,
+                                                  color: AppColors.primaryColor
+                                                      .withAlpha(
+                                                        200,
+                                                      ),
+                                                ),
+                                                4.horizontalSpace,
+                                                Text(
+                                                  'السورة التالية',
+                                                  style: AppTextStyle.style9W700
+                                                      .copyWith(
+                                                        color: AppColors
+                                                            .primaryColor
+                                                            .withAlpha(
+                                                              200,
+                                                            ),
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      else
+                                        const Spacer(),
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () {
+                                            _scrollController.animateTo(
+                                              0,
+                                              duration: const Duration(
+                                                milliseconds: 500,
+                                              ),
+                                              curve: Curves.easeInOut,
+                                            );
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Icon(
+                                                Icons.keyboard_double_arrow_up,
+                                                size: 16.r,
+                                                color: AppColors.primaryColor
+                                                    .withAlpha(200),
+                                              ),
+                                              Text(
+                                                'أعلى الصفحة',
+                                                style: AppTextStyle.style9W700
+                                                    .copyWith(
+                                                      color: AppColors
+                                                          .primaryColor
+                                                          .withAlpha(
+                                                            200,
+                                                          ),
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      if (widget.surah.number > 1)
+                                        Expanded(
+                                          child: InkWell(
+                                            onTap: _goToPreviousSurah,
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  'السورة السابقة',
+                                                  style: AppTextStyle.style9W700
+                                                      .copyWith(
+                                                        color: AppColors
+                                                            .primaryColor
+                                                            .withAlpha(
+                                                              200,
+                                                            ),
+                                                      ),
+                                                ),
+                                                4.horizontalSpace,
+                                                Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  size: 14.r,
+                                                  color: AppColors.primaryColor
+                                                      .withAlpha(200),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      else
+                                        const Spacer(),
+                                    ],
+                                  ),
                                   10.verticalSpace,
                                 ],
                               ),
@@ -416,9 +747,6 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                     children: [
                                       TextSpan(
                                         text: '$ayahText ',
-                                        recognizer: LongPressGestureRecognizer()
-                                          ..onLongPress = () =>
-                                              _openTafsir(index + 1),
                                         style: AppTextStyle.style20W900
                                             .copyWith(
                                               fontFamily: AppFonts.quran,
@@ -428,21 +756,11 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                             ),
                                       ),
 
-                                      // TextSpan(
-                                      //   text: '$ayahText ',
-                                      //   style: AppTextStyle.style20W900
-                                      //       .copyWith(
-                                      //         fontFamily: AppFonts.quran,
-                                      //         color: _textColor,
-                                      //         height: 1.8,
-                                      //         fontSize: _fontSize.sp,
-                                      //       ),
-                                      // ),
                                       TextSpan(
                                         text: ' $ayahNumber ',
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = () =>
-                                              _openTafsir(index + 1),
+                                              _showAyahOptions(index + 1),
                                         style: AppTextStyle.style20W900
                                             .copyWith(
                                               fontFamily: AppFonts.quran,
@@ -456,34 +774,92 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                 }).toList(),
                               ),
                             ),
-                            if (widget.surah.number <
-                                _quranCubit.allSurahs.length) ...[
-                              40.verticalSpace,
-                              // const Divider(),
-                              // 20.verticalSpace,
-                              FilledButton.icon(
-                                style: const ButtonStyle(
-                                  iconAlignment: IconAlignment.end,
-                                  backgroundColor: WidgetStatePropertyAll(
-                                    AppColors.transparent,
+                            40.verticalSpace,
+
+                            Row(
+                              children: [
+                                if (widget.surah.number > 1)
+                                  Expanded(
+                                    child: TextButton.icon(
+                                      onPressed: _goToPreviousSurah,
+                                      icon: Icon(
+                                        Icons.arrow_back_ios_new_outlined,
+                                        size: 14.r,
+                                        color: _textColor.withAlpha(200),
+                                      ),
+                                      label: Text(
+                                        'السورة السابقة',
+                                        style: AppTextStyle.style12W700
+                                            .copyWith(
+                                              fontFamily: AppFonts.amiri,
+                                              color: _textColor.withAlpha(200),
+                                            ),
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  const Spacer(),
+
+                                Expanded(
+                                  child: TextButton.icon(
+                                    onPressed: () {
+                                      _scrollController.animateTo(
+                                        0,
+                                        duration: const Duration(
+                                          milliseconds: 500,
+                                        ),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.keyboard_double_arrow_up,
+                                      size: 16.r,
+                                      color: _textColor.withAlpha(200),
+                                    ),
+                                    label: Text(
+                                      'أعلى الصفحة',
+                                      style: AppTextStyle.style12W700.copyWith(
+                                        fontFamily: AppFonts.amiri,
+                                        color: _textColor.withAlpha(200),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                onPressed: _goToNextSurah,
-                                icon: Icon(
-                                  Icons.arrow_forward,
-                                  size: 12.r,
-                                  color: _textColor.withAlpha(200),
-                                ),
-                                label: Text(
-                                  'الانتقال إلى سورة ${_quranCubit.allSurahs[widget.surah.number].name}',
-                                  style: AppTextStyle.style12W700.copyWith(
-                                    fontFamily: AppFonts.amiri,
-                                    color: _textColor.withAlpha(200),
-                                  ),
-                                ),
-                              ),
-                              40.verticalSpace,
-                            ],
+
+                                if (widget.surah.number <
+                                    _quranCubit.allSurahs.length)
+                                  Expanded(
+                                    child: TextButton(
+                                      onPressed: _goToNextSurah,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'السورة التالية',
+                                            style: AppTextStyle.style12W700
+                                                .copyWith(
+                                                  fontFamily: AppFonts.amiri,
+                                                  color: _textColor.withAlpha(
+                                                    200,
+                                                  ),
+                                                ),
+                                          ),
+                                          4.horizontalSpace,
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 14.r,
+                                            color: _textColor.withAlpha(200),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  const Spacer(),
+                              ],
+                            ),
+                            40.verticalSpace,
                           ],
                         ),
                       ),
@@ -527,13 +903,135 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                         height: 1.9,
                         fontFamily: AppFonts.amiri,
                         color: AppColors.primaryColor.withAlpha(210),
-                        fontSize: (_fontSize - 2).sp,
+                        fontSize: (_fontSize - 4).sp,
                       ),
                     ),
                     24.verticalSpace,
                   ],
                 ),
               ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _saveAyahWithNote(int ayah, String ayahText, String note) {
+    final savedNotesStr =
+        CacheHelper.getData('saved_ayahs_notes') as String? ?? '[]';
+    final notesList = SavedAyahNote.decode(savedNotesStr);
+
+    final newNote = SavedAyahNote(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      surahNumber: widget.surah.number,
+      surahName: widget.surah.name,
+      ayahNumber: ayah,
+      ayahText: ayahText,
+      note: note,
+    );
+
+    notesList.add(newNote);
+    CacheHelper.saveData(
+      key: 'saved_ayahs_notes',
+      value: SavedAyahNote.encode(notesList),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('تم حفظ الآية والملاحظة بنجاح'),
+        backgroundColor: AppColors.primaryColor,
+      ),
+    );
+  }
+
+  void _showAddNoteBottomSheet(int ayah) {
+    final noteController = TextEditingController();
+
+    final ayahText = surahAyahs[ayah - 1]
+        .replaceFirst('بِسمِ اللَّهِ الرَّحمـٰنِ الرَّحيمِ', '')
+        .trim();
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (_) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 16.r,
+              right: 16.r,
+              top: 20.r,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'إضافة ملاحظة للآية $ayah',
+                  style: AppTextStyle.style18W900.copyWith(
+                    fontFamily: AppFonts.amiri,
+                  ),
+                ),
+                16.verticalSpace,
+                Container(
+                  padding: EdgeInsets.all(12.r),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withAlpha(20),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Text(
+                    ayahText,
+                    style: AppTextStyle.style16W800.copyWith(
+                      fontFamily: AppFonts.quran,
+                      color: AppColors.primaryColor,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                16.verticalSpace,
+                TextField(
+                  controller: noteController,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: 'اكتب خواطرك أو ملاحظتك حول الآية...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: AppColors.primaryColor,
+                      ),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                ),
+                16.verticalSpace,
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    style: const ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(
+                        AppColors.primaryColor,
+                      ),
+                    ),
+                    onPressed: () {
+                      if (noteController.text.trim().isNotEmpty) {
+                        _saveAyahWithNote(ayah, ayahText, noteController.text);
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text('حفظ'),
+                  ),
+                ),
+                20.verticalSpace,
+              ],
             ),
           ),
         );

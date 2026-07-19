@@ -14,9 +14,13 @@ class AppRoutes {
   static const String missedPrayersScreen = '/missedPrayersScreen';
   static const String surahReadingView = '/surahReadingView';
   static const String quranIndexView = '/quranIndexView';
+  static const String savedAyahsAndNotesView = '/savedAyahsAndNotesView';
   static const String hisnIndexView = '/hisnIndexView';
   static const String hisnReadingView = '/hisnReadingView';
-  static const String sunanView = '/sunanView';
+  // static const String sunanView = '/sunanView';
   static const String asmaaIndexView = '/asmaaIndexView';
   static const String asmaaReadingView = '/asmaaReadingView';
+  static const String highlightsAndNotesView = '/highlightsAndNotesView';
+  static const String tafsirIndexView = '/tafsirIndexView';
+  static const String tafsirReadingView = '/tafsirReadingView';
 }
