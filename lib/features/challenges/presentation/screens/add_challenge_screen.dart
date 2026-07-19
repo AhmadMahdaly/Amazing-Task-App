@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -51,11 +53,15 @@ class _AddChallengeScreenState extends State<AddChallengeScreen> {
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       if (_endDate.isBefore(_startDate)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppTexts.endDateMustBeInFuture),
-          ),
-        );
+        final messenger = ScaffoldMessenger.of(context);
+
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(AppTexts.endDateMustBeInFuture),
+            ),
+          );
         return;
       }
 

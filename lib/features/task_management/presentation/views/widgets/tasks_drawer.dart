@@ -575,15 +575,17 @@ class TasksDrawer extends StatelessWidget {
     await tasksCubit.deleteTasksForList(list.id);
     await listsCubit.deleteList(list.id);
 
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(
-          AppTexts.listDeleted,
-          style: AppTextStyle.style12W300.copyWith(color: AppColors.white),
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            AppTexts.listDeleted,
+            style: AppTextStyle.style12W300.copyWith(color: AppColors.white),
+          ),
+          backgroundColor: AppColors.primaryColor,
+          duration: const Duration(seconds: 2),
         ),
-        backgroundColor: AppColors.primaryColor,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+      );
   }
 }

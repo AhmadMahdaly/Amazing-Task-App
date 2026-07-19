@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -124,22 +126,26 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
               }
 
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      alreadyInMyDay
-                          ? AppTexts.unpinFromNotification
-                          : AppTexts.taskAddedToMyDay,
-                      style: AppTextStyle.style9W300.copyWith(
-                        color: Colors.white,
+                final messenger = ScaffoldMessenger.of(context);
+
+                messenger
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        alreadyInMyDay
+                            ? AppTexts.unpinFromNotification
+                            : AppTexts.taskAddedToMyDay,
+                        style: AppTextStyle.style9W300.copyWith(
+                          color: Colors.white,
+                        ),
                       ),
+                      backgroundColor: alreadyInMyDay
+                          ? Colors.redAccent
+                          : Colors.orangeAccent,
+                      duration: const Duration(seconds: 1),
                     ),
-                    backgroundColor: alreadyInMyDay
-                        ? Colors.redAccent
-                        : Colors.orangeAccent,
-                    duration: const Duration(seconds: 1),
-                  ),
-                );
+                  );
               }
               return false;
             }
@@ -165,27 +171,31 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
               unawaited(cubit.deleteTask(widget.task.id));
 
               if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    AppTexts.taskDeleted,
-                    style: AppTextStyle.style9W300.copyWith(
-                      color: Colors.white,
+              final messenger = ScaffoldMessenger.of(context);
+
+              messenger
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      AppTexts.taskDeleted,
+                      style: AppTextStyle.style9W300.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                    backgroundColor: Colors.redAccent,
+                    behavior: SnackBarBehavior.floating,
+                    dismissDirection: DismissDirection.horizontal,
+                    duration: const Duration(seconds: 4),
+                    action: SnackBarAction(
+                      label: AppTexts.undo,
+                      textColor: Colors.white,
+                      onPressed: () {
+                        unawaited(cubit.restoreTask(snapshot));
+                      },
                     ),
                   ),
-                  backgroundColor: Colors.redAccent,
-                  behavior: SnackBarBehavior.floating,
-                  dismissDirection: DismissDirection.horizontal,
-                  duration: const Duration(seconds: 4),
-                  action: SnackBarAction(
-                    label: AppTexts.undo,
-                    textColor: Colors.white,
-                    onPressed: () {
-                      unawaited(cubit.restoreTask(snapshot));
-                    },
-                  ),
-                ),
-              );
+                );
             }
           }
         },

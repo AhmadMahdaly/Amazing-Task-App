@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_colors.dart';
@@ -138,27 +140,35 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
 
       final stateAfterSave = listsCubit.state;
       if (stateAfterSave is ListsError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              stateAfterSave.message,
-              style: AppTextStyle.style9W300.copyWith(color: Colors.white),
+        final messenger = ScaffoldMessenger.of(context);
+
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(
+                stateAfterSave.message,
+                style: AppTextStyle.style9W300.copyWith(color: Colors.white),
+              ),
+              backgroundColor: Colors.redAccent,
             ),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
+          );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              e.toString(),
-              style: AppTextStyle.style9W300.copyWith(color: Colors.white),
+        final messenger = ScaffoldMessenger.of(context);
+
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(
+                e.toString(),
+                style: AppTextStyle.style9W300.copyWith(color: Colors.white),
+              ),
+              backgroundColor: Colors.redAccent,
             ),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
+          );
       }
     } finally {
       if (mounted) {

@@ -1,4 +1,4 @@
-// ignore_for_file: parameter_assignments
+// ignore_for_file: cascade_invocations, parameter_assignments
 
 import 'dart:async';
 
@@ -486,23 +486,26 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       final snapshot = task;
       await cubit.deleteTask(task.id);
       if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            AppTexts.taskDeleted,
-            style: AppTextStyle.style12W300.copyWith(color: Colors.white),
+
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              AppTexts.taskDeleted,
+              style: AppTextStyle.style12W300.copyWith(color: Colors.white),
+            ),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+            dismissDirection: DismissDirection.horizontal,
+            duration: const Duration(seconds: 2),
+            action: SnackBarAction(
+              label: AppTexts.undo,
+              textColor: Colors.white,
+              onPressed: () => unawaited(cubit.restoreTask(snapshot)),
+            ),
           ),
-          backgroundColor: Colors.redAccent,
-          behavior: SnackBarBehavior.floating,
-          dismissDirection: DismissDirection.horizontal,
-          duration: const Duration(seconds: 2),
-          action: SnackBarAction(
-            label: AppTexts.undo,
-            textColor: Colors.white,
-            onPressed: () => unawaited(cubit.restoreTask(snapshot)),
-          ),
-        ),
-      );
+        );
       if (mounted) context.pop();
     }
   }
@@ -786,31 +789,36 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
                                 if (!mounted) return;
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      AppTexts.stepConvertedToTask,
-                                      style: AppTextStyle.style12W300.copyWith(
-                                        color: Colors.white,
+                                final messenger = ScaffoldMessenger.of(context);
+
+                                messenger
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        AppTexts.stepConvertedToTask,
+                                        style: AppTextStyle.style12W300
+                                            .copyWith(
+                                              color: Colors.white,
+                                            ),
+                                      ),
+                                      backgroundColor: AppColors.primaryColor,
+                                      behavior: SnackBarBehavior.floating,
+                                      duration: const Duration(seconds: 4),
+                                      action: SnackBarAction(
+                                        label: AppTexts.undo,
+                                        textColor: Colors.white,
+                                        onPressed: () {
+                                          unawaited(
+                                            cubit.undoDetachStep(
+                                              originalTaskSnapshot,
+                                              newTaskId,
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ),
-                                    backgroundColor: AppColors.primaryColor,
-                                    behavior: SnackBarBehavior.floating,
-                                    duration: const Duration(seconds: 4),
-                                    action: SnackBarAction(
-                                      label: AppTexts.undo,
-                                      textColor: Colors.white,
-                                      onPressed: () {
-                                        unawaited(
-                                          cubit.undoDetachStep(
-                                            originalTaskSnapshot,
-                                            newTaskId,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                );
+                                  );
                               } else {
                                 await _deleteStep(task, index);
                               }
