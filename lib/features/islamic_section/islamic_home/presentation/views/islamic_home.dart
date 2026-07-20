@@ -111,19 +111,20 @@ class IslamicHomeView extends StatelessWidget {
                       },
                     ),
                     _IslamicItem(
-                      title: 'حصن المسلم',
-                      icon: Icons.self_improvement_rounded,
-                      onTap: () async {
-                        await context.pushNamed(AppRoutes.hisnIndexView);
-                      },
-                    ),
-                    _IslamicItem(
                       title: 'الأربعون النووية',
                       icon: Icons.import_contacts_rounded,
                       onTap: () async {
                         await context.pushNamed(AppRoutes.arbaoonIndexView);
                       },
                     ),
+                    _IslamicItem(
+                      title: 'حصن المسلم',
+                      icon: Icons.self_improvement_rounded,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.hisnIndexView);
+                      },
+                    ),
+
                     _IslamicItem(
                       title: 'حسبة الصلوات الفائتة',
                       icon: Icons.calculate_outlined,
