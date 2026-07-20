@@ -8,6 +8,11 @@ import 'package:s/features/challenges/presentation/screens/add_challenge_screen.
 import 'package:s/features/challenges/presentation/screens/analysis_screen.dart';
 import 'package:s/features/challenges/presentation/screens/challenges_screen.dart';
 import 'package:s/features/day_schedule/presentation/views/day_schedule_screen.dart';
+import 'package:s/features/islamic_section/arbaoon/domain/entities/hadith.dart';
+import 'package:s/features/islamic_section/arbaoon/presentation/cubit/arbaoon_cubit.dart';
+import 'package:s/features/islamic_section/arbaoon/presentation/views/arbaoon_index_view.dart';
+import 'package:s/features/islamic_section/arbaoon/presentation/views/arbaoon_reading_view.dart';
+import 'package:s/features/islamic_section/arbaoon/presentation/views/highlights_and_notes_view.dart';
 import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_lesson.dart';
 import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
 import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_index_view.dart';
@@ -266,6 +271,37 @@ void initRouter() {
               surah: surah,
             ),
           );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.arbaoonIndexView,
+        name: AppRoutes.arbaoonIndexView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<ArbaoonCubit>()..loadHadiths(),
+            child: const ArbaoonIndexView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.arbaoonReadingView,
+        name: AppRoutes.arbaoonReadingView,
+        builder: (context, state) {
+          final hadith = state.extra! as Hadith;
+          return BlocProvider.value(
+            value: getIt<ArbaoonCubit>(),
+            child: ArbaoonReadingView(
+              hadith: hadith,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.arbaoonNotesView,
+        name: AppRoutes.arbaoonNotesView,
+        builder: (context, state) {
+          return const ArbaoonNotesView();
         },
       ),
       // GoRoute(

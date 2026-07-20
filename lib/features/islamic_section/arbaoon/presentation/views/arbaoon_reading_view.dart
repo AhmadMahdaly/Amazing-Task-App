@@ -14,19 +14,19 @@ import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
+import 'package:s/features/islamic_section/arbaoon/domain/entities/hadith.dart';
+import 'package:s/features/islamic_section/arbaoon/presentation/cubit/arbaoon_cubit.dart';
 import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_highlight.dart';
-import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_lesson.dart';
-import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
 
-class AsmaaReadingView extends StatefulWidget {
-  const AsmaaReadingView({required this.lesson, super.key});
-  final AsmaaLesson lesson;
+class ArbaoonReadingView extends StatefulWidget {
+  const ArbaoonReadingView({required this.hadith, super.key});
+  final Hadith hadith;
 
   @override
-  State<AsmaaReadingView> createState() => _AsmaaReadingViewState();
+  State<ArbaoonReadingView> createState() => _ArbaoonReadingViewState();
 }
 
-class _AsmaaReadingViewState extends State<AsmaaReadingView> {
+class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
   double _fontSize = 24;
   int _screenOpacity = 200;
   Color _textColor = Colors.white;
@@ -46,27 +46,28 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
     Colors.redAccent,
     Colors.purple,
   ];
-  late AsmaaCubit _asmaaCubit;
+  late ArbaoonCubit _arbaoonCubit;
   double _readingProgress = 0;
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _asmaaCubit = context.read<AsmaaCubit>();
+    _arbaoonCubit = context.read<ArbaoonCubit>();
 
     _fontSize =
-        (CacheHelper.getData('asmaa_font_size') as num?)?.toDouble() ?? 24;
+        (CacheHelper.getData('arbaoon_font_size') as num?)?.toDouble() ?? 24;
     _screenOpacity =
-        (CacheHelper.getData('asmaa_screen_opacity') as num?)?.toInt() ?? 200;
+        (CacheHelper.getData('arbaoon_screen_opacity') as num?)?.toInt() ?? 200;
 
-    final colorValue = CacheHelper.getData('asmaa_text_color') as int?;
+    final colorValue = CacheHelper.getData('arbaoon_text_color') as int?;
     if (colorValue != null) {
       _textColor = Color(colorValue);
     }
 
     final offset =
-        (CacheHelper.getData('asmaa_lesson_${widget.lesson.id}_offset') as num?)
+        (CacheHelper.getData('arbaoon_lesson_${widget.hadith.id}_offset')
+                as num?)
             ?.toDouble() ??
         0;
 
@@ -87,25 +88,25 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
   void dispose() {
     _scrollController.removeListener(_saveOffset);
     _scrollController.dispose();
-    _asmaaCubit.saveLastRead(widget.lesson.id);
+    _arbaoonCubit.saveLastRead(widget.hadith);
 
     super.dispose();
   }
 
   void _saveOffset() {
     CacheHelper.saveData(
-      key: 'asmaa_lesson_${widget.lesson.id}_offset',
+      key: 'arbaoon_lesson_${widget.hadith.id}_offset',
       value: _scrollController.offset,
     );
   }
 
   void _goToNextLesson() {
-    final nextLesson = _asmaaCubit.allLessons.firstWhere(
-      (l) => l.id == widget.lesson.id + 1,
-      orElse: () => widget.lesson,
+    final nextLesson = _arbaoonCubit.allHadiths.firstWhere(
+      (l) => l.id == widget.hadith.id + 1,
+      orElse: () => widget.hadith,
     );
 
-    if (nextLesson.id != widget.lesson.id) {
+    if (nextLesson.id != widget.hadith.id) {
       context.pushReplacementNamed(
         AppRoutes.asmaaReadingView,
         extra: nextLesson,
@@ -126,7 +127,8 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
 
   void _loadHighlights() {
     final savedData =
-        CacheHelper.getData('asmaa_highlights_${widget.lesson.id}') as String?;
+        CacheHelper.getData('arbaoon_highlights_${widget.hadith.id}')
+            as String?;
     if (savedData != null) {
       setState(() {
         _highlights = AsmaaHighlight.decode(savedData);
@@ -136,7 +138,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
 
   void _saveHighlights() {
     CacheHelper.saveData(
-      key: 'asmaa_highlights_${widget.lesson.id}',
+      key: 'arbaoon_highlights_${widget.hadith.id}',
       value: AsmaaHighlight.encode(_highlights),
     );
   }
@@ -151,7 +153,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
             appBar: AppBar(
               toolbarHeight: 70.h,
               title: Text(
-                widget.lesson.title,
+                widget.hadith.title,
                 style: AppTextStyle.style20Bold.copyWith(
                   color: _textColor,
                   fontFamily: AppFonts.amiri,
@@ -195,7 +197,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                           setState(() => _textColor = color);
                                           setModalState(() {});
                                           CacheHelper.saveData(
-                                            key: 'asmaa_text_color',
+                                            key: 'arbaoon_text_color',
                                             value: color.toARGB32(),
                                           );
                                         },
@@ -223,7 +225,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                             setState(() => _fontSize -= 2);
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'asmaa_font_size',
+                                              key: 'arbaoon_font_size',
                                               value: _fontSize,
                                             );
                                           }
@@ -247,7 +249,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                         },
                                         onChangeEnd: (value) {
                                           CacheHelper.saveData(
-                                            key: 'asmaa_font_size',
+                                            key: 'arbaoon_font_size',
                                             value: value,
                                           );
                                         },
@@ -258,7 +260,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                             setState(() => _fontSize += 2);
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'asmaa_font_size',
+                                              key: 'arbaoon_font_size',
                                               value: _fontSize,
                                             );
                                           }
@@ -285,7 +287,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                             );
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'asmaa_screen_opacity',
+                                              key: 'arbaoon_screen_opacity',
                                               value: _screenOpacity,
                                             );
                                           }
@@ -314,7 +316,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                         },
                                         onChangeEnd: (value) {
                                           CacheHelper.saveData(
-                                            key: 'asmaa_screen_opacity',
+                                            key: 'arbaoon_screen_opacity',
                                             value: value,
                                           );
                                         },
@@ -327,7 +329,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                             );
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'asmaa_screen_opacity',
+                                              key: 'arbaoon_screen_opacity',
                                               value: _screenOpacity,
                                             );
                                           }
@@ -356,15 +358,15 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                       });
                                       setModalState(() {});
                                       CacheHelper.saveData(
-                                        key: 'asmaa_font_size',
+                                        key: 'arbaoon_font_size',
                                         value: 24,
                                       );
                                       CacheHelper.saveData(
-                                        key: 'asmaa_screen_opacity',
+                                        key: 'arbaoon_screen_opacity',
                                         value: 200,
                                       );
                                       CacheHelper.saveData(
-                                        key: 'asmaa_text_color',
+                                        key: 'arbaoon_text_color',
                                         value: Colors.white.toARGB32(),
                                       );
                                     },
@@ -456,7 +458,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
               settings: wallpaperState.settings,
               child: ColoredBox(
                 color: AppColors.primaryColor.withAlpha(_screenOpacity),
-                child: widget.lesson.content.isEmpty
+                child: widget.hadith.content.isEmpty
                     ? const Center(child: LoadingWidget())
                     : SingleChildScrollView(
                         controller: _scrollController,
@@ -466,7 +468,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                             SelectableText.rich(
                               TextSpan(
                                 children: _buildHighlightedSpans(
-                                  widget.lesson.content,
+                                  widget.hadith.content,
                                 ),
                                 style: AppTextStyle.style20W900.copyWith(
                                   fontFamily: AppFonts.amiri,
@@ -517,8 +519,8 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                 );
                               },
                             ),
-                            if (widget.lesson.id <
-                                _asmaaCubit.allLessons.length) ...[
+                            if (widget.hadith.id <
+                                _arbaoonCubit.allHadiths.length) ...[
                               40.verticalSpace,
                               FilledButton.icon(
                                 style: const ButtonStyle(
@@ -534,7 +536,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                   color: _textColor.withAlpha(200),
                                 ),
                                 label: Text(
-                                  'الانتقال إلى الاسم التالي',
+                                  'الانتقال إلى الحديث التالي',
                                   style: AppTextStyle.style12W700.copyWith(
                                     fontFamily: AppFonts.amiri,
                                     color: _textColor.withAlpha(200),
@@ -622,9 +624,9 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                       return GestureDetector(
                         onTap: () => setSheetState(() => selectedColor = color),
                         child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          width: 40,
-                          height: 40,
+                          margin: EdgeInsets.symmetric(horizontal: 8.w),
+                          width: 40.w,
+                          height: 40.h,
                           decoration: BoxDecoration(
                             color: color,
                             shape: BoxShape.circle,
@@ -664,7 +666,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                           AsmaaHighlight(
                             id: DateTime.now().millisecondsSinceEpoch
                                 .toString(),
-                            lessonId: widget.lesson.id,
+                            lessonId: widget.hadith.id,
                             startOffset: start,
                             endOffset: end,
                             selectedText: text,
@@ -708,9 +710,9 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
             return Padding(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 16,
-                right: 16,
-                top: 16,
+                left: 16.w,
+                right: 16.w,
+                top: 16.h,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -748,9 +750,9 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                       return GestureDetector(
                         onTap: () => setSheetState(() => selectedColor = color),
                         child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          width: 40,
-                          height: 40,
+                          margin: EdgeInsets.symmetric(horizontal: 8.r),
+                          width: 40.w,
+                          height: 40.h,
                           decoration: BoxDecoration(
                             color: color,
                             shape: BoxShape.circle,

@@ -10,14 +10,14 @@ import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_highlight.dart';
 
-class HighlightsAndNotesView extends StatefulWidget {
-  const HighlightsAndNotesView({super.key});
+class ArbaoonNotesView extends StatefulWidget {
+  const ArbaoonNotesView({super.key});
 
   @override
-  State<HighlightsAndNotesView> createState() => _HighlightsAndNotesViewState();
+  State<ArbaoonNotesView> createState() => _ArbaoonNotesViewState();
 }
 
-class _HighlightsAndNotesViewState extends State<HighlightsAndNotesView> {
+class _ArbaoonNotesViewState extends State<ArbaoonNotesView> {
   List<AsmaaHighlight> allHighlights = [];
 
   final List<Color> _highlightColors = [
@@ -38,7 +38,7 @@ class _HighlightsAndNotesViewState extends State<HighlightsAndNotesView> {
     final temp = <AsmaaHighlight>[];
 
     for (var i = 1; i <= 99; i++) {
-      final savedData = CacheHelper.getData('asmaa_highlights_$i') as String?;
+      final savedData = CacheHelper.getData('arbaoon_highlights_$i') as String?;
       if (savedData != null) {
         temp.addAll(AsmaaHighlight.decode(savedData));
       }
@@ -54,10 +54,10 @@ class _HighlightsAndNotesViewState extends State<HighlightsAndNotesView> {
         .toList();
 
     if (lessonHighlights.isEmpty) {
-      CacheHelper.removeData('asmaa_highlights_$lessonId');
+      CacheHelper.removeData('arbaoon_highlights_$lessonId');
     } else {
       CacheHelper.saveData(
-        key: 'asmaa_highlights_$lessonId',
+        key: 'arbaoon_highlights_$lessonId',
         value: AsmaaHighlight.encode(lessonHighlights),
       );
     }

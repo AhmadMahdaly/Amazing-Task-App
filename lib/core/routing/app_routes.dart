@@ -23,4 +23,8 @@ class AppRoutes {
   static const String highlightsAndNotesView = '/highlightsAndNotesView';
   static const String tafsirIndexView = '/tafsirIndexView';
   static const String tafsirReadingView = '/tafsirReadingView';
+
+  static const String arbaoonIndexView = '/arbaoonIndexView';
+  static const String arbaoonReadingView = '/arbaoonReadingView';
+  static const String arbaoonNotesView = '/arbaoonNotesView';
 }

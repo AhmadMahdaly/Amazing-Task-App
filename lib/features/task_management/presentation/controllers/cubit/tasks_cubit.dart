@@ -123,6 +123,11 @@ class TasksCubit extends Cubit<TasksState> {
       );
 
       final wasInMyDay = isTaskInMyDay(task);
+      final allTasks = await tasksRepository.getTasks();
+
+      final nextPosition = allTasks
+          .where((t) => t.listId == task.listId)
+          .length;
       final nextTask = TaskEntity(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: task.title,
@@ -130,7 +135,7 @@ class TasksCubit extends Cubit<TasksState> {
         dueDate: nextDueDate,
         repeatMode: task.repeatMode,
         myDayDate: wasInMyDay ? formatMyDayDate(nextDueDate) : null,
-        position: task.position,
+        position: nextPosition,
         isImportant: task.isImportant,
       );
 
@@ -445,11 +450,17 @@ class TasksCubit extends Cubit<TasksState> {
     final updatedOriginalTask = syncTaskStepCounts(task, updatedSteps);
 
     final newTaskId = DateTime.now().millisecondsSinceEpoch.toString();
-    final newTask = TaskEntity(
+    final newTask = task.copyWith(
       id: newTaskId,
       title: step.title,
-      listId: task.listId,
-      position: task.position,
+
+      steps: const [],
+      completedSteps: 0,
+      totalSteps: 0,
+
+      clearCompletedAt: !step.isCompleted,
+      isCompleted: step.isCompleted,
+      completedAt: step.isCompleted ? DateTime.now() : null,
     );
 
     try {

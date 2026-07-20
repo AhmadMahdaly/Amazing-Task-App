@@ -7,10 +7,7 @@ class AsmaaLocalDataSource {
     try {
       final rawText = await rootBundle.loadString('assets/text/asmaa.txt');
 
-      // تقسيم النص بناءً على البسملة التي تبدأ بها كل الدروس
-      final rawLessons = rawText.split(
-        'بسـم اللـه الرحمـن الرحيـم',
-      );
+      final rawLessons = rawText.split('بسـم اللـه الرحمـن الرحيـم');
 
       final lessons = <AsmaaLesson>[];
 
@@ -18,7 +15,7 @@ class AsmaaLocalDataSource {
         r'الدرس\s*:\s*\d+\s*-\s*(اسم الله .+)\s*\.',
       );
 
-      var currentId = 1; // عداد الـ ID
+      var currentId = 1;
 
       for (final rawLesson in rawLessons) {
         if (rawLesson.trim().isEmpty) continue;
@@ -30,12 +27,12 @@ class AsmaaLocalDataSource {
 
         lessons.add(
           AsmaaLesson(
-            id: currentId, // تمرير الـ ID هنا
+            id: currentId,
             title: title,
             content: 'بسـم اللـه الرحمـن الرحيـم\n${rawLesson.trim()}',
           ),
         );
-        currentId++; // زيادة العداد للدرس التالي
+        currentId++;
       }
 
       return lessons;

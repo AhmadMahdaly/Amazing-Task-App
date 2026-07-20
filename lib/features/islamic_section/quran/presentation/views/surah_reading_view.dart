@@ -747,6 +747,9 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                     children: [
                                       TextSpan(
                                         text: '$ayahText ',
+                                        recognizer: LongPressGestureRecognizer()
+                                          ..onLongPress = () =>
+                                              _openTafsir(index + 1),
                                         style: AppTextStyle.style20W900
                                             .copyWith(
                                               fontFamily: AppFonts.quran,
@@ -1022,10 +1025,12 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                       ),
                     ),
                     onPressed: () {
-                      if (noteController.text.trim().isNotEmpty) {
-                        _saveAyahWithNote(ayah, ayahText, noteController.text);
-                        Navigator.pop(context);
-                      }
+                      _saveAyahWithNote(
+                        ayah,
+                        ayahText,
+                        noteController.text.trim(),
+                      );
+                      Navigator.pop(context);
                     },
                     child: const Text('حفظ'),
                   ),

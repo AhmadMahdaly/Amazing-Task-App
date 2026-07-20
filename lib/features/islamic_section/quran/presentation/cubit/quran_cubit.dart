@@ -82,12 +82,26 @@ class QuranCubit extends Cubit<QuranState> {
     return ayahs;
   }
 
+  List<SurahEntity> getSurahsInJuz(int juzNumber) {
+    return allSurahs
+        .where((s) => _getJuzForPage(s.startPage) == juzNumber)
+        .toList();
+  }
+
+  int _getJuzForPage(int page) {
+    return ((page - 1) ~/ 20) + 1;
+  }
+
   Future<void> saveLastRead(int surahNumber) async {
     lastReadSurah = surahNumber;
     await CacheHelper.saveData(
       key: CacheKeys.lastReadSurah,
       value: surahNumber,
     );
+    emit(QuranLoaded(surahs: allSurahs, lastReadSurahNumber: lastReadSurah));
+  }
+
+  void refreshIndex() {
     emit(QuranLoaded(surahs: allSurahs, lastReadSurahNumber: lastReadSurah));
   }
 }

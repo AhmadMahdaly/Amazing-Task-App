@@ -181,28 +181,30 @@ class _SavedAyahsAndNotesViewState extends State<SavedAyahsAndNotesView> {
                             ),
                             textAlign: TextAlign.justify,
                           ),
-                          16.verticalSpace,
-                          const Divider(),
-                          8.verticalSpace,
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(
-                                Icons.edit_note,
-                                color: AppColors.secondaryColor,
-                              ),
-                              8.horizontalSpace,
-                              Expanded(
-                                child: Text(
-                                  note.note,
-                                  style: AppTextStyle.style16W800.copyWith(
-                                    fontFamily: AppFonts.amiri,
-                                    height: 1.5,
+                          if (note.note.trim().isNotEmpty) ...[
+                            16.verticalSpace,
+                            const Divider(),
+                            8.verticalSpace,
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.edit_note,
+                                  color: AppColors.secondaryColor,
+                                ),
+                                8.horizontalSpace,
+                                Expanded(
+                                  child: Text(
+                                    note.note,
+                                    style: AppTextStyle.style16W800.copyWith(
+                                      fontFamily: AppFonts.amiri,
+                                      height: 1.5,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
                         ],
                       ),
                     ),

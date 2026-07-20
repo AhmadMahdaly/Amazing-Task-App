@@ -9,6 +9,7 @@ import '../responsive/responsive_config.dart';
 
 class CustomPrimaryTextfield extends StatelessWidget {
   const CustomPrimaryTextfield({
+    this.hintStyle,
     this.onEditingComplete,
     this.onFieldSubmitted,
     this.controller,
@@ -43,6 +44,8 @@ class CustomPrimaryTextfield extends StatelessWidget {
   final TextAlign? textAlign;
   final String? text;
   final TextStyle? style;
+  final TextStyle? hintStyle;
+
   final bool? readOnly;
   final void Function()? onTap;
   final void Function(String)? onChanged;
@@ -95,6 +98,7 @@ class CustomPrimaryTextfield extends StatelessWidget {
             text ?? '',
             style:
                 style ??
+                hintStyle ??
                 AppTextStyle.style14W500.copyWith(
                   color: AppColors.secondaryColor,
                 ),

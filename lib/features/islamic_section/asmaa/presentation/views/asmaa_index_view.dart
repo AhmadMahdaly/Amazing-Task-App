@@ -43,6 +43,15 @@ class AsmaaIndexView extends StatelessWidget {
                 await context.pushNamed(AppRoutes.highlightsAndNotesView);
               },
             ),
+            IconButton(
+              icon: Icon(
+                Icons.info_outline_rounded,
+                color: AppColors.buttonColor.withAlpha(150),
+                size: 24.r,
+              ),
+              tooltip: 'عن الكتاب',
+              onPressed: () => _showBookIntroduction(context),
+            ),
             20.horizontalSpace,
           ],
         ),
@@ -198,6 +207,96 @@ class AsmaaIndexView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _showBookIntroduction(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: .75,
+          minChildSize: .5,
+          maxChildSize: .95,
+          builder: (context, controller) {
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(24.r),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(height: 12.r),
+
+                    Container(
+                      width: 50.r,
+                      height: 5.r,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade400,
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.all(20.r),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.auto_stories_rounded,
+                            color: AppColors.primaryColor,
+                            size: 28.r,
+                          ),
+                          10.horizontalSpace,
+                          Text(
+                            'عن الكتاب',
+                            style: AppTextStyle.style20W900.copyWith(
+                              fontFamily: AppFonts.amiri,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Expanded(
+                      child: ListView(
+                        controller: controller,
+                        padding: EdgeInsets.symmetric(horizontal: 20.r),
+                        children: [
+                          Text(
+                            '''
+            يُعد كتاب «أسماء الله الحسنى» للدكتور محمد راتب النابلسي من أشهر الكتب المعاصرة التي تناولت هذا الباب العظيم، حيث يشرح أسماء الله الحسنى بأسلوب سهل يجمع بين الأدلة الشرعية والتأمل في معانيها وآثارها في حياة المسلم.
+            
+            ويهدف الكتاب إلى تعريف القارئ بربه سبحانه وتعالى، وترسيخ الإيمان من خلال فهم أسماء الله الحسنى، وربط هذه المعرفة بالسلوك والعبادة.
+            
+            وفي هذه الدروس ستتعرف على معاني كل اسم من أسماء الله الحسنى، وكيفية التعبد لله به، حتى تتحول المعرفة إلى يقين، واليقين إلى عمل، والعمل إلى قربٍ من الله سبحانه وتعالى.
+            ''',
+                            textAlign: TextAlign.justify,
+                            style: AppTextStyle.style18W800.copyWith(
+                              fontFamily: AppFonts.amiri,
+                              color: AppColors.primaryColor,
+                              height: 2,
+                            ),
+                          ),
+
+                          30.verticalSpace,
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

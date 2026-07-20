@@ -33,6 +33,18 @@ class HisnIndexView extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_ios_new),
             onPressed: () => context.pop(),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.info_outline_rounded,
+                color: AppColors.buttonColor.withAlpha(150),
+                size: 24.r,
+              ),
+              tooltip: 'عن الكتاب',
+              onPressed: () => _showBookIntroduction(context),
+            ),
+            20.horizontalSpace,
+          ],
         ),
         body: BlocBuilder<HisnCubit, HisnState>(
           builder: (context, state) {
@@ -136,6 +148,126 @@ class HisnIndexView extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  Future<void> _showBookIntroduction(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: .75,
+          minChildSize: .5,
+          maxChildSize: .95,
+          builder: (context, controller) {
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(24.r),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(height: 12.r),
+
+                    Container(
+                      width: 50.r,
+                      height: 5.r,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade400,
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.all(20.r),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.menu_book_rounded,
+                            color: AppColors.primaryColor,
+                            size: 28.r,
+                          ),
+                          10.horizontalSpace,
+                          Text(
+                            'عن حصن المسلم',
+                            style: AppTextStyle.style20W900.copyWith(
+                              fontFamily: AppFonts.amiri,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Expanded(
+                      child: ListView(
+                        controller: controller,
+                        padding: EdgeInsets.symmetric(horizontal: 20.r),
+                        children: [
+                          Text(
+                            '''
+            يُعد كتاب «حصن المسلم من أذكار الكتاب والسنة» من أشهر كتب الأذكار في العالم الإسلامي، وقد ألّفه الشيخ سعيد بن علي بن وهف القحطاني، وجمع فيه الأذكار والأدعية الصحيحة الواردة في القرآن الكريم والسنة النبوية.
+            
+            يمتاز الكتاب بسهولة ترتيبه، حيث قُسمت الأذكار بحسب المناسبات والأحوال اليومية، مثل أذكار الصباح والمساء، والنوم، والاستيقاظ، والصلاة، والسفر، والطعام، وغيرها، مع الاقتصار على الأحاديث الصحيحة أو الحسنة.
+            
+            ومن خلال هذا القسم يمكنك الوصول إلى الأذكار بسهولة، وقراءتها في وقتها، والمواظبة عليها لتكون معينًا لك على ذكر الله في مختلف أحوالك، اقتداءً بهدي النبي ﷺ.
+            ''',
+                            textAlign: TextAlign.justify,
+                            style: AppTextStyle.style18W800.copyWith(
+                              fontFamily: AppFonts.amiri,
+                              color: AppColors.primaryColor,
+                              height: 2,
+                            ),
+                          ),
+
+                          SizedBox(height: 24.r),
+
+                          Container(
+                            padding: EdgeInsets.all(16.r),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryColor.withAlpha(15),
+                              borderRadius: BorderRadius.circular(16.r),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.lightbulb_outline_rounded,
+                                  color: AppColors.primaryColor,
+                                ),
+                                12.horizontalSpace,
+                                Expanded(
+                                  child: Text(
+                                    'احرص على المحافظة على هذه الأذكار يوميًا، فهي من أعظم أسباب طمأنينة القلب، وحفظ الله لعبده، واتباع سنة النبي ﷺ.',
+                                    style: AppTextStyle.style18W500.copyWith(
+                                      fontFamily: AppFonts.amiri,
+                                      color: AppColors.primaryColor,
+                                      height: 1.8,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          30.verticalSpace,
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

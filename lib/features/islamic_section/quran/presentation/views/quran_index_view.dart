@@ -83,6 +83,7 @@ class QuranIndexView extends StatelessWidget {
                           bookmarkedAyah != null)
                         _buildBookmarkCard(
                           context,
+                          context.read<QuranCubit>(),
                           state.surahs,
                           bookmarkedSurahNumber,
                           bookmarkedAyah,
@@ -228,6 +229,7 @@ class QuranIndexView extends StatelessWidget {
 
   Widget _buildBookmarkCard(
     BuildContext context,
+    QuranCubit cubit,
     List<SurahEntity> surahs,
     int surahNumber,
     int ayahNumber,
@@ -261,7 +263,7 @@ class QuranIndexView extends StatelessWidget {
                     CacheHelper.removeData('bookmarked_ayah');
                     CacheHelper.removeData('bookmarked_offset');
 
-                    (context as Element).markNeedsBuild();
+                    cubit.refreshIndex();
 
                     Navigator.pop(context);
 
