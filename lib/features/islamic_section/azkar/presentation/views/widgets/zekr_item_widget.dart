@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 
@@ -88,7 +88,7 @@ class ZekrItemWidget extends StatelessWidget {
                             benefit,
                             style: AppTextStyle.style9W300.copyWith(
                               color: AppColors.primaryColor,
-                              fontFamily: kPrimaryArFont,
+                              fontFamily: AppFonts.ar,
                             ),
                           ),
                         ),
@@ -164,7 +164,7 @@ class ZekrItemWidget extends StatelessWidget {
                   '$totalCount',
                   style: AppTextStyle.style9W500.copyWith(
                     color: AppColors.secondaryColor.withAlpha(20),
-                    fontFamily: kPrimaryArFont,
+                    fontFamily: AppFonts.ar,
                   ),
                 ),
               ],

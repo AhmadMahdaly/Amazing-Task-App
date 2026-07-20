@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/resources/islamic_text.dart';
 import 'package:s/core/responsive/responsive_config.dart';
@@ -68,7 +68,7 @@ class _SettingsCalculationViewState extends State<SettingsCalculationView> {
           title: Text(
             IslamicTexts.editSettings,
             style: AppTextStyle.style16Bold.copyWith(
-              fontFamily: kPrimaryArFont,
+              fontFamily: AppFonts.ar,
             ),
           ),
           backgroundColor: AppColors.primaryColor,
@@ -99,7 +99,7 @@ class _SettingsCalculationViewState extends State<SettingsCalculationView> {
                       IslamicTexts.editSettingsDescription,
                       style: AppTextStyle.style14W500.copyWith(
                         color: AppColors.secondaryColor,
-                        fontFamily: kPrimaryArFont,
+                        fontFamily: AppFonts.ar,
                       ),
                     ),
                   ),
@@ -123,13 +123,13 @@ class _SettingsCalculationViewState extends State<SettingsCalculationView> {
                     controller: _doubtController,
                     keyboardType: TextInputType.number,
                     style: AppTextStyle.style14W500.copyWith(
-                      fontFamily: kPrimaryArFont,
+                      fontFamily: AppFonts.ar,
                     ),
                     decoration: InputDecoration(
                       labelText: IslamicTexts.doubtPeriodMonths,
                       labelStyle: AppTextStyle.style14W500.copyWith(
                         color: AppColors.secondaryColor,
-                        fontFamily: kPrimaryArFont,
+                        fontFamily: AppFonts.ar,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.r),
@@ -217,7 +217,7 @@ class _SettingsCalculationViewState extends State<SettingsCalculationView> {
                       IslamicTexts.save,
                       style: AppTextStyle.style16Bold.copyWith(
                         color: AppColors.white,
-                        fontFamily: kPrimaryArFont,
+                        fontFamily: AppFonts.ar,
                       ),
                     ),
                   ),
@@ -250,7 +250,7 @@ class _SettingsCalculationViewState extends State<SettingsCalculationView> {
             Text(
               '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}',
               style: AppTextStyle.style14W500.copyWith(
-                fontFamily: kPrimaryArFont,
+                fontFamily: AppFonts.ar,
               ),
             ),
             Icon(

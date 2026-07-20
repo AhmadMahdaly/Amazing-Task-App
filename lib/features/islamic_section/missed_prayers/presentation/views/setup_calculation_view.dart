@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/resources/islamic_text.dart';
 import 'package:s/core/responsive/responsive_config.dart';
@@ -54,7 +54,7 @@ class _SetupCalculationViewState extends State<SetupCalculationView> {
           title: Text(
             IslamicTexts.setupTitle,
             style: AppTextStyle.style16Bold.copyWith(
-              fontFamily: kPrimaryArFont,
+              fontFamily: AppFonts.ar,
             ),
           ),
           backgroundColor: AppColors.primaryColor,
@@ -96,13 +96,13 @@ class _SetupCalculationViewState extends State<SetupCalculationView> {
                     controller: _doubtController,
                     keyboardType: TextInputType.number,
                     style: AppTextStyle.style14W500.copyWith(
-                      fontFamily: kPrimaryArFont,
+                      fontFamily: AppFonts.ar,
                     ),
                     decoration: InputDecoration(
                       labelText: IslamicTexts.doubtPeriodMonths,
                       labelStyle: AppTextStyle.style14W500.copyWith(
                         color: AppColors.secondaryColor,
-                        fontFamily: kPrimaryArFont,
+                        fontFamily: AppFonts.ar,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.r),
@@ -161,7 +161,7 @@ class _SetupCalculationViewState extends State<SetupCalculationView> {
                       IslamicTexts.calculateAndStart,
                       style: AppTextStyle.style16Bold.copyWith(
                         color: AppColors.white,
-                        fontFamily: kPrimaryArFont,
+                        fontFamily: AppFonts.ar,
                       ),
                     ),
                   ),
@@ -197,7 +197,7 @@ class _SetupCalculationViewState extends State<SetupCalculationView> {
                 IslamicTexts.setupMissedPrayersTitle,
                 style: AppTextStyle.style16Bold.copyWith(
                   color: AppColors.primaryColor,
-                  fontFamily: kPrimaryArFont,
+                  fontFamily: AppFonts.ar,
                 ),
               ),
             ],
@@ -207,7 +207,7 @@ class _SetupCalculationViewState extends State<SetupCalculationView> {
             IslamicTexts.setupMissedPrayersSubject,
             style: AppTextStyle.style14W500.copyWith(
               height: 1.5,
-              fontFamily: kPrimaryArFont,
+              fontFamily: AppFonts.ar,
             ),
           ),
         ],
@@ -239,10 +239,10 @@ class _SetupCalculationViewState extends State<SetupCalculationView> {
               style: selectedDate == null
                   ? AppTextStyle.style14W500.copyWith(
                       color: AppColors.secondaryColor,
-                      fontFamily: kPrimaryArFont,
+                      fontFamily: AppFonts.ar,
                     )
                   : AppTextStyle.style14W500.copyWith(
-                      fontFamily: kPrimaryArFont,
+                      fontFamily: AppFonts.ar,
                     ),
             ),
             Icon(

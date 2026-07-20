@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
@@ -376,6 +376,7 @@ class _HadithTile extends StatelessWidget {
         hadith.title,
         style: AppTextStyle.style18W900.copyWith(
           fontFamily: AppFonts.amiri,
+          color: AppColors.thirdColor,
         ),
       ),
       subtitle: Padding(
@@ -384,7 +385,7 @@ class _HadithTile extends StatelessWidget {
           hadith.preview,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: AppTextStyle.style16W600.copyWith(
+          style: AppTextStyle.style18W600.copyWith(
             fontFamily: AppFonts.amiri,
           ),
         ),

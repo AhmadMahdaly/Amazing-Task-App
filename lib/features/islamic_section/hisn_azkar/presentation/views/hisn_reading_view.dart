@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
-import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/features/islamic_section/hisn_azkar/domain/entities/hisn_chapter_entity.dart';
@@ -208,7 +208,7 @@ class _HisnReadingViewState extends State<HisnReadingView> {
                           footnote,
                           style: AppTextStyle.style9W300.copyWith(
                             color: AppColors.primaryColor,
-                            fontFamily: kPrimaryArFont,
+                            fontFamily: AppFonts.ar,
 
                             fontSize: (_fontSize - 10).sp,
                             height: 1.5,

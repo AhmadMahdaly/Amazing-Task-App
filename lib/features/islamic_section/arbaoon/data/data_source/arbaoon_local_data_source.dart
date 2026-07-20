@@ -37,10 +37,18 @@ class ArbaoonLocalDataSourceImpl implements ArbaoonLocalDataSource {
 
       final content = lines.skip(1).join('\n').trim();
 
-      final preview = content
+      final normalizedContent = content
           .replaceAll('\n', ' ')
           .replaceAll(RegExp(r'\s+'), ' ')
           .trim();
+
+      final match = RegExp('"([^"]+)"').firstMatch(normalizedContent);
+
+      final preview =
+          match?.group(1) ??
+          (normalizedContent.length > 120
+              ? '${normalizedContent.substring(0, 120)}...'
+              : normalizedContent);
 
       hadiths.add(
         Hadith(

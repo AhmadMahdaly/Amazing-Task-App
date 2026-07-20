@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/resources/islamic_text.dart';
 import 'package:s/core/responsive/responsive_config.dart';
@@ -39,14 +39,14 @@ class PrayerItemWidget extends StatelessWidget {
               Text(
                 prayerName,
                 style: AppTextStyle.style16Bold.copyWith(
-                  fontFamily: kPrimaryArFont,
+                  fontFamily: AppFonts.ar,
                 ),
               ),
               Text(
                 '${IslamicTexts.remaining}: $countLeft',
                 style: AppTextStyle.style14W500.copyWith(
                   color: AppColors.secondaryColor,
-                  fontFamily: kPrimaryArFont,
+                  fontFamily: AppFonts.ar,
                 ),
               ),
             ],
@@ -95,7 +95,7 @@ class PrayerItemWidget extends StatelessWidget {
                   IslamicTexts.done,
                   style: AppTextStyle.style14W500.copyWith(
                     color: AppColors.white,
-                    fontFamily: kPrimaryArFont,
+                    fontFamily: AppFonts.ar,
                   ),
                 ),
               ),

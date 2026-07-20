@@ -1,7 +1,7 @@
 name: s
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.40+40
+version: 1.0.41+41
 
 environment:
   sdk: ^3.9.0
@@ -70,6 +70,9 @@ flutter:
     - family: UthmanicHafs
       fonts:
         - asset: assets/fonts/UthmanicHafs.otf
+    - family: Arabesque
+      fonts:
+        - asset: assets/fonts/AGA-Arabesque.ttf
 
 icons_launcher:
   image_path: "assets/images/png/logo.png"

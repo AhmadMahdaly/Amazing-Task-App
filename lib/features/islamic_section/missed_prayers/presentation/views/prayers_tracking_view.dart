@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/resources/islamic_text.dart';
 import 'package:s/core/responsive/responsive_config.dart';
@@ -22,7 +22,7 @@ class PrayersTrackingView extends StatelessWidget {
           title: Text(
             IslamicTexts.trackingTitle,
             style: AppTextStyle.style16Bold.copyWith(
-              fontFamily: kPrimaryArFont,
+              fontFamily: AppFonts.ar,
             ),
           ),
           backgroundColor: AppColors.primaryColor,
@@ -118,7 +118,7 @@ class PrayersTrackingView extends StatelessWidget {
                     state.message,
                     style: AppTextStyle.style14W500.copyWith(
                       color: AppColors.errorColor,
-                      fontFamily: kPrimaryArFont,
+                      fontFamily: AppFonts.ar,
                     ),
                   ),
                 );
@@ -154,7 +154,7 @@ class PrayersTrackingView extends StatelessWidget {
             IslamicTexts.overallProgressTitle,
             style: AppTextStyle.style14Bold.copyWith(
               color: AppColors.primaryColor,
-              fontFamily: kPrimaryArFont,
+              fontFamily: AppFonts.ar,
             ),
           ),
           10.verticalSpace,
@@ -175,14 +175,14 @@ class PrayersTrackingView extends StatelessWidget {
                 '${IslamicTexts.completedRatio}: ${(progress * 100).toStringAsFixed(1)}%',
                 style: AppTextStyle.style12W500.copyWith(
                   color: AppColors.secondaryColor,
-                  fontFamily: kPrimaryArFont,
+                  fontFamily: AppFonts.ar,
                 ),
               ),
               Text(
                 '${IslamicTexts.remainingRatio}: ${((1 - progress) * 100).toStringAsFixed(1)}%',
                 style: AppTextStyle.style12W500.copyWith(
                   color: AppColors.secondaryColor,
-                  fontFamily: kPrimaryArFont,
+                  fontFamily: AppFonts.ar,
                 ),
               ),
             ],

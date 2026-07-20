@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:s/core/resources/app_fonts.dart';
 
-import '../constants.dart';
 import '../responsive/responsive_config.dart';
 import 'app_colors.dart';
 import 'app_text_style.dart';
@@ -12,7 +12,7 @@ class Appthemes {
       useMaterial3: true,
       primaryColor: AppColors.primaryColor,
       scaffoldBackgroundColor: AppColors.white,
-      fontFamily: kPrimaryEnFont,
+      fontFamily: AppFonts.en,
 
       textTheme: TextTheme(
         titleLarge: AppTextStyle.style18W800,
@@ -25,7 +25,7 @@ class Appthemes {
         toolbarHeight: 100.h,
         titleTextStyle: AppTextStyle.style16Bold.copyWith(
           color: AppColors.white,
-          fontFamily: kPrimaryEnFont,
+          fontFamily: AppFonts.en,
         ),
         backgroundColor: AppColors.primaryColor,
         surfaceTintColor: AppColors.white,
@@ -49,7 +49,7 @@ class Appthemes {
         ),
         elevation: 5,
         titleTextStyle: AppTextStyle.style20Bold.copyWith(
-          fontFamily: kPrimaryEnFont,
+          fontFamily: AppFonts.en,
         ),
       ),
 
@@ -63,7 +63,7 @@ class Appthemes {
           ),
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
           textStyle: AppTextStyle.style12W500.copyWith(
-            fontFamily: kPrimaryEnFont,
+            fontFamily: AppFonts.en,
           ),
         ),
       ),
@@ -77,7 +77,7 @@ class Appthemes {
           ),
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
           textStyle: AppTextStyle.style14W500.copyWith(
-            fontFamily: kPrimaryEnFont,
+            fontFamily: AppFonts.en,
           ),
         ),
       ),

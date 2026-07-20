@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
-import 'package:s/core/constants.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
@@ -237,7 +237,7 @@ class _ArbaoonNotesViewState extends State<ArbaoonNotesView> {
                         Text(
                           '"${highlight.selectedText}"',
                           style: AppTextStyle.style18W900.copyWith(
-                            fontFamily: AppFonts.amiri,
+                            fontFamily: AppFonts.hadith,
                             color: AppColors.primaryColor,
 
                             height: 1.6,
