@@ -9,6 +9,7 @@ import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_lesson.dart';
 import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
+import 'package:s/features/islamic_section/notes/presentation/utils/notes_section_type.dart';
 
 class AsmaaIndexView extends StatelessWidget {
   const AsmaaIndexView({super.key});
@@ -40,7 +41,10 @@ class AsmaaIndexView extends StatelessWidget {
                 size: 24.r,
               ),
               onPressed: () async {
-                await context.pushNamed(AppRoutes.highlightsAndNotesView);
+                await context.pushNamed(
+                  AppRoutes.unifiedNotesView,
+                  extra: NotesSectionType.asmaa,
+                );
               },
             ),
             IconButton(
@@ -121,7 +125,7 @@ class AsmaaIndexView extends StatelessWidget {
                             ),
                           ),
                           title: Text(
-                            lesson.title, // مثل "اسم الله الملك"
+                            lesson.title,
                             style: AppTextStyle.style18W900.copyWith(
                               fontFamily: AppFonts.amiri,
                               color: AppColors.primaryColor,
@@ -305,7 +309,7 @@ class AsmaaIndexView extends StatelessWidget {
     AsmaaLesson lesson,
   ) async {
     await context.pushNamed(
-      AppRoutes.asmaaReadingView, // تأكد من إضافة هذا الراوت
+      AppRoutes.asmaaReadingView,
       extra: lesson,
     );
   }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
@@ -56,11 +57,11 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
     _asmaaCubit = context.read<AsmaaCubit>();
 
     _fontSize =
-        (CacheHelper.getData('asmaa_font_size') as num?)?.toDouble() ?? 24;
+        (CacheHelper.getData(CacheKeys.asmaaFontSize) as num?)?.toDouble() ?? 24;
     _screenOpacity =
-        (CacheHelper.getData('asmaa_screen_opacity') as num?)?.toInt() ?? 200;
+        (CacheHelper.getData(CacheKeys.asmaaScreenOpacity) as num?)?.toInt() ?? 200;
 
-    final colorValue = CacheHelper.getData('asmaa_text_color') as int?;
+    final colorValue = CacheHelper.getData(CacheKeys.asmaaTextColor) as int?;
     if (colorValue != null) {
       _textColor = Color(colorValue);
     }
@@ -195,7 +196,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                           setState(() => _textColor = color);
                                           setModalState(() {});
                                           CacheHelper.saveData(
-                                            key: 'asmaa_text_color',
+                                            key: CacheKeys.asmaaTextColor,
                                             value: color.toARGB32(),
                                           );
                                         },
@@ -223,7 +224,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                             setState(() => _fontSize -= 2);
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'asmaa_font_size',
+                                              key: CacheKeys.asmaaFontSize,
                                               value: _fontSize,
                                             );
                                           }
@@ -247,7 +248,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                         },
                                         onChangeEnd: (value) {
                                           CacheHelper.saveData(
-                                            key: 'asmaa_font_size',
+                                            key: CacheKeys.asmaaFontSize,
                                             value: value,
                                           );
                                         },
@@ -258,7 +259,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                             setState(() => _fontSize += 2);
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'asmaa_font_size',
+                                              key: CacheKeys.asmaaFontSize,
                                               value: _fontSize,
                                             );
                                           }
@@ -285,7 +286,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                             );
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'asmaa_screen_opacity',
+                                              key: CacheKeys.asmaaScreenOpacity,
                                               value: _screenOpacity,
                                             );
                                           }
@@ -314,7 +315,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                         },
                                         onChangeEnd: (value) {
                                           CacheHelper.saveData(
-                                            key: 'asmaa_screen_opacity',
+                                            key: CacheKeys.asmaaScreenOpacity,
                                             value: value,
                                           );
                                         },
@@ -327,7 +328,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                             );
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'asmaa_screen_opacity',
+                                              key: CacheKeys.asmaaScreenOpacity,
                                               value: _screenOpacity,
                                             );
                                           }
@@ -356,15 +357,15 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                       });
                                       setModalState(() {});
                                       CacheHelper.saveData(
-                                        key: 'asmaa_font_size',
+                                        key: CacheKeys.asmaaFontSize,
                                         value: 24,
                                       );
                                       CacheHelper.saveData(
-                                        key: 'asmaa_screen_opacity',
+                                        key: CacheKeys.asmaaScreenOpacity,
                                         value: 200,
                                       );
                                       CacheHelper.saveData(
-                                        key: 'asmaa_text_color',
+                                        key: CacheKeys.asmaaTextColor,
                                         value: Colors.white.toARGB32(),
                                       );
                                     },

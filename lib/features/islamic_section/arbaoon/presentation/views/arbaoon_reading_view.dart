@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
@@ -56,11 +57,14 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
     _arbaoonCubit = context.read<ArbaoonCubit>();
 
     _fontSize =
-        (CacheHelper.getData('arbaoon_font_size') as num?)?.toDouble() ?? 24;
+        (CacheHelper.getData(CacheKeys.hadithScreenOpacity) as num?)
+            ?.toDouble() ??
+        24;
     _screenOpacity =
-        (CacheHelper.getData('arbaoon_screen_opacity') as num?)?.toInt() ?? 200;
+        (CacheHelper.getData(CacheKeys.hadithScreenOpacity) as num?)?.toInt() ??
+        200;
 
-    final colorValue = CacheHelper.getData('arbaoon_text_color') as int?;
+    final colorValue = CacheHelper.getData(CacheKeys.hadithTextColor) as int?;
     if (colorValue != null) {
       _textColor = Color(colorValue);
     }
@@ -197,7 +201,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                           setState(() => _textColor = color);
                                           setModalState(() {});
                                           CacheHelper.saveData(
-                                            key: 'arbaoon_text_color',
+                                            key: CacheKeys.hadithTextColor,
                                             value: color.toARGB32(),
                                           );
                                         },
@@ -225,7 +229,8 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                             setState(() => _fontSize -= 2);
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'arbaoon_font_size',
+                                              key:
+                                                  CacheKeys.hadithScreenOpacity,
                                               value: _fontSize,
                                             );
                                           }
@@ -249,7 +254,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                         },
                                         onChangeEnd: (value) {
                                           CacheHelper.saveData(
-                                            key: 'arbaoon_font_size',
+                                            key: CacheKeys.hadithScreenOpacity,
                                             value: value,
                                           );
                                         },
@@ -260,7 +265,8 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                             setState(() => _fontSize += 2);
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'arbaoon_font_size',
+                                              key:
+                                                  CacheKeys.hadithScreenOpacity,
                                               value: _fontSize,
                                             );
                                           }
@@ -287,7 +293,8 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                             );
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'arbaoon_screen_opacity',
+                                              key:
+                                                  CacheKeys.hadithScreenOpacity,
                                               value: _screenOpacity,
                                             );
                                           }
@@ -316,7 +323,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                         },
                                         onChangeEnd: (value) {
                                           CacheHelper.saveData(
-                                            key: 'arbaoon_screen_opacity',
+                                            key: CacheKeys.hadithScreenOpacity,
                                             value: value,
                                           );
                                         },
@@ -329,7 +336,8 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                             );
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key: 'arbaoon_screen_opacity',
+                                              key:
+                                                  CacheKeys.hadithScreenOpacity,
                                               value: _screenOpacity,
                                             );
                                           }
@@ -358,15 +366,15 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                       });
                                       setModalState(() {});
                                       CacheHelper.saveData(
-                                        key: 'arbaoon_font_size',
+                                        key: CacheKeys.hadithScreenOpacity,
                                         value: 24,
                                       );
                                       CacheHelper.saveData(
-                                        key: 'arbaoon_screen_opacity',
+                                        key: CacheKeys.hadithScreenOpacity,
                                         value: 200,
                                       );
                                       CacheHelper.saveData(
-                                        key: 'arbaoon_text_color',
+                                        key: CacheKeys.hadithTextColor,
                                         value: Colors.white.toARGB32(),
                                       );
                                     },

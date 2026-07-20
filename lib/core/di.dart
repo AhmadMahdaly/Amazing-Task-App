@@ -25,6 +25,8 @@ import 'package:s/features/islamic_section/missed_prayers/data/datasource/missed
 import 'package:s/features/islamic_section/missed_prayers/data/repo/missed_prayers_repository_impl.dart';
 import 'package:s/features/islamic_section/missed_prayers/domain/repo/missed_prayers_repository.dart';
 import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
+import 'package:s/features/islamic_section/notes/data/data_sources/notes_data_source.dart';
+import 'package:s/features/islamic_section/notes/presentation/cubit/notes_cubit.dart';
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
 import 'package:s/features/task_list/data/datasource/lists_local_data_source.dart';
@@ -108,5 +110,7 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<ArbaoonRepository>(
       () => ArbaoonRepositoryImpl(getIt()),
     )
-    ..registerLazySingleton<ArbaoonCubit>(() => ArbaoonCubit(getIt()));
+    ..registerLazySingleton<ArbaoonCubit>(() => ArbaoonCubit(getIt()))
+    ..registerLazySingleton<NotesDataSource>(NotesDataSource.new)
+    ..registerLazySingleton<NotesCubit>(() => NotesCubit(getIt()));
 }

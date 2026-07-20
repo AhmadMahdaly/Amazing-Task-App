@@ -12,12 +12,10 @@ import 'package:s/features/islamic_section/arbaoon/domain/entities/hadith.dart';
 import 'package:s/features/islamic_section/arbaoon/presentation/cubit/arbaoon_cubit.dart';
 import 'package:s/features/islamic_section/arbaoon/presentation/views/arbaoon_index_view.dart';
 import 'package:s/features/islamic_section/arbaoon/presentation/views/arbaoon_reading_view.dart';
-import 'package:s/features/islamic_section/arbaoon/presentation/views/highlights_and_notes_view.dart';
 import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_lesson.dart';
 import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
 import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_index_view.dart';
 import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_reading_view.dart';
-import 'package:s/features/islamic_section/asmaa/presentation/views/highlights_and_notes_view.dart';
 import 'package:s/features/islamic_section/azkar/presentation/controllers/cubit/azkar_cubit.dart';
 import 'package:s/features/islamic_section/azkar/presentation/views/azkar_view.dart';
 import 'package:s/features/islamic_section/hisn_azkar/domain/entities/hisn_chapter_entity.dart';
@@ -29,10 +27,12 @@ import 'package:s/features/islamic_section/missed_prayers/domain/entities/missed
 import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
 import 'package:s/features/islamic_section/missed_prayers/presentation/views/missed_prayers_wrapper_view.dart';
 import 'package:s/features/islamic_section/missed_prayers/presentation/views/settings_calculation_view.dart';
+import 'package:s/features/islamic_section/notes/presentation/cubit/notes_cubit.dart';
+import 'package:s/features/islamic_section/notes/presentation/utils/notes_section_type.dart';
+import 'package:s/features/islamic_section/notes/presentation/views/unified_notes_view.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
 import 'package:s/features/islamic_section/quran/presentation/views/quran_index_view.dart';
-import 'package:s/features/islamic_section/quran/presentation/views/saved_ayahs_and_notes_view.dart';
 import 'package:s/features/islamic_section/quran/presentation/views/surah_reading_view.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/views/tafsir_index_view.dart';
@@ -124,7 +124,7 @@ void initRouter() {
         path: AppRoutes.missedPrayersScreen,
         name: AppRoutes.missedPrayersScreen,
         builder: (context, state) => BlocProvider<MissedPrayersCubit>.value(
-          value: getIt<MissedPrayersCubit>(),
+          value: getIt<MissedPrayersCubit>()..loadPrayersData(),
           child: const MissedPrayersWrapperView(),
         ),
       ),
@@ -221,17 +221,14 @@ void initRouter() {
         },
       ),
       GoRoute(
-        path: AppRoutes.highlightsAndNotesView,
-        name: AppRoutes.highlightsAndNotesView,
+        path: AppRoutes.unifiedNotesView,
+        name: AppRoutes.unifiedNotesView,
         builder: (context, state) {
-          return const HighlightsAndNotesView();
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.savedAyahsAndNotesView,
-        name: AppRoutes.savedAyahsAndNotesView,
-        builder: (context, state) {
-          return const SavedAyahsAndNotesView();
+          final sectionType = state.extra! as NotesSectionType;
+          return BlocProvider.value(
+            value: getIt<NotesCubit>()..loadNotes(sectionType),
+            child: UnifiedNotesView(sectionType: sectionType),
+          );
         },
       ),
 
@@ -297,13 +294,13 @@ void initRouter() {
           );
         },
       ),
-      GoRoute(
-        path: AppRoutes.arbaoonNotesView,
-        name: AppRoutes.arbaoonNotesView,
-        builder: (context, state) {
-          return const ArbaoonNotesView();
-        },
-      ),
+      // GoRoute(
+      //   path: AppRoutes.arbaoonNotesView,
+      //   name: AppRoutes.arbaoonNotesView,
+      //   builder: (context, state) {
+      //     return const ArbaoonNotesView();
+      //   },
+      // ),
       // GoRoute(
       //   path: AppRoutes.errorScreen,
       //   name: AppRoutes.errorScreen,

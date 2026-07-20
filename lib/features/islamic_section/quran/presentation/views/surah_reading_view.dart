@@ -50,20 +50,23 @@ class _SurahReadingViewState extends State<SurahReadingView> {
         (CacheHelper.getData(CacheKeys.quranFontSize) as num?)?.toDouble() ??
         28;
     _screenOpacity =
-        (CacheHelper.getData(CacheKeys.screenOpacity) as num?)?.toInt() ?? 200;
+        (CacheHelper.getData(CacheKeys.quranScreenOpacity) as num?)?.toInt() ??
+        200;
     final colorValue = CacheHelper.getData(CacheKeys.quranTextColor) as int?;
     if (colorValue != null) {
       _textColor = Color(colorValue);
     }
 
     final isFromBookmark =
-        CacheHelper.getData('is_from_bookmark') as bool? ?? false;
-    CacheHelper.removeData('is_from_bookmark');
+        CacheHelper.getData(CacheKeys.isFromBookmark) as bool? ?? false;
+    CacheHelper.removeData(CacheKeys.isFromBookmark);
 
     double offset = 0;
     if (isFromBookmark) {
       offset =
-          (CacheHelper.getData('bookmarked_offset') as num?)?.toDouble() ?? 0;
+          (CacheHelper.getData(CacheKeys.bookmarkedOffset) as num?)
+              ?.toDouble() ??
+          0;
     } else {
       offset =
           (CacheHelper.getData('surah_${widget.surah.number}_offset') as num?)
@@ -123,11 +126,14 @@ class _SurahReadingViewState extends State<SurahReadingView> {
   }
 
   void _saveBookmark(int ayah) {
-    CacheHelper.saveData(key: 'bookmarked_surah', value: widget.surah.number);
-    CacheHelper.saveData(key: 'bookmarked_ayah', value: ayah);
+    CacheHelper.saveData(
+      key: CacheKeys.bookmarkedSurah,
+      value: widget.surah.number,
+    );
+    CacheHelper.saveData(key: CacheKeys.bookmarkedAyah, value: ayah);
 
     CacheHelper.saveData(
-      key: 'bookmarked_offset',
+      key: CacheKeys.bookmarkedOffset,
       value: _scrollController.offset,
     );
 
@@ -270,7 +276,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     setModalState(() {});
 
     CacheHelper.saveData(
-      key: CacheKeys.screenOpacity,
+      key: CacheKeys.quranScreenOpacity,
       value: newValue,
     );
   }
@@ -498,7 +504,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                       );
 
                                       CacheHelper.saveData(
-                                        key: CacheKeys.screenOpacity,
+                                        key: CacheKeys.quranScreenOpacity,
                                         value: 200,
                                       );
 
@@ -922,7 +928,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
 
   void _saveAyahWithNote(int ayah, String ayahText, String note) {
     final savedNotesStr =
-        CacheHelper.getData('saved_ayahs_notes') as String? ?? '[]';
+        CacheHelper.getData(CacheKeys.savedAyahsNotes) as String? ?? '[]';
     final notesList = SavedAyahNote.decode(savedNotesStr);
 
     final newNote = SavedAyahNote(
@@ -936,7 +942,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
 
     notesList.add(newNote);
     CacheHelper.saveData(
-      key: 'saved_ayahs_notes',
+      key: CacheKeys.savedAyahsNotes,
       value: SavedAyahNote.encode(notesList),
     );
 

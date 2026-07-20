@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
@@ -54,11 +55,11 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
     );
 
     _fontSize =
-        (CacheHelper.getData('tafsir_font_size') as num?)?.toDouble() ?? 24;
+        (CacheHelper.getData(CacheKeys.tafsirFontSize) as num?)?.toDouble() ?? 24;
     _screenOpacity =
-        (CacheHelper.getData('tafsir_screen_opacity') as num?)?.toInt() ?? 200;
+        (CacheHelper.getData(CacheKeys.tafsirScreenOpacity) as num?)?.toInt() ?? 200;
 
-    final colorValue = CacheHelper.getData('tafsir_text_color') as int?;
+    final colorValue = CacheHelper.getData(CacheKeys.tafsirTextColor) as int?;
     if (colorValue != null) {
       _textColor = Color(colorValue);
     }
@@ -120,7 +121,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
     setModalState(() {});
 
     CacheHelper.saveData(
-      key: 'tafsir_font_size',
+      key: CacheKeys.tafsirFontSize,
       value: _fontSize,
     );
   }
@@ -138,7 +139,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
     setModalState(() {});
 
     CacheHelper.saveData(
-      key: 'tafsir_screen_opacity',
+      key: CacheKeys.tafsirScreenOpacity,
       value: newValue,
     );
   }
@@ -291,7 +292,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
                                           setModalState(() {});
 
                                           CacheHelper.saveData(
-                                            key: 'tafsir_text_color',
+                                            key: CacheKeys.tafsirTextColor,
                                             value: color.toARGB32(),
                                           );
                                         },
@@ -450,17 +451,17 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
                                       setModalState(() {});
 
                                       CacheHelper.saveData(
-                                        key: 'tafsir_font_size',
+                                        key: CacheKeys.tafsirFontSize,
                                         value: 28,
                                       );
 
                                       CacheHelper.saveData(
-                                        key: 'tafsir_screen_opacity',
+                                        key: CacheKeys.tafsirScreenOpacity,
                                         value: 200,
                                       );
 
                                       CacheHelper.saveData(
-                                        key: 'tafsir_text_color',
+                                        key: CacheKeys.tafsirTextColor,
                                         value: Colors.white.toARGB32(),
                                       );
                                     },

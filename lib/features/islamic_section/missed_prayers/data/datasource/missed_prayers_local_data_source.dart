@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/features/islamic_section/missed_prayers/data/models/missed_prayers_model.dart';
 
 class MissedPrayersLocalDataSource {
   MissedPrayersLocalDataSource();
 
-  static const String _cacheKey = 'MISSED_PRAYERS_DATA';
+  static const String _cacheKey = CacheKeys.missedPrayersData;
 
   Future<void> cachePrayersData(MissedPrayersModel model) async {
     final jsonString = json.encode(model.toJson());

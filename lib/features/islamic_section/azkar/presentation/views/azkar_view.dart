@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
@@ -32,7 +33,8 @@ class _AzkarViewState extends State<AzkarView> {
     super.initState();
     context.read<AzkarCubit>().getAzkar(widget.azkarType);
     _fontSize =
-        (CacheHelper.getData('azkar_font_size') as num?)?.toDouble() ?? 18;
+        (CacheHelper.getData(CacheKeys.azkarFontSize) as num?)?.toDouble() ??
+        18;
   }
 
   void _updateFontSize(
@@ -46,7 +48,7 @@ class _AzkarViewState extends State<AzkarView> {
     setModalState(() {});
 
     CacheHelper.saveData(
-      key: 'azkar_font_size',
+      key: CacheKeys.azkarFontSize,
       value: _fontSize,
     );
   }

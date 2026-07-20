@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/features/islamic_section/arbaoon/domain/entities/hadith.dart';
 import 'package:s/features/islamic_section/arbaoon/domain/repository/arbaoon_repository.dart';
 
@@ -21,7 +22,7 @@ class ArbaoonCubit extends Cubit<ArbaoonState> {
     try {
       allHadiths = await _repository.getHadiths();
 
-      final lastReadId = CacheHelper.getData('last_read_hadith_id') as int?;
+      final lastReadId = CacheHelper.getData(CacheKeys.lastReadHadith) as int?;
 
       if (lastReadId != null) {
         try {
@@ -46,7 +47,7 @@ class ArbaoonCubit extends Cubit<ArbaoonState> {
     lastReadHadith = hadith;
 
     await CacheHelper.saveData(
-      key: 'last_read_hadith_id',
+      key: CacheKeys.lastReadHadith,
       value: hadith.id,
     );
 

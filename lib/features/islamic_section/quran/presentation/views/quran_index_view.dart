@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
+import 'package:s/features/islamic_section/notes/presentation/utils/notes_section_type.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
 
@@ -43,7 +45,10 @@ class QuranIndexView extends StatelessWidget {
                 size: 24.r,
               ),
               onPressed: () async {
-                await context.pushNamed(AppRoutes.savedAyahsAndNotesView);
+                await context.pushNamed(
+                  AppRoutes.unifiedNotesView,
+                  extra: NotesSectionType.quran,
+                );
               },
             ),
             20.horizontalSpace,
@@ -70,9 +75,9 @@ class QuranIndexView extends StatelessWidget {
 
             if (state is QuranLoaded) {
               final bookmarkedSurahNumber =
-                  CacheHelper.getData('bookmarked_surah') as int?;
+                  CacheHelper.getData(CacheKeys.bookmarkedSurah) as int?;
               final bookmarkedAyah =
-                  CacheHelper.getData('bookmarked_ayah') as int?;
+                  CacheHelper.getData(CacheKeys.bookmarkedAyah) as int?;
 
               return Column(
                 children: [
@@ -259,9 +264,9 @@ class QuranIndexView extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () {
-                    CacheHelper.removeData('bookmarked_surah');
-                    CacheHelper.removeData('bookmarked_ayah');
-                    CacheHelper.removeData('bookmarked_offset');
+                    CacheHelper.removeData(CacheKeys.bookmarkedSurah);
+                    CacheHelper.removeData(CacheKeys.bookmarkedAyah);
+                    CacheHelper.removeData(CacheKeys.bookmarkedOffset);
 
                     cubit.refreshIndex();
 
@@ -296,7 +301,7 @@ class QuranIndexView extends StatelessWidget {
         );
       },
       onTap: () async {
-        await CacheHelper.saveData(key: 'is_from_bookmark', value: true);
+        await CacheHelper.saveData(key: CacheKeys.isFromBookmark, value: true);
         if (context.mounted) {
           await _navigateToReading(context, bookmarkedSurah);
         }

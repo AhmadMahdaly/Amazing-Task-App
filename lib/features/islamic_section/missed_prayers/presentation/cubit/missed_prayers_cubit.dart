@@ -117,10 +117,9 @@ class MissedPrayersCubit extends Cubit<MissedPrayersState> {
         totalTargetPerPrayer: currentData.totalTargetPerPrayer,
         fajrLeft: newFajr,
         dhuhrLeft: newDhuhr,
-        asrLeft: newAsr, // 👈 تم التعديل هنا (كانت currentData.asrLeft)
-        maghribLeft:
-            newMaghrib, // 👈 تم التعديل هنا (كانت currentData.maghribLeft)
-        ishaLeft: newIsha, // 👈 تم التعديل هنا (كانت currentData.ishaLeft)
+        asrLeft: newAsr,
+        maghribLeft: newMaghrib,
+        ishaLeft: newIsha,
         birthDate: currentData.birthDate,
         commitmentDate: currentData.commitmentDate,
         doubtMonths: currentData.doubtMonths,

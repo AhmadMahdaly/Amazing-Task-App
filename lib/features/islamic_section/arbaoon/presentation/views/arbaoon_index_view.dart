@@ -8,6 +8,7 @@ import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/features/islamic_section/arbaoon/domain/entities/hadith.dart';
+import 'package:s/features/islamic_section/notes/presentation/utils/notes_section_type.dart';
 
 import '../cubit/arbaoon_cubit.dart';
 
@@ -41,7 +42,10 @@ class ArbaoonIndexView extends StatelessWidget {
                 size: 24.r,
               ),
               onPressed: () async {
-                await context.pushNamed(AppRoutes.arbaoonNotesView);
+                await context.pushNamed(
+                  AppRoutes.unifiedNotesView,
+                  extra: NotesSectionType.arbaoon,
+                );
               },
             ),
             IconButton(

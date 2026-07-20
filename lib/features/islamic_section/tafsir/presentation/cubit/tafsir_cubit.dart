@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/features/islamic_section/tafsir/data/models/tafsir_model.dart';
 import 'package:s/features/islamic_section/tafsir/domain/entities/tafsir_entity.dart';
 
@@ -15,7 +16,7 @@ class TafsirCubit extends Cubit<TafsirState> {
   Future<void> loadTafsirData() async {
     emit(TafsirLoading());
     try {
-      lastReadSurah = CacheHelper.getData('last_read_tafsir_surah') as int?;
+      lastReadSurah = CacheHelper.getData(CacheKeys.lastReadTafsir) as int?;
       final jsonString = await rootBundle.loadString(
         'assets/json/muyassar.json',
       );
@@ -46,7 +47,7 @@ class TafsirCubit extends Cubit<TafsirState> {
   Future<void> saveLastRead(int surahNumber) async {
     lastReadSurah = surahNumber;
     await CacheHelper.saveData(
-      key: 'last_read_tafsir_surah',
+      key: CacheKeys.lastReadTafsir,
       value: surahNumber,
     );
     emit(TafsirLoaded(groupedTafsir, lastReadSurah));

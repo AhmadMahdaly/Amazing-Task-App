@@ -24,7 +24,7 @@ class MissedPrayersRepositoryImpl implements MissedPrayersRepository {
 
       await localDataSource.cachePrayersData(model);
     } catch (e) {
-      throw Exception('Failed to save missed prayers data: $e');
+      throw Exception('فشل في حفظ بيانات الصلوات الفائتة');
     }
   }
 
@@ -35,7 +35,7 @@ class MissedPrayersRepositoryImpl implements MissedPrayersRepository {
 
       return model;
     } catch (e) {
-      throw Exception('Failed to load missed prayers data: $e');
+      throw Exception('فشل في تحميل بيانات الصلوات الفائتة');
     }
   }
 }

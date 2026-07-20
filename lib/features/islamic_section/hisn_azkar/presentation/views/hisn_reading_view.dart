@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
@@ -23,7 +24,7 @@ class _HisnReadingViewState extends State<HisnReadingView> {
   void initState() {
     super.initState();
     _fontSize =
-        (CacheHelper.getData('hist_font_size') as num?)?.toDouble() ?? 18;
+        (CacheHelper.getData(CacheKeys.hisnFontSize) as num?)?.toDouble() ?? 18;
   }
 
   void _updateFontSize(
@@ -37,7 +38,7 @@ class _HisnReadingViewState extends State<HisnReadingView> {
     setModalState(() {});
 
     CacheHelper.saveData(
-      key: 'hist_font_size',
+      key: CacheKeys.hisnFontSize,
       value: _fontSize,
     );
   }

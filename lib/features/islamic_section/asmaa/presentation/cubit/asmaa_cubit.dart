@@ -2,6 +2,7 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_lesson.dart';
 import 'package:s/features/islamic_section/asmaa/domain/repositories/asmaa_repository.dart';
 
@@ -19,7 +20,7 @@ class AsmaaCubit extends Cubit<AsmaaState> {
       final lessons = await repository.getAsmaaLessons();
       allLessons = lessons;
 
-      final lastReadId = CacheHelper.getData('last_read_asmaa_lesson') as int?;
+      final lastReadId = CacheHelper.getData(CacheKeys.lastReadAsmaa) as int?;
 
       emit(AsmaaLoaded(lessons, lastReadLessonId: lastReadId));
     } catch (e) {
@@ -28,7 +29,7 @@ class AsmaaCubit extends Cubit<AsmaaState> {
   }
 
   void saveLastRead(int lessonId) {
-    CacheHelper.saveData(key: 'last_read_asmaa_lesson', value: lessonId);
+    CacheHelper.saveData(key: CacheKeys.lastReadAsmaa, value: lessonId);
 
     if (state is AsmaaLoaded) {
       final currentState = state as AsmaaLoaded;

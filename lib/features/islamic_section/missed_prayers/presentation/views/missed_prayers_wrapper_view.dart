@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
@@ -8,21 +6,8 @@ import '../../../../../core/resources/app_colors.dart';
 import 'prayers_tracking_view.dart';
 import 'setup_calculation_view.dart';
 
-class MissedPrayersWrapperView extends StatefulWidget {
+class MissedPrayersWrapperView extends StatelessWidget {
   const MissedPrayersWrapperView({super.key});
-
-  @override
-  State<MissedPrayersWrapperView> createState() =>
-      _MissedPrayersWrapperViewState();
-}
-
-class _MissedPrayersWrapperViewState extends State<MissedPrayersWrapperView> {
-  @override
-  void initState() {
-    super.initState();
-
-    unawaited(context.read<MissedPrayersCubit>().loadPrayersData());
-  }
 
   @override
   Widget build(BuildContext context) {

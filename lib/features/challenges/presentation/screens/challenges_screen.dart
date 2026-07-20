@@ -9,6 +9,7 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
+import 'package:s/core/shared_widgets/custom_primary_button.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/challenges/data/models/challenge_model.dart';
@@ -67,52 +68,86 @@ class ChallengesScreen extends StatelessWidget {
                 if (state is ChallengeLoaded) {
                   if (state.challenges.isEmpty) {
                     return Center(
-                      child: Container(
-                        height: 300.h,
-                        width: 300.w,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 12.h,
-                        ),
-
-                        decoration: BoxDecoration(
-                          color: AppColors.buttonColor,
-                          borderRadius: BorderRadius.circular(16.r),
-                          border: Border.all(
-                            color: AppColors.errorColor.withAlpha(77),
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.all(24.r),
+                        child: Container(
+                          constraints: BoxConstraints(maxWidth: 420.w),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24.w,
+                            vertical: 28.h,
                           ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  Icons.warning_amber_rounded,
-                                  color: AppColors.errorColor,
-                                  size: 30.r,
-                                ),
-                                8.horizontalSpace,
-                                Text(
-                                  AppTexts.howChallengesWork,
-                                  style: AppTextStyle.style18Bold.copyWith(
-                                    color: AppColors.primaryColor,
-                                  ),
-                                ),
-                              ],
+                          decoration: BoxDecoration(
+                            color: AppColors.buttonColor,
+                            borderRadius: BorderRadius.circular(24.r),
+                            border: Border.all(
+                              color: AppColors.errorColor.withAlpha(40),
                             ),
-                            12.verticalSpace,
-
-                            Text(
-                              AppTexts.challengeDescription,
-                              style: AppTextStyle.style16W500.copyWith(
-                                height: 1.6,
-                                color: AppColors.primaryColor,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withAlpha(18),
+                                blurRadius: 18,
+                                offset: const Offset(0, 8),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 84.r,
+                                height: 84.r,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.errorColor.withAlpha(25),
+                                ),
+                                child: Icon(
+                                  Icons.emoji_events_outlined,
+                                  size: 42.r,
+                                  color: AppColors.errorColor,
+                                ),
+                              ),
+
+                              20.verticalSpace,
+
+                              Text(
+                                AppTexts.howChallengesWork,
+                                textAlign: TextAlign.center,
+                                style: AppTextStyle.style20Bold.copyWith(
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+
+                              8.verticalSpace,
+
+                              Divider(
+                                color: AppColors.primaryColor.withAlpha(40),
+                                thickness: 1,
+                              ),
+
+                              8.verticalSpace,
+
+                              Text(
+                                AppTexts.challengeDescription,
+                                textAlign: TextAlign.justify,
+                                style: AppTextStyle.style16W500.copyWith(
+                                  // height: 0.8,
+                                  color: AppColors.secondaryColor,
+                                ),
+                              ),
+
+                              28.verticalSpace,
+
+                              CustomPrimaryButton(
+                                onPressed: () async {
+                                  await context.pushNamed(
+                                    AppRoutes.addChallengeScreen,
+                                  );
+                                },
+
+                                text: AppTexts.addNewChallenge,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

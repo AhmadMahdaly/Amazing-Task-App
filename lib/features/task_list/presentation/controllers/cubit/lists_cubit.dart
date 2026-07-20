@@ -44,7 +44,6 @@ class ListsCubit extends Cubit<ListsState> {
     emit(ListsLoaded(lists));
   }
 
-  /// Next position from persisted lists, not UI cubit state (avoids 0 while loading).
   int _nextListPosition(List<TaskListEntity> existing) {
     if (existing.isEmpty) return 0;
     var maxPosition = existing.first.position;
