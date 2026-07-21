@@ -57,8 +57,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
     _arbaoonCubit = context.read<ArbaoonCubit>();
 
     _fontSize =
-        (CacheHelper.getData(CacheKeys.hadithScreenOpacity) as num?)
-            ?.toDouble() ??
+        (CacheHelper.getData(CacheKeys.hadithFontSize) as num?)?.toDouble() ??
         24;
     _screenOpacity =
         (CacheHelper.getData(CacheKeys.hadithScreenOpacity) as num?)?.toInt() ??
@@ -90,7 +89,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
 
   @override
   void dispose() {
-    _scrollController.removeListener(_saveOffset);
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _arbaoonCubit.saveLastRead(widget.hadith);
 
@@ -112,7 +111,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
 
     if (nextLesson.id != widget.hadith.id) {
       context.pushReplacementNamed(
-        AppRoutes.asmaaReadingView,
+        AppRoutes.arbaoonReadingView,
         extra: nextLesson,
       );
     }
@@ -229,8 +228,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                             setState(() => _fontSize -= 2);
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key:
-                                                  CacheKeys.hadithScreenOpacity,
+                                              key: CacheKeys.hadithFontSize,
                                               value: _fontSize,
                                             );
                                           }
@@ -254,7 +252,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                         },
                                         onChangeEnd: (value) {
                                           CacheHelper.saveData(
-                                            key: CacheKeys.hadithScreenOpacity,
+                                            key: CacheKeys.hadithFontSize,
                                             value: value,
                                           );
                                         },
@@ -265,8 +263,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                             setState(() => _fontSize += 2);
                                             setModalState(() {});
                                             CacheHelper.saveData(
-                                              key:
-                                                  CacheKeys.hadithScreenOpacity,
+                                              key: CacheKeys.hadithFontSize,
                                               value: _fontSize,
                                             );
                                           }
@@ -366,7 +363,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                       });
                                       setModalState(() {});
                                       CacheHelper.saveData(
-                                        key: CacheKeys.hadithScreenOpacity,
+                                        key: CacheKeys.hadithFontSize,
                                         value: 24,
                                       );
                                       CacheHelper.saveData(
@@ -479,7 +476,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                   widget.hadith.content,
                                 ),
                                 style: AppTextStyle.style20W600.copyWith(
-                                  fontFamily: AppFonts.hadith,
+                                  fontFamily: AppFonts.amiri,
                                   color: _textColor,
                                   height: 1.8,
                                   fontSize: _fontSize.sp,

@@ -89,33 +89,41 @@ class ArbaoonIndexView extends StatelessWidget {
                 ),
               );
             }
-
-            return ListView(
-              padding: EdgeInsets.all(16.r),
+            return Column(
               children: [
                 if (state.lastReadHadith != null)
-                  _ContinueReadingCard(
-                    hadith: state.lastReadHadith!,
+                  Padding(
+                    padding: EdgeInsets.all(16.r),
+                    child: _ContinueReadingCard(
+                      hadith: state.lastReadHadith!,
+                    ),
                   ),
 
-                20.verticalSpace,
-
+                // 20.verticalSpace,
                 // Text(
                 //   'الأحاديث (${state.hadiths.length})',
                 //   style: AppTextStyle.style20W900.copyWith(
                 //     fontFamily: AppFonts.amiri,
                 //   ),
                 // ),
-
                 // 12.verticalSpace,
-                ...state.hadiths.map(
-                  (hadith) => Column(
-                    children: [
-                      _HadithTile(hadith: hadith),
-                      const Divider(
-                        color: AppColors.secondaryColor,
-                      ),
-                    ],
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: state.hadiths.length,
+                    separatorBuilder: (context, index) => Divider(
+                      color: AppColors.thirdColor.withAlpha(50),
+                      height: 1,
+                    ),
+                    itemBuilder: (context, index) {
+                      final hadith = state.hadiths[index];
+
+                      final isLastRead = hadith.id == state.lastReadHadith?.id;
+
+                      return _HadithTile(
+                        hadith: hadith,
+                        isLastRead: isLastRead,
+                      );
+                    },
                   ),
                 ),
               ],
@@ -354,28 +362,39 @@ class _ContinueReadingCard extends StatelessWidget {
 
 class _HadithTile extends StatelessWidget {
   const _HadithTile({
+    required this.isLastRead,
     required this.hadith,
   });
 
   final Hadith hadith;
-
+  final bool isLastRead;
   @override
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(
-        // horizontal: 18.w,
+        horizontal: 18.w,
         vertical: 10.h,
       ),
-      leading: CircleAvatar(
-        backgroundColor: AppColors.primaryColor.withAlpha(20),
-
-        child: Text(
-          '${hadith.id}',
-          style: AppTextStyle.style16Bold.copyWith(
-            color: AppColors.primaryColor,
+      leading: Container(
+        width: 40.r,
+        height: 40.r,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isLastRead
+              ? AppColors.primaryColor
+              : AppColors.primaryColor.withAlpha(20),
+        ),
+        child: Center(
+          child: Text(
+            '${hadith.id}',
+            style: AppTextStyle.style14W500.copyWith(
+              color: isLastRead ? Colors.white : AppColors.primaryColor,
+              fontFamily: AppFonts.amiri,
+            ),
           ),
         ),
       ),
+
       title: Text(
         hadith.title,
         style: AppTextStyle.style18W900.copyWith(

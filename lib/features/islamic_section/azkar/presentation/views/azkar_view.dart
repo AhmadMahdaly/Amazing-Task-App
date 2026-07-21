@@ -27,6 +27,8 @@ class AzkarView extends StatefulWidget {
 }
 
 class _AzkarViewState extends State<AzkarView> {
+  double _readingProgress = 0;
+  final ScrollController _scrollController = ScrollController();
   double _fontSize = 18;
   @override
   void initState() {
@@ -35,6 +37,23 @@ class _AzkarViewState extends State<AzkarView> {
     _fontSize =
         (CacheHelper.getData(CacheKeys.azkarFontSize) as num?)?.toDouble() ??
         18;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.position.maxScrollExtent;
+      }
+    });
+
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    final max = _scrollController.position.maxScrollExtent;
+    if (max == 0) return;
+
+    setState(() {
+      _readingProgress = (_scrollController.offset / max).clamp(0.0, 1.0);
+    });
   }
 
   void _updateFontSize(
@@ -51,6 +70,15 @@ class _AzkarViewState extends State<AzkarView> {
       key: CacheKeys.azkarFontSize,
       value: _fontSize,
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+
+    super.dispose();
   }
 
   @override
@@ -159,6 +187,70 @@ class _AzkarViewState extends State<AzkarView> {
                 );
               },
             ),
+            InkWell(
+              borderRadius: BorderRadius.circular(320),
+              child: SizedBox(
+                width: 24.w,
+                height: 24.h,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      value: _readingProgress,
+                      strokeWidth: 1,
+                      backgroundColor: AppColors.buttonColor.withAlpha(20),
+                      color: AppColors.buttonColor.withAlpha(150),
+                    ),
+                    Text(
+                      '${(_readingProgress * 100).round()}',
+                      style: AppTextStyle.style9W700.copyWith(
+                        color: AppColors.buttonColor.withAlpha(150),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onTap: () async {
+                await showModalBottomSheet<void>(
+                  context: context,
+                  builder: (_) {
+                    return StatefulBuilder(
+                      builder: (context, setModalState) {
+                        return Padding(
+                          padding: EdgeInsets.all(16.r),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('مستوى التقدم'),
+                              Slider(
+                                activeColor: AppColors.primaryColor,
+                                value: _readingProgress,
+                                onChanged: (value) {
+                                  setModalState(() {
+                                    _readingProgress = value;
+                                  });
+                                  final max = _scrollController
+                                      .position
+                                      .maxScrollExtent;
+                                  _scrollController.animateTo(
+                                    value * max,
+                                    duration: const Duration(
+                                      milliseconds: 150,
+                                    ),
+                                    curve: Curves.easeOut,
+                                  );
+                                },
+                              ),
+                              10.verticalSpace,
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
 
             20.horizontalSpace,
           ],
@@ -200,6 +292,7 @@ class _AzkarViewState extends State<AzkarView> {
                       child: SizedBox(
                         width: maxWidth,
                         child: ListView.separated(
+                          controller: _scrollController,
                           padding: EdgeInsets.all(16.r),
                           itemCount: azkarList.length,
                           separatorBuilder: (context, index) =>

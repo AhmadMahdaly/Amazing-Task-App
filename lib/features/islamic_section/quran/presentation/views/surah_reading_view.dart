@@ -89,7 +89,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
 
   @override
   void dispose() {
-    _scrollController.removeListener(_saveOffset);
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _quranCubit.saveLastRead(widget.surah.number);
 

@@ -84,7 +84,9 @@ class TafsirIndexView extends StatelessWidget {
                             ),
                             itemBuilder: (context, index) {
                               final surah = quranState.surahs[index];
-
+                              final isLastRead =
+                                  surah.number ==
+                                  tafsirState.lastReadSurahNumber;
                               return ListTile(
                                 contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16.r,
@@ -95,13 +97,17 @@ class TafsirIndexView extends StatelessWidget {
                                   height: 40.r,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: AppColors.primaryColor.withAlpha(20),
+                                    color: isLastRead
+                                        ? AppColors.primaryColor
+                                        : AppColors.primaryColor.withAlpha(20),
                                   ),
                                   child: Center(
                                     child: Text(
                                       '${surah.number}',
                                       style: AppTextStyle.style14W500.copyWith(
-                                        color: AppColors.primaryColor,
+                                        color: isLastRead
+                                            ? Colors.white
+                                            : AppColors.primaryColor,
                                         fontFamily: AppFonts.amiri,
                                       ),
                                     ),

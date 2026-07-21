@@ -57,9 +57,11 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
     _asmaaCubit = context.read<AsmaaCubit>();
 
     _fontSize =
-        (CacheHelper.getData(CacheKeys.asmaaFontSize) as num?)?.toDouble() ?? 24;
+        (CacheHelper.getData(CacheKeys.asmaaFontSize) as num?)?.toDouble() ??
+        24;
     _screenOpacity =
-        (CacheHelper.getData(CacheKeys.asmaaScreenOpacity) as num?)?.toInt() ?? 200;
+        (CacheHelper.getData(CacheKeys.asmaaScreenOpacity) as num?)?.toInt() ??
+        200;
 
     final colorValue = CacheHelper.getData(CacheKeys.asmaaTextColor) as int?;
     if (colorValue != null) {
@@ -86,7 +88,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
 
   @override
   void dispose() {
-    _scrollController.removeListener(_saveOffset);
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _asmaaCubit.saveLastRead(widget.lesson.id);
 

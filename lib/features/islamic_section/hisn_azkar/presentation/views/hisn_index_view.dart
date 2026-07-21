@@ -106,13 +106,13 @@ class HisnIndexView extends StatelessWidget {
                             width: 40.r,
                             height: 40.r,
                             decoration: BoxDecoration(
+                              shape: BoxShape.circle,
                               color: AppColors.primaryColor.withAlpha(20),
-                              borderRadius: BorderRadius.circular(8.r),
                             ),
                             child: Center(
                               child: Text(
                                 '${index + 1}',
-                                style: AppTextStyle.style14W800.copyWith(
+                                style: AppTextStyle.style14W500.copyWith(
                                   color: AppColors.primaryColor,
                                   fontFamily: AppFonts.amiri,
                                 ),
