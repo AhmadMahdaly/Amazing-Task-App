@@ -28,6 +28,10 @@ import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/mis
 import 'package:s/features/islamic_section/notes/data/data_sources/notes_data_source.dart';
 import 'package:s/features/islamic_section/notes/presentation/cubit/notes_cubit.dart';
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
+import 'package:s/features/islamic_section/tabeen/data/data_source/tabeen_local_data_source.dart';
+import 'package:s/features/islamic_section/tabeen/data/repositories/tabeen_repository_impl.dart';
+import 'package:s/features/islamic_section/tabeen/domain/repository/tabeen_repository.dart';
+import 'package:s/features/islamic_section/tabeen/presentation/cubit/tabeen_cubit.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
 import 'package:s/features/task_list/data/datasource/lists_local_data_source.dart';
 import 'package:s/features/task_list/data/repo/lists_repository_impl.dart';
@@ -111,6 +115,13 @@ Future<void> setupGetIt() async {
       () => ArbaoonRepositoryImpl(getIt()),
     )
     ..registerLazySingleton<ArbaoonCubit>(() => ArbaoonCubit(getIt()))
+    ..registerLazySingleton<TabeenLocalDataSource>(
+      TabeenLocalDataSourceImpl.new,
+    )
+    ..registerLazySingleton<TabeenRepository>(
+      () => TabeenRepositoryImpl(getIt()),
+    )
+    ..registerLazySingleton<TabeenCubit>(() => TabeenCubit(getIt()))
     ..registerLazySingleton<NotesDataSource>(NotesDataSource.new)
     ..registerLazySingleton<NotesCubit>(() => NotesCubit(getIt()));
 }

@@ -16,13 +16,14 @@ class AppRoutes {
   static const String quranIndexView = '/quranIndexView';
   static const String hisnIndexView = '/hisnIndexView';
   static const String hisnReadingView = '/hisnReadingView';
-  // static const String sunanView = '/sunanView';
   static const String asmaaIndexView = '/asmaaIndexView';
   static const String asmaaReadingView = '/asmaaReadingView';
   static const String tafsirIndexView = '/tafsirIndexView';
   static const String tafsirReadingView = '/tafsirReadingView';
-
   static const String arbaoonIndexView = '/arbaoonIndexView';
   static const String arbaoonReadingView = '/arbaoonReadingView';
+  static const String tabeenReadingView = '/tabeenReadingView';
+  static const String tabeenIndexView = '/tabeenIndexView';
   static const String unifiedNotesView = '/unifiedNotesView';
+  static const String sirahView = '/sirahView';
 }

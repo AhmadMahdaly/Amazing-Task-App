@@ -1,7 +1,7 @@
 name: s
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.42+42
+version: 1.0.43+43
 
 environment:
   sdk: ^3.9.0
@@ -52,6 +52,7 @@ flutter:
     - assets/text/quran-uthmani-min.txt
     - assets/text/asmaa.txt
     - assets/text/arbaoon.txt
+    - assets/text/tabeen.txt
 
   fonts:
     - family: Almarai

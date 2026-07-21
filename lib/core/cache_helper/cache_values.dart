@@ -11,24 +11,28 @@ class CacheKeys {
   static const String azkarFontSize = 'azkar_font_size';
   static const String hisnFontSize = 'hist_font_size';
   static const String tafsirFontSize = 'tafsir_font_size';
+  static const String tabeenFontSize = 'tabeen_font_size';
 
   /// Screen opacity
   static const String quranScreenOpacity = 'screen_opacity';
   static const String hadithScreenOpacity = 'arbaoon_screen_opacity';
   static const String asmaaScreenOpacity = 'asmaa_screen_opacity';
   static const String tafsirScreenOpacity = 'tafsir_screen_opacity';
+  static const String tabeenScreenOpacity = 'tabeen_screen_opacity';
 
   /// Text Colors
   static const String quranTextColor = 'quran_text_color';
   static const String hadithTextColor = 'arbaoon_text_color';
   static const String asmaaTextColor = 'asmaa_text_color';
   static const String tafsirTextColor = 'tafsir_text_color';
+  static const String tabeenTextColor = 'tabeen_text_color';
 
   /// Last read
   static const String lastReadSurah = 'last_read_surah';
   static const String lastReadHadith = 'last_read_hadith_id';
   static const String lastReadAsmaa = 'last_read_asmaa_lesson';
   static const String lastReadTafsir = 'last_read_tafsir_surah';
+  static const String lastReadTabeen = 'last_read_tabeen_id';
 
   /// Notes
   static const String savedAyahsNotes = 'saved_ayahs_notes';

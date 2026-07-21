@@ -124,7 +124,13 @@ class IslamicHomeView extends StatelessWidget {
                         await context.pushNamed(AppRoutes.hisnIndexView);
                       },
                     ),
-
+                    _IslamicItem(
+                      title: 'السيرة',
+                      icon: Icons.history_edu_rounded,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.sirahView);
+                      },
+                    ),
                     _IslamicItem(
                       title: 'حسبة الصلوات الفائتة',
                       icon: Icons.calculate_outlined,
@@ -148,27 +154,27 @@ class IslamicHomeView extends StatelessWidget {
                         }
 
                         return GridView.builder(
-                          padding: const EdgeInsets.all(20),
+                          padding: EdgeInsets.all(20.r),
                           itemCount: items.length,
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: crossAxisCount,
-                                crossAxisSpacing: 12.w,
-                                mainAxisSpacing: 12.h,
+                                crossAxisSpacing: 10.w,
+                                mainAxisSpacing: 10.h,
                                 childAspectRatio: 1,
                               ),
                           itemBuilder: (context, index) {
                             final item = items[index];
 
                             return InkWell(
-                              borderRadius: BorderRadius.circular(20.r),
+                              borderRadius: BorderRadius.circular(16.r),
                               onTap: item.onTap,
                               child: Card(
                                 elevation: 6,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.r),
+                                  borderRadius: BorderRadius.circular(16.r),
                                 ),
-                                color: Colors.white.withValues(alpha: .92),
+                                color: Colors.white.withValues(alpha: .90),
                                 child: Padding(
                                   padding: EdgeInsets.all(20.r),
                                   child: Column(

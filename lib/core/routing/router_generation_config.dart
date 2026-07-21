@@ -23,6 +23,7 @@ import 'package:s/features/islamic_section/hisn_azkar/presentation/cubit/hisn_cu
 import 'package:s/features/islamic_section/hisn_azkar/presentation/views/hisn_index_view.dart';
 import 'package:s/features/islamic_section/hisn_azkar/presentation/views/hisn_reading_view.dart';
 import 'package:s/features/islamic_section/islamic_home/presentation/views/islamic_home.dart';
+import 'package:s/features/islamic_section/islamic_home/presentation/views/sirah_view.dart';
 import 'package:s/features/islamic_section/missed_prayers/domain/entities/missed_prayers_entity.dart';
 import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
 import 'package:s/features/islamic_section/missed_prayers/presentation/views/missed_prayers_wrapper_view.dart';
@@ -34,6 +35,10 @@ import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.da
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
 import 'package:s/features/islamic_section/quran/presentation/views/quran_index_view.dart';
 import 'package:s/features/islamic_section/quran/presentation/views/surah_reading_view.dart';
+import 'package:s/features/islamic_section/tabeen/domain/entities/tabeen.dart';
+import 'package:s/features/islamic_section/tabeen/presentation/cubit/tabeen_cubit.dart';
+import 'package:s/features/islamic_section/tabeen/presentation/views/tabeen_index_view.dart';
+import 'package:s/features/islamic_section/tabeen/presentation/views/tabeen_reading_view.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/views/tafsir_index_view.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/views/tafsir_reading_view.dart';
@@ -105,6 +110,11 @@ void initRouter() {
         path: AppRoutes.islamicHomeView,
         name: AppRoutes.islamicHomeView,
         builder: (context, state) => const IslamicHomeView(),
+      ),
+      GoRoute(
+        path: AppRoutes.sirahView,
+        name: AppRoutes.sirahView,
+        builder: (context, state) => const SirahView(),
       ),
       GoRoute(
         path: AppRoutes.azkarView,
@@ -290,6 +300,29 @@ void initRouter() {
             value: getIt<ArbaoonCubit>(),
             child: ArbaoonReadingView(
               hadith: hadith,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.tabeenIndexView,
+        name: AppRoutes.tabeenIndexView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<TabeenCubit>()..loadTabeen(),
+            child: const TabeenIndexView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.tabeenReadingView,
+        name: AppRoutes.tabeenReadingView,
+        builder: (context, state) {
+          final tabeen = state.extra! as Tabeen;
+          return BlocProvider.value(
+            value: getIt<TabeenCubit>(),
+            child:TabeenReadingView(
+              tabeen: tabeen,
             ),
           );
         },
