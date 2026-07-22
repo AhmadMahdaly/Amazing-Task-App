@@ -1,4 +1,5 @@
 // ignore_for_file: discarded_futures, cascade_invocations
+import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
     Colors.green.shade100,
     Colors.brown.shade100,
   ];
-  List<AsmaaHighlight> _highlights = [];
+  List<Highlight> _highlights = [];
   final List<Color> _highlightColors = [
     Colors.orange,
     Colors.green,
@@ -134,7 +135,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
             as String?;
     if (savedData != null) {
       setState(() {
-        _highlights = AsmaaHighlight.decode(savedData);
+        _highlights = Highlight.decode(savedData);
       });
     }
   }
@@ -142,7 +143,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
   void _saveHighlights() {
     CacheHelper.saveData(
       key: 'arbaoon_highlights_${widget.hadith.id}',
-      value: AsmaaHighlight.encode(_highlights),
+      value: Highlight.encode(_highlights),
     );
   }
 
@@ -666,21 +667,20 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                       ),
                     ),
                     onPressed: () {
-                      setState(() {
-                        _highlights.add(
-                          AsmaaHighlight(
-                            id: DateTime.now().millisecondsSinceEpoch
-                                .toString(),
-                            lessonId: widget.hadith.id,
-                            startOffset: start,
-                            endOffset: end,
-                            selectedText: text,
-                            colorValue: selectedColor.toARGB32(),
-                            note: noteController.text,
-                          ),
-                        );
-                      });
-                      _saveHighlights();
+                      // بناء كائن التحديد الجديد
+                      final newHighlight = Highlight(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        lessonId: widget.hadith.id,
+                        startOffset: start,
+                        endOffset: end,
+                        selectedText: text,
+                        colorValue: selectedColor.toARGB32(),
+                        note: noteController.text,
+                      );
+
+                      // استدعاء دالة الدمج الذكية بدلاً من الإضافة المباشرة
+                      _addAndMergeHighlight(newHighlight);
+
                       Navigator.pop(context);
                     },
                     child: Text(
@@ -700,7 +700,65 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
     );
   }
 
-  void _showEditHighlightBottomSheet(AsmaaHighlight highlight) {
+  void _addAndMergeHighlight(Highlight newHighlight) {
+    setState(() {
+      // 1. إضافة التحديد الجديد
+      _highlights.add(newHighlight);
+
+      // 2. الترتيب المكاني (حسب بداية التحديد)
+      _highlights.sort((a, b) => a.startOffset.compareTo(b.startOffset));
+
+      // 3. خوارزمية الدمج (Merge Intervals)
+      final mergedHighlights = <Highlight>[];
+      if (_highlights.isEmpty) return;
+
+      var current = _highlights.first;
+
+      for (var i = 1; i < _highlights.length; i++) {
+        final next = _highlights[i];
+
+        // التحقق مما إذا كان التحديدان متقاطعين أو متلامسين
+        if (current.endOffset >= next.startOffset) {
+          // دمج الأرقام
+          final mergedStart = current.startOffset;
+          final mergedEnd = math.max(current.endOffset, next.endOffset);
+
+          // استخراج النص المدمج بسلاسة من محتوى الدرس الأصلي
+          final mergedText = widget.hadith.content.substring(
+            mergedStart,
+            mergedEnd,
+          );
+
+          // دمج الملاحظات (نحتفظ بالقديمة إن وجدت، وإلا نأخذ الجديدة)
+          final mergedNote = current.note.isNotEmpty ? current.note : next.note;
+
+          // إنشاء الكائن المدمج
+          current = Highlight(
+            id: current.id, // نحتفظ بالـ ID القديم
+            lessonId: current.lessonId,
+            startOffset: mergedStart,
+            endOffset: mergedEnd,
+            selectedText: mergedText,
+            colorValue: next.colorValue, // اللون الجديد يطغى على القديم
+            note: mergedNote,
+          );
+        } else {
+          // إذا لم يتقاطعا، نضيف الحالي للقائمة وننتقل للتالي
+          mergedHighlights.add(current);
+          current = next;
+        }
+      }
+      mergedHighlights.add(current);
+
+      // 4. تحديث القائمة الأساسية
+      _highlights = mergedHighlights;
+    });
+
+    // حفظ التغييرات بعد الدمج
+    _saveHighlights();
+  }
+
+  void _showEditHighlightBottomSheet(Highlight highlight) {
     var selectedColor = Color(highlight.colorValue);
     final noteController = TextEditingController(
       text: highlight.note,
@@ -797,7 +855,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                           (h) => h.id == highlight.id,
                         );
                         if (index != -1) {
-                          _highlights[index] = AsmaaHighlight(
+                          _highlights[index] = Highlight(
                             id: highlight.id,
                             lessonId: highlight.lessonId,
                             startOffset: highlight.startOffset,

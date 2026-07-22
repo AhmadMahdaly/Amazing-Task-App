@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class SavedAyahNote {
   SavedAyahNote({
+    required this.endAyahNumber,
     required this.id,
     required this.surahNumber,
     required this.surahName,
@@ -18,6 +19,7 @@ class SavedAyahNote {
       ayahNumber: map['ayahNumber'] as int,
       ayahText: map['ayahText'] as String,
       note: map['note'] as String,
+      endAyahNumber: map['endAyahNumber'] as int? ?? map['ayahNumber'] as int,
     );
   }
   final String id;
@@ -26,6 +28,7 @@ class SavedAyahNote {
   final int ayahNumber;
   final String ayahText;
   final String note;
+  final int? endAyahNumber;
 
   Map<String, dynamic> toMap() {
     return {
@@ -35,6 +38,7 @@ class SavedAyahNote {
       'ayahNumber': ayahNumber,
       'ayahText': ayahText,
       'note': note,
+      'endAyahNumber': endAyahNumber ?? ayahNumber,
     };
   }
 

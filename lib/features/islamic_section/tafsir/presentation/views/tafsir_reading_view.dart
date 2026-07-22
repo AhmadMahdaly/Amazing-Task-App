@@ -55,9 +55,11 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
     );
 
     _fontSize =
-        (CacheHelper.getData(CacheKeys.tafsirFontSize) as num?)?.toDouble() ?? 24;
+        (CacheHelper.getData(CacheKeys.tafsirFontSize) as num?)?.toDouble() ??
+        24;
     _screenOpacity =
-        (CacheHelper.getData(CacheKeys.tafsirScreenOpacity) as num?)?.toInt() ?? 200;
+        (CacheHelper.getData(CacheKeys.tafsirScreenOpacity) as num?)?.toInt() ??
+        200;
 
     final colorValue = CacheHelper.getData(CacheKeys.tafsirTextColor) as int?;
     if (colorValue != null) {
@@ -606,35 +608,34 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
                                   textAlign: TextAlign.justify,
                                 ),
 
-                                16.verticalSpace,
+                                // 8.verticalSpace,
                                 Divider(
                                   color: AppColors.buttonColor.withAlpha(30),
                                 ),
-                                12.verticalSpace,
 
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Icon(
-                                      Icons.menu_book_rounded,
-                                      color: _textColor,
-                                      size: 18.r,
-                                    ),
-                                    8.horizontalSpace,
-                                    Expanded(
-                                      child: Text(
-                                        'التفسير الميسر:',
-                                        style: AppTextStyle.style14W800
-                                            .copyWith(
-                                              color: _textColor.withAlpha(200),
-                                              fontFamily: AppFonts.amiri,
-                                            ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                8.verticalSpace,
-
+                                // 12.verticalSpace,
+                                // Row(
+                                //   crossAxisAlignment: CrossAxisAlignment.start,
+                                //   children: [
+                                //     Icon(
+                                //       Icons.menu_book_rounded,
+                                //       color: _textColor,
+                                //       size: 18.r,
+                                //     ),
+                                //     8.horizontalSpace,
+                                //     Expanded(
+                                //       child: Text(
+                                //         'التفسير الميسر:',
+                                //         style: AppTextStyle.style14W800
+                                //             .copyWith(
+                                //               color: _textColor.withAlpha(200),
+                                //               fontFamily: AppFonts.amiri,
+                                //             ),
+                                //       ),
+                                //     ),
+                                //   ],
+                                // ),
+                                // 16.verticalSpace,
                                 _buildTafsirText(cleanTafsirText),
                               ],
                             ),

@@ -33,7 +33,7 @@ class NotesCubit extends Cubit<NotesState> {
   }
 
   Future<void> updateHighlight(
-    AsmaaHighlight updatedHighlight,
+    Highlight updatedHighlight,
     NotesSectionType sectionType,
   ) async {
     try {

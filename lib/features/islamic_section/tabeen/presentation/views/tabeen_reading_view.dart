@@ -1,6 +1,5 @@
 // ignore_for_file: discarded_futures, cascade_invocations
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,10 +11,8 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
-import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
-import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_highlight.dart';
 import 'package:s/features/islamic_section/tabeen/domain/entities/tabeen.dart';
 import 'package:s/features/islamic_section/tabeen/presentation/cubit/tabeen_cubit.dart';
 
@@ -39,14 +36,14 @@ class _TabeenReadingViewState extends State<TabeenReadingView> {
     Colors.green.shade100,
     Colors.brown.shade100,
   ];
-  List<AsmaaHighlight> _highlights = [];
-  final List<Color> _highlightColors = [
-    Colors.orange,
-    Colors.green,
-    Colors.blue,
-    Colors.redAccent,
-    Colors.purple,
-  ];
+  // List<Highlight> _highlights = [];
+  // final List<Color> _highlightColors = [
+  //   Colors.orange,
+  //   Colors.green,
+  //   Colors.blue,
+  //   Colors.redAccent,
+  //   Colors.purple,
+  // ];
   late TabeenCubit _tabeenCubit;
   double _readingProgress = 0;
   final ScrollController _scrollController = ScrollController();
@@ -84,7 +81,7 @@ class _TabeenReadingViewState extends State<TabeenReadingView> {
     });
 
     _scrollController.addListener(_onScroll);
-    _loadHighlights();
+    // _loadHighlights();
   }
 
   @override
@@ -128,22 +125,21 @@ class _TabeenReadingViewState extends State<TabeenReadingView> {
     _saveOffset();
   }
 
-  void _loadHighlights() {
-    final savedData =
-        CacheHelper.getData('tabeen_highlights_${widget.tabeen.id}') as String?;
-    if (savedData != null) {
-      setState(() {
-        _highlights = AsmaaHighlight.decode(savedData);
-      });
-    }
-  }
-
-  void _saveHighlights() {
-    CacheHelper.saveData(
-      key: 'tabeen_highlights_${widget.tabeen.id}',
-      value: AsmaaHighlight.encode(_highlights),
-    );
-  }
+  // void _loadHighlights() {
+  //   final savedData =
+  //       CacheHelper.getData('tabeen_highlights_${widget.tabeen.id}') as String?;
+  //   if (savedData != null) {
+  //     setState(() {
+  //       _highlights = Highlight.decode(savedData);
+  //     });
+  //   }
+  // }
+  // void _saveHighlights() {
+  //   CacheHelper.saveData(
+  //     key: 'tabeen_highlights_${widget.tabeen.id}',
+  //     value: Highlight.encode(_highlights),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -483,45 +479,45 @@ class _TabeenReadingViewState extends State<TabeenReadingView> {
                               ),
                               textAlign: TextAlign.justify,
                               textDirection: TextDirection.rtl,
-                              contextMenuBuilder: (context, editableTextState) {
-                                final buttonItems =
-                                    editableTextState.contextMenuButtonItems;
+                              // contextMenuBuilder: (context, editableTextState) {
+                              // final buttonItems =
+                              //     editableTextState.contextMenuButtonItems;
 
-                                buttonItems.insert(
-                                  0,
-                                  ContextMenuButtonItem(
-                                    label: 'Highlight / Note',
-                                    type: ContextMenuButtonType.liveTextInput,
-                                    onPressed: () {
-                                      final selection = editableTextState
-                                          .textEditingValue
-                                          .selection;
-                                      if (!selection.isCollapsed) {
-                                        final selectedText = editableTextState
-                                            .textEditingValue
-                                            .text
-                                            .substring(
-                                              selection.start,
-                                              selection.end,
-                                            );
+                              // buttonItems.insert(
+                              //   0,
+                              //   ContextMenuButtonItem(
+                              //     label: 'Highlight / Note',
+                              //     type: ContextMenuButtonType.liveTextInput,
+                              //     onPressed: () {
+                              //       final selection = editableTextState
+                              //           .textEditingValue
+                              //           .selection;
+                              //       if (!selection.isCollapsed) {
+                              //         final selectedText = editableTextState
+                              //             .textEditingValue
+                              //             .text
+                              //             .substring(
+                              //               selection.start,
+                              //               selection.end,
+                              //             );
 
-                                        ContextMenuController.removeAny();
+                              //         ContextMenuController.removeAny();
 
-                                        _showHighlightBottomSheet(
-                                          selection.start,
-                                          selection.end,
-                                          selectedText,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                );
+                              //         _showHighlightBottomSheet(
+                              //           selection.start,
+                              //           selection.end,
+                              //           selectedText,
+                              //         );
+                              //       }
+                              //     },
+                              //   ),
+                              // );
 
-                                return AdaptiveTextSelectionToolbar.buttonItems(
-                                  anchors: editableTextState.contextMenuAnchors,
-                                  buttonItems: buttonItems,
-                                );
-                              },
+                              //   return AdaptiveTextSelectionToolbar.buttonItems(
+                              //     anchors: editableTextState.contextMenuAnchors,
+                              //     buttonItems: buttonItems,
+                              //   );
+                              // },
                             ),
                             if (widget.tabeen.id <
                                 _tabeenCubit.allTabeen.length) ...[
@@ -561,269 +557,353 @@ class _TabeenReadingViewState extends State<TabeenReadingView> {
   }
 
   List<InlineSpan> _buildHighlightedSpans(String text) {
-    _highlights.sort((a, b) => a.startOffset.compareTo(b.startOffset));
-
     final spans = <InlineSpan>[];
-    var currentIndex = 0;
 
-    for (final h in _highlights) {
-      if (h.startOffset < currentIndex) continue;
+    final regex = RegExp(r'([^\s()]+)\s*\(([^()]*)\)');
 
-      if (h.startOffset > currentIndex) {
-        spans.add(TextSpan(text: text.substring(currentIndex, h.startOffset)));
+    var lastIndex = 0;
+
+    for (final match in regex.allMatches(text)) {
+      if (match.start > lastIndex) {
+        spans.addAll(
+          _applyHighlights(
+            text.substring(lastIndex, match.start),
+            lastIndex,
+          ),
+        );
       }
 
-      spans.add(
-        TextSpan(
-          text: text.substring(h.startOffset, h.endOffset),
-          style: TextStyle(
-            color: Color(h.colorValue),
-          ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              _showEditHighlightBottomSheet(h);
-            },
+      final word = match.group(1)!;
+      final note = match.group(2)!;
+
+      spans.addAll(
+        _applyHighlights(
+          word,
+          match.start,
         ),
       );
-      currentIndex = h.endOffset;
+
+      spans.add(
+        WidgetSpan(
+          alignment: PlaceholderAlignment.middle,
+          child: GestureDetector(
+            onTap: () {
+              showModalBottomSheet<void>(
+                context: context,
+                builder: (_) => Padding(
+                  padding: EdgeInsets.all(20.r),
+                  child: Text(
+                    note,
+                    style: AppTextStyle.style18W900.copyWith(
+                      fontFamily: AppFonts.amiri,
+                    ),
+                  ),
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: Icon(
+                Icons.info_outline,
+                size: _fontSize * .65,
+                color: AppColors.buttonColor.withAlpha(100),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      lastIndex = match.end;
     }
 
-    if (currentIndex < text.length) {
-      spans.add(TextSpan(text: text.substring(currentIndex)));
+    if (lastIndex < text.length) {
+      spans.addAll(
+        _applyHighlights(
+          text.substring(lastIndex),
+          lastIndex,
+        ),
+      );
     }
 
     return spans;
   }
 
-  void _showHighlightBottomSheet(int start, int end, String text) {
-    var selectedColor = _highlightColors.first;
-    final noteController = TextEditingController();
+  List<InlineSpan> _applyHighlights(String text, int globalOffset) {
+    final spans = <InlineSpan>[];
 
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 16,
-                right: 16,
-                top: 16,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'تحديد النص وإضافة ملاحظة',
-                    style: AppTextStyle.style18W900.copyWith(
-                      fontFamily: AppFonts.amiri,
-                    ),
-                  ),
-                  16.verticalSpace,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: _highlightColors.map((color) {
-                      return GestureDetector(
-                        onTap: () => setSheetState(() => selectedColor = color),
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 8.w),
-                          width: 40.w,
-                          height: 40.h,
-                          decoration: BoxDecoration(
-                            color: color,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: selectedColor == color
-                                  ? Colors.black
-                                  : Colors.transparent,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  16.verticalSpace,
-                  CustomPrimaryTextfield(
-                    controller: noteController,
-                    text: 'اكتب ملاحظتك هنا (اختياري)',
-                    textAlign: TextAlign.center,
-                    hintStyle: AppTextStyle.style16W600.copyWith(
-                      fontFamily: AppFonts.amiri,
-                      color: AppColors.secondaryColor,
-                    ),
+    const current = 0;
 
-                    maxLines: 3,
-                  ),
-                  16.verticalSpace,
-                  FilledButton(
-                    style: const ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        AppColors.primaryColor,
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _highlights.add(
-                          AsmaaHighlight(
-                            id: DateTime.now().millisecondsSinceEpoch
-                                .toString(),
-                            lessonId: widget.tabeen.id,
-                            startOffset: start,
-                            endOffset: end,
-                            selectedText: text,
-                            colorValue: selectedColor.toARGB32(),
-                            note: noteController.text,
-                          ),
-                        );
-                      });
-                      _saveHighlights();
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'حفظ',
-                      style: AppTextStyle.style18W900.copyWith(
-                        fontFamily: AppFonts.amiri,
-                      ),
-                    ),
-                  ),
-                  20.verticalSpace,
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+    // final highlights = [..._highlights]
+    //   ..sort((a, b) => a.startOffset.compareTo(b.startOffset));
+
+    // for (final h in highlights) {
+    //   if (h.endOffset <= globalOffset) continue;
+    //   if (h.startOffset >= globalOffset + text.length) break;
+
+    //   final start = (h.startOffset - globalOffset).clamp(0, text.length);
+    //   final end = (h.endOffset - globalOffset).clamp(0, text.length);
+
+    //   if (start > current) {
+    //     spans.add(
+    //       TextSpan(
+    //         text: text.substring(current, start),
+    //       ),
+    //     );
+    //   }
+
+    //   spans.add(
+    //     TextSpan(
+    //       text: text.substring(start, end),
+    //       style: TextStyle(
+    //         color: Color(h.colorValue),
+    //       ),
+    //       recognizer: TapGestureRecognizer()
+    //         ..onTap = () => _showEditHighlightBottomSheet(h),
+    //     ),
+    //   );
+
+    //   current = end;
+    // }
+
+    if (current < text.length) {
+      spans.add(
+        TextSpan(
+          text: text.substring(current),
+        ),
+      );
+    }
+
+    return spans;
   }
 
-  void _showEditHighlightBottomSheet(AsmaaHighlight highlight) {
-    var selectedColor = Color(highlight.colorValue);
-    final noteController = TextEditingController(
-      text: highlight.note,
-    );
+  // void _showHighlightBottomSheet(int start, int end, String text) {
+  //   var selectedColor = _highlightColors.first;
+  //   final noteController = TextEditingController();
+  //   showModalBottomSheet<void>(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     builder: (context) {
+  //       return StatefulBuilder(
+  //         builder: (context, setSheetState) {
+  //           return Padding(
+  //             padding: EdgeInsets.only(
+  //               bottom: MediaQuery.of(context).viewInsets.bottom,
+  //               left: 16,
+  //               right: 16,
+  //               top: 16,
+  //             ),
+  //             child: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 Text(
+  //                   'تحديد النص وإضافة ملاحظة',
+  //                   style: AppTextStyle.style18W900.copyWith(
+  //                     fontFamily: AppFonts.amiri,
+  //                   ),
+  //                 ),
+  //                 16.verticalSpace,
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: _highlightColors.map((color) {
+  //                     return GestureDetector(
+  //                       onTap: () => setSheetState(() => selectedColor = color),
+  //                       child: Container(
+  //                         margin: EdgeInsets.symmetric(horizontal: 8.w),
+  //                         width: 40.w,
+  //                         height: 40.h,
+  //                         decoration: BoxDecoration(
+  //                           color: backgroundColor,
+  //                           shape: BoxShape.circle,
+  //                           border: Border.all(
+  //                             color: selectedColor == color
+  //                                 ? Colors.black
+  //                                 : Colors.transparent,
+  //                             width: 2,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     );
+  //                   }).toList(),
+  //                 ),
+  //                 16.verticalSpace,
+  //                 CustomPrimaryTextfield(
+  //                   controller: noteController,
+  //                   text: 'اكتب ملاحظتك هنا (اختياري)',
+  //                   textAlign: TextAlign.center,
+  //                   hintStyle: AppTextStyle.style16W600.copyWith(
+  //                     fontFamily: AppFonts.amiri,
+  //                     color: AppColors.secondaryColor,
+  //                   ),
 
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 16.w,
-                right: 16.w,
-                top: 16.h,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.red,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _highlights.removeWhere(
-                              (h) => h.id == highlight.id,
-                            );
-                          });
-                          _saveHighlights();
-                          Navigator.pop(context);
-                        },
-                      ),
-                      Text(
-                        'تعديل أو إزالة التحديد',
-                        style: AppTextStyle.style18W900.copyWith(
-                          fontFamily: AppFonts.amiri,
-                        ),
-                      ),
-                    ],
-                  ),
-                  16.verticalSpace,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: _highlightColors.map((color) {
-                      return GestureDetector(
-                        onTap: () => setSheetState(() => selectedColor = color),
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 8.r),
-                          width: 40.w,
-                          height: 40.h,
-                          decoration: BoxDecoration(
-                            color: color,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color:
-                                  selectedColor.toARGB32() == color.toARGB32()
-                                  ? Colors.black
-                                  : Colors.transparent,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  16.verticalSpace,
-                  CustomPrimaryTextfield(
-                    controller: noteController,
-                    textAlign: TextAlign.center,
-                    text: 'اكتب ملاحظتك هنا (اختياري)',
-                    hintStyle: AppTextStyle.style16W600.copyWith(
-                      fontFamily: AppFonts.amiri,
-                      color: AppColors.secondaryColor,
-                    ),
-                    maxLines: 3,
-                  ),
-                  16.verticalSpace,
-                  FilledButton(
-                    style: const ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        AppColors.primaryColor,
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        final index = _highlights.indexWhere(
-                          (h) => h.id == highlight.id,
-                        );
-                        if (index != -1) {
-                          _highlights[index] = AsmaaHighlight(
-                            id: highlight.id,
-                            lessonId: highlight.lessonId,
-                            startOffset: highlight.startOffset,
-                            endOffset: highlight.endOffset,
-                            selectedText: highlight.selectedText,
-                            colorValue: selectedColor.toARGB32(),
-                            note: noteController.text,
-                          );
-                        }
-                      });
-                      _saveHighlights();
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'حفظ التعديلات',
-                      style: AppTextStyle.style18W900.copyWith(
-                        fontFamily: AppFonts.amiri,
-                      ),
-                    ),
-                  ),
-                  20.verticalSpace,
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
+  //                   maxLines: 3,
+  //                 ),
+  //                 16.verticalSpace,
+  //                 FilledButton(
+  //                   style: const ButtonStyle(
+  //                     backgroundColor: WidgetStatePropertyAll(
+  //                       AppColors.primaryColor,
+  //                     ),
+  //                   ),
+  //                   onPressed: () {
+  //                     setState(() {
+  //                       _highlights.add(
+  //                         Highlight(
+  //                           id: DateTime.now().millisecondsSinceEpoch
+  //                               .toString(),
+  //                           lessonId: widget.tabeen.id,
+  //                           startOffset: start,
+  //                           endOffset: end,
+  //                           selectedText: text,
+  //                           colorValue: selectedColor.toARGB32(),
+  //                           note: noteController.text,
+  //                         ),
+  //                       );
+  //                     });
+  //                     _saveHighlights();
+  //                     Navigator.pop(context);
+  //                   },
+  //                   child: Text(
+  //                     'حفظ',
+  //                     style: AppTextStyle.style18W900.copyWith(
+  //                       fontFamily: AppFonts.amiri,
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 20.verticalSpace,
+  //               ],
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
+  // void _showEditHighlightBottomSheet(Highlight highlight) {
+  //   var selectedColor = Color(highlight.colorValue);
+  //   final noteController = TextEditingController(
+  //     text: highlight.note,
+  //   );
+
+  //   showModalBottomSheet<void>(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     builder: (context) {
+  //       return StatefulBuilder(
+  //         builder: (context, setSheetState) {
+  //           return Padding(
+  //             padding: EdgeInsets.only(
+  //               bottom: MediaQuery.of(context).viewInsets.bottom,
+  //               left: 16.w,
+  //               right: 16.w,
+  //               top: 16.h,
+  //             ),
+  //             child: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     IconButton(
+  //                       icon: const Icon(
+  //                         Icons.delete_outline,
+  //                         color: Colors.red,
+  //                       ),
+  //                       onPressed: () {
+  //                         setState(() {
+  //                           _highlights.removeWhere(
+  //                             (h) => h.id == highlight.id,
+  //                           );
+  //                         });
+  //                         _saveHighlights();
+  //                         Navigator.pop(context);
+  //                       },
+  //                     ),
+  //                     Text(
+  //                       'تعديل أو إزالة التحديد',
+  //                       style: AppTextStyle.style18W900.copyWith(
+  //                         fontFamily: AppFonts.amiri,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 16.verticalSpace,
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: _highlightColors.map((color) {
+  //                     return GestureDetector(
+  //                       onTap: () => setSheetState(() => selectedColor = color),
+  //                       child: Container(
+  //                         margin: EdgeInsets.symmetric(horizontal: 8.r),
+  //                         width: 40.w,
+  //                         height: 40.h,
+  //                         decoration: BoxDecoration(
+  //                           color: backgroundColor,
+  //                           shape: BoxShape.circle,
+  //                           border: Border.all(
+  //                             color:
+  //                                 selectedColor.toARGB32() == color.toARGB32()
+  //                                 ? Colors.black
+  //                                 : Colors.transparent,
+  //                             width: 2,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     );
+  //                   }).toList(),
+  //                 ),
+  //                 16.verticalSpace,
+  //                 CustomPrimaryTextfield(
+  //                   controller: noteController,
+  //                   textAlign: TextAlign.center,
+  //                   text: 'اكتب ملاحظتك هنا (اختياري)',
+  //                   hintStyle: AppTextStyle.style16W600.copyWith(
+  //                     fontFamily: AppFonts.amiri,
+  //                     color: AppColors.secondaryColor,
+  //                   ),
+  //                   maxLines: 3,
+  //                 ),
+  //                 16.verticalSpace,
+  //                 FilledButton(
+  //                   style: const ButtonStyle(
+  //                     backgroundColor: WidgetStatePropertyAll(
+  //                       AppColors.primaryColor,
+  //                     ),
+  //                   ),
+  //                   onPressed: () {
+  //                     setState(() {
+  //                       final index = _highlights.indexWhere(
+  //                         (h) => h.id == highlight.id,
+  //                       );
+  //                       if (index != -1) {
+  //                         _highlights[index] = Highlight(
+  //                           id: highlight.id,
+  //                           lessonId: highlight.lessonId,
+  //                           startOffset: highlight.startOffset,
+  //                           endOffset: highlight.endOffset,
+  //                           selectedText: highlight.selectedText,
+  //                           colorValue: selectedColor.toARGB32(),
+  //                           note: noteController.text,
+  //                         );
+  //                       }
+  //                     });
+  //                     _saveHighlights();
+  //                     Navigator.pop(context);
+  //                   },
+  //                   child: Text(
+  //                     'حفظ التعديلات',
+  //                     style: AppTextStyle.style18W900.copyWith(
+  //                       fontFamily: AppFonts.amiri,
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 20.verticalSpace,
+  //               ],
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 }

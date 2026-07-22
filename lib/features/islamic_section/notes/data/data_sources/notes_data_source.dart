@@ -1,5 +1,7 @@
 // ignore_for_file: cascade_invocations, discarded_futures
 
+import 'dart:math';
+
 import 'package:s/core/cache_helper/cache_helper.dart';
 import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_highlight.dart';
@@ -12,12 +14,143 @@ class NotesDataSource {
       case NotesSectionType.quran:
         final savedNotesStr =
             CacheHelper.getData(CacheKeys.savedAyahsNotes) as String?;
-        return savedNotesStr != null ? SavedAyahNote.decode(savedNotesStr) : [];
+        final notes = savedNotesStr != null
+            ? SavedAyahNote.decode(savedNotesStr)
+            : <SavedAyahNote>[];
+
+        // الترتيب وفق المصحف (رقم السورة ثم رقم الآية)
+        notes.sort((a, b) {
+          final surahCompare = a.surahNumber.compareTo(b.surahNumber);
+          if (surahCompare != 0) return surahCompare;
+
+          return a.ayahNumber.compareTo(b.ayahNumber);
+        });
+
+        return notes;
+
       case NotesSectionType.asmaa:
-        return _getHighlights('asmaa_highlights_');
+        return _getSortedHighlights('asmaa_highlights_');
       case NotesSectionType.arbaoon:
-        return _getHighlights('arbaoon_highlights_');
+        return _getSortedHighlights('arbaoon_highlights_');
+      case NotesSectionType.tabeen:
+        return _getSortedHighlights('tabeen_highlights_');
     }
+  }
+
+  List<Highlight> _getSortedHighlights(String keyPrefix) {
+    final temp = <Highlight>[];
+    for (var i = 1; i <= 99; i++) {
+      final savedData = CacheHelper.getData('$keyPrefix$i') as String?;
+      if (savedData != null) {
+        temp.addAll(Highlight.decode(savedData));
+      }
+    }
+
+    temp.sort((a, b) {
+      final lessonCompare = a.lessonId.compareTo(b.lessonId);
+      if (lessonCompare != 0) return lessonCompare;
+      return a.startOffset.compareTo(b.startOffset);
+    });
+    return temp;
+  }
+
+  Future<void> saveAyahNote(SavedAyahNote newAyah) async {
+    final notes = await getNotes(NotesSectionType.quran) as List<SavedAyahNote>;
+
+    var merged = false;
+    for (var i = 0; i < notes.length; i++) {
+      final existingAyah = notes[i];
+
+      if (existingAyah.surahNumber == newAyah.surahNumber) {
+        if (newAyah.ayahNumber == existingAyah.endAyahNumber! + 1) {
+          notes[i] = SavedAyahNote(
+            id: existingAyah.id,
+            surahNumber: existingAyah.surahNumber,
+            surahName: existingAyah.surahName,
+            ayahNumber: existingAyah.ayahNumber,
+            endAyahNumber: newAyah.endAyahNumber,
+            ayahText: '${existingAyah.ayahText} ۝ ${newAyah.ayahText} ۝',
+            note: existingAyah.note.isNotEmpty
+                ? existingAyah.note
+                : newAyah.note,
+          );
+          merged = true;
+          break;
+        } else if (newAyah.ayahNumber == existingAyah.ayahNumber - 1) {
+          notes[i] = SavedAyahNote(
+            id: existingAyah.id,
+            surahNumber: existingAyah.surahNumber,
+            surahName: existingAyah.surahName,
+            ayahNumber: newAyah.ayahNumber,
+            endAyahNumber: existingAyah.endAyahNumber,
+            ayahText: '${newAyah.ayahText} ۝ ${existingAyah.ayahText} ۝',
+            note: existingAyah.note.isNotEmpty
+                ? existingAyah.note
+                : newAyah.note,
+          );
+          merged = true;
+          break;
+        }
+      }
+    }
+
+    if (!merged) {
+      notes.add(newAyah);
+    }
+
+    await CacheHelper.saveData(
+      key: CacheKeys.savedAyahsNotes,
+      value: SavedAyahNote.encode(notes),
+    );
+  }
+
+  Future<void> saveHighlight(
+    Highlight newHighlight,
+    NotesSectionType type,
+  ) async {
+    final keyPrefix = type == NotesSectionType.asmaa
+        ? 'asmaa_highlights_'
+        : type == NotesSectionType.arbaoon
+        ? 'arbaoon_highlights_'
+        : 'tabeen_highlights_';
+
+    final allHighlights = await getNotes(type) as List<Highlight>;
+    final lessonHighlights = allHighlights
+        .where((h) => h.lessonId == newHighlight.lessonId)
+        .toList();
+
+    var merged = false;
+
+    for (var i = 0; i < lessonHighlights.length; i++) {
+      final existing = lessonHighlights[i];
+
+      if (newHighlight.startOffset <= existing.endOffset &&
+          newHighlight.endOffset >= existing.startOffset) {
+        lessonHighlights[i] = Highlight(
+          id: existing.id,
+          lessonId: existing.lessonId,
+          startOffset: min(existing.startOffset, newHighlight.startOffset),
+          endOffset: max(existing.endOffset, newHighlight.endOffset),
+
+          selectedText:
+              '${existing.selectedText} ... ${newHighlight.selectedText}',
+          colorValue: newHighlight.colorValue,
+          note: existing.note.isNotEmpty ? existing.note : newHighlight.note,
+        );
+        merged = true;
+        break;
+      }
+    }
+
+    if (!merged) {
+      lessonHighlights.add(newHighlight);
+    }
+
+    _saveHighlightsForLesson(
+      newHighlight.lessonId,
+      lessonHighlights,
+      keyPrefix,
+    );
   }
 
   Future<void> deleteNote(dynamic note, NotesSectionType type) async {
@@ -29,27 +162,30 @@ class NotesDataSource {
         value: SavedAyahNote.encode(notes),
       );
     } else {
-      final highlight = note as AsmaaHighlight;
+      final highlight = note as Highlight;
       final keyPrefix = type == NotesSectionType.asmaa
           ? 'asmaa_highlights_'
-          : 'arbaoon_highlights_';
+          : type == NotesSectionType.arbaoon
+          ? 'arbaoon_highlights_'
+          : 'tabeen_highlights_';
 
-      final allHighlights = await getNotes(type) as List<AsmaaHighlight>;
+      final allHighlights = await getNotes(type) as List<Highlight>;
       allHighlights.removeWhere((element) => element.id == highlight.id);
-
       _saveHighlightsForLesson(highlight.lessonId, allHighlights, keyPrefix);
     }
   }
 
   Future<void> updateHighlight(
-    AsmaaHighlight updatedHighlight,
+    Highlight updatedHighlight,
     NotesSectionType type,
   ) async {
     final keyPrefix = type == NotesSectionType.asmaa
         ? 'asmaa_highlights_'
-        : 'arbaoon_highlights_';
+        : type == NotesSectionType.arbaoon
+        ? 'arbaoon_highlights_'
+        : 'tabeen_highlights_';
 
-    final allHighlights = await getNotes(type) as List<AsmaaHighlight>;
+    final allHighlights = await getNotes(type) as List<Highlight>;
     final index = allHighlights.indexWhere(
       (element) => element.id == updatedHighlight.id,
     );
@@ -64,32 +200,20 @@ class NotesDataSource {
     }
   }
 
-  List<AsmaaHighlight> _getHighlights(String keyPrefix) {
-    final temp = <AsmaaHighlight>[];
-    for (var i = 1; i <= 99; i++) {
-      final savedData = CacheHelper.getData('$keyPrefix$i') as String?;
-      if (savedData != null) {
-        temp.addAll(AsmaaHighlight.decode(savedData));
-      }
-    }
-    return temp;
-  }
-
   void _saveHighlightsForLesson(
     int lessonId,
-    List<AsmaaHighlight> allHighlights,
+    List<Highlight> allHighlights,
     String keyPrefix,
   ) {
     final lessonHighlights = allHighlights
         .where((h) => h.lessonId == lessonId)
         .toList();
-
     if (lessonHighlights.isEmpty) {
       CacheHelper.removeData('$keyPrefix$lessonId');
     } else {
       CacheHelper.saveData(
         key: '$keyPrefix$lessonId',
-        value: AsmaaHighlight.encode(lessonHighlights),
+        value: Highlight.encode(lessonHighlights),
       );
     }
   }

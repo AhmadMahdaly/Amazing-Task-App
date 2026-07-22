@@ -23,6 +23,7 @@ class UnifiedNotesView extends StatelessWidget {
         return 'ملاحظاتي والآيات المحفوظة';
       case NotesSectionType.asmaa:
       case NotesSectionType.arbaoon:
+      case NotesSectionType.tabeen:
         return 'ملاحظاتي وتحديداتي';
     }
   }
@@ -90,9 +91,7 @@ class UnifiedNotesView extends StatelessWidget {
                 padding: EdgeInsets.all(16.r),
                 itemCount: notes.length,
                 itemBuilder: (context, index) {
-                  final note = sectionType == NotesSectionType.quran
-                      ? notes.reversed.toList()[index]
-                      : notes[index];
+                  final note = notes[index];
 
                   if (sectionType == NotesSectionType.quran) {
                     return _QuranNoteCard(
@@ -101,7 +100,7 @@ class UnifiedNotesView extends StatelessWidget {
                     );
                   } else {
                     return _HighlightNoteCard(
-                      highlight: note as AsmaaHighlight,
+                      highlight: note as Highlight,
                       isArbaoon: sectionType == NotesSectionType.arbaoon,
                       sectionType: sectionType,
                     );
@@ -124,6 +123,9 @@ class _QuranNoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ayahRangeText = note.ayahNumber == note.endAyahNumber
+        ? 'آية ${note.ayahNumber}'
+        : 'آيات ${note.ayahNumber} - ${note.endAyahNumber}';
     return Card(
       elevation: 3,
       margin: EdgeInsets.only(bottom: 16.r),
@@ -146,7 +148,7 @@ class _QuranNoteCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
-                    'سورة ${note.surahName} - آية ${note.ayahNumber}',
+                    'سورة ${note.surahName} - $ayahRangeText',
                     style: AppTextStyle.style14W500.copyWith(
                       color: Colors.white,
                       fontFamily: AppFonts.amiri,
@@ -256,7 +258,7 @@ class _HighlightNoteCard extends StatelessWidget {
     required this.highlight,
     required this.isArbaoon,
   });
-  final AsmaaHighlight highlight;
+  final Highlight highlight;
   final bool isArbaoon;
   final NotesSectionType sectionType;
 
@@ -359,7 +361,7 @@ class _HighlightNoteCard extends StatelessWidget {
 
   void _confirmDelete(
     BuildContext context,
-    AsmaaHighlight highlight,
+    Highlight highlight,
     NotesSectionType sectionType,
   ) {
     showDialog<void>(
@@ -411,7 +413,7 @@ class _HighlightNoteCard extends StatelessWidget {
 
   void _showEditHighlightBottomSheet(
     BuildContext parentContext,
-    AsmaaHighlight highlight,
+    Highlight highlight,
     NotesSectionType sectionType,
   ) {
     final highlightColors = [
@@ -490,7 +492,7 @@ class _HighlightNoteCard extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      final updatedHighlight = AsmaaHighlight(
+                      final updatedHighlight = Highlight(
                         id: highlight.id,
                         lessonId: highlight.lessonId,
                         startOffset: highlight.startOffset,

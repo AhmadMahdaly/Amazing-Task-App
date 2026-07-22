@@ -1,5 +1,1 @@
-enum NotesSectionType {
-  quran,
-  asmaa,
-  arbaoon,
-}
+enum NotesSectionType { quran, asmaa, arbaoon, tabeen }

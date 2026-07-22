@@ -7,7 +7,6 @@ import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
-import 'package:s/features/islamic_section/notes/presentation/utils/notes_section_type.dart';
 import 'package:s/features/islamic_section/tabeen/domain/entities/tabeen.dart';
 
 import '../cubit/tabeen_cubit.dart';
@@ -35,19 +34,19 @@ class TabeenIndexView extends StatelessWidget {
             onPressed: () => context.pop(),
           ),
           actions: [
-            IconButton(
-              icon: Icon(
-                Icons.highlight_alt_rounded,
-                color: AppColors.buttonColor.withAlpha(150),
-                size: 24.r,
-              ),
-              onPressed: () async {
-                await context.pushNamed(
-                  AppRoutes.unifiedNotesView,
-                  extra: NotesSectionType.arbaoon,
-                );
-              },
-            ),
+            // IconButton(
+            //   icon: Icon(
+            //     Icons.highlight_alt_rounded,
+            //     color: AppColors.buttonColor.withAlpha(150),
+            //     size: 24.r,
+            //   ),
+            //   onPressed: () async {
+            //     await context.pushNamed(
+            //       AppRoutes.unifiedNotesView,
+            //       extra: NotesSectionType.tabeen,
+            //     );
+            //   },
+            // ),
             IconButton(
               icon: Icon(
                 Icons.info_outline_rounded,
@@ -95,7 +94,7 @@ class TabeenIndexView extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.all(16.r),
                     child: _ContinueReadingCard(
-                      hadith: state.lastReadTabeen!,
+                      tabee: state.lastReadTabeen!,
                     ),
                   ),
 
@@ -120,7 +119,7 @@ class TabeenIndexView extends StatelessWidget {
                       final isLastRead = hadith.id == state.lastReadTabeen?.id;
 
                       return _TabeenTile(
-                        hadith: hadith,
+                        tabee: hadith,
                         isLastRead: isLastRead,
                       );
                     },
@@ -157,7 +156,7 @@ class TabeenIndexView extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(height: 12.r),
+                    12.verticalSpace,
 
                     Container(
                       width: 50.r,
@@ -212,7 +211,7 @@ class TabeenIndexView extends StatelessWidget {
                             ),
                           ),
 
-                          SizedBox(height: 24.r),
+                          24.verticalSpace,
 
                           Container(
                             padding: EdgeInsets.all(16.r),
@@ -242,7 +241,7 @@ class TabeenIndexView extends StatelessWidget {
                             ),
                           ),
 
-                          SizedBox(height: 20.r),
+                          20.verticalSpace,
 
                           Container(
                             padding: EdgeInsets.all(18.r),
@@ -260,7 +259,7 @@ class TabeenIndexView extends StatelessWidget {
                                   color: AppColors.primaryColor,
                                   size: 30.r,
                                 ),
-                                SizedBox(height: 12.r),
+                                12.verticalSpace,
                                 Text(
                                   '﴿وَالسَّابِقُونَ الْأَوَّلُونَ مِنَ الْمُهَاجِرِينَ وَالْأَنصَارِ وَالَّذِينَ اتَّبَعُوهُم بِإِحْسَانٍ رَّضِيَ اللَّهُ عَنْهُمْ وَرَضُوا عَنْهُ﴾',
                                   textAlign: TextAlign.center,
@@ -269,7 +268,7 @@ class TabeenIndexView extends StatelessWidget {
                                     color: AppColors.primaryColor,
                                   ),
                                 ),
-                                SizedBox(height: 8.r),
+                                8.verticalSpace,
                                 Text(
                                   '[التوبة: 100]',
                                   style: AppTextStyle.style14W500.copyWith(
@@ -281,7 +280,7 @@ class TabeenIndexView extends StatelessWidget {
                             ),
                           ),
 
-                          SizedBox(height: 30.r),
+                          30.verticalSpace,
                         ],
                       ),
                     ),
@@ -298,10 +297,10 @@ class TabeenIndexView extends StatelessWidget {
 
 class _ContinueReadingCard extends StatelessWidget {
   const _ContinueReadingCard({
-    required this.hadith,
+    required this.tabee,
   });
 
-  final Tabeen hadith;
+  final Tabeen tabee;
 
   @override
   Widget build(BuildContext context) {
@@ -309,8 +308,8 @@ class _ContinueReadingCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(18.r),
       onTap: () async {
         await context.pushNamed(
-          AppRoutes.arbaoonReadingView,
-          extra: hadith,
+          AppRoutes.tabeenReadingView,
+          extra: tabee,
         );
       },
       child: Container(
@@ -334,14 +333,14 @@ class _ContinueReadingCard extends StatelessWidget {
                   ),
                   6.verticalSpace,
                   Text(
-                    hadith.title,
+                    tabee.title,
                     style: AppTextStyle.style20W900.copyWith(
                       fontFamily: AppFonts.amiri,
                     ),
                   ),
                   // 4.verticalSpace,
                   // Text(
-                  //   hadith.preview,
+                  //   tabee.preview,
                   //   maxLines: 2,
                   //   overflow: TextOverflow.ellipsis,
                   //   style: AppTextStyle.style14W600.copyWith(
@@ -363,10 +362,10 @@ class _ContinueReadingCard extends StatelessWidget {
 class _TabeenTile extends StatelessWidget {
   const _TabeenTile({
     required this.isLastRead,
-    required this.hadith,
+    required this.tabee,
   });
 
-  final Tabeen hadith;
+  final Tabeen tabee;
   final bool isLastRead;
   @override
   Widget build(BuildContext context) {
@@ -386,7 +385,7 @@ class _TabeenTile extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            '${hadith.id}',
+            '${tabee.id}',
             style: AppTextStyle.style14W500.copyWith(
               color: isLastRead ? Colors.white : AppColors.primaryColor,
               fontFamily: AppFonts.amiri,
@@ -396,7 +395,7 @@ class _TabeenTile extends StatelessWidget {
       ),
 
       title: Text(
-        hadith.title,
+        tabee.title,
         style: AppTextStyle.style18W900.copyWith(
           fontFamily: AppFonts.amiri,
           color: AppColors.thirdColor,
@@ -405,7 +404,7 @@ class _TabeenTile extends StatelessWidget {
       // subtitle: Padding(
       //   padding: EdgeInsets.only(top: 6.h),
       //   child: Text(
-      //     hadith.preview,
+      //     tabee.preview,
       //     maxLines: 2,
       //     overflow: TextOverflow.ellipsis,
       //     style: AppTextStyle.style18W600.copyWith(
@@ -418,11 +417,11 @@ class _TabeenTile extends StatelessWidget {
         size: 16.r,
       ),
       onTap: () async {
-        await context.read<TabeenCubit>().saveLastRead(hadith);
+        await context.read<TabeenCubit>().saveLastRead(tabee);
 
         await context.pushNamed(
           AppRoutes.tabeenReadingView,
-          extra: hadith,
+          extra: tabee,
         );
       },
     );

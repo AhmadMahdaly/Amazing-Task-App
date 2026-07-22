@@ -1,4 +1,4 @@
-// ignore_for_file: cascade_invocations, discarded_futures
+// ignore_for_file: discarded_futures
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
 import 'package:s/core/cache_helper/cache_values.dart';
+import 'package:s/core/di.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
@@ -14,6 +15,7 @@ import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
+import 'package:s/features/islamic_section/notes/data/data_sources/notes_data_source.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/saved_ayah_note_entity.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
@@ -89,8 +91,9 @@ class _SurahReadingViewState extends State<SurahReadingView> {
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
     _quranCubit.saveLastRead(widget.surah.number);
 
     super.dispose();
@@ -145,7 +148,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     );
   }
 
-  void _showAyahOptions(int ayah) {
+  void _showAyahOptions(int ayah, String ayahText) {
     showModalBottomSheet<void>(
       context: context,
       shape: RoundedRectangleBorder(
@@ -194,6 +197,27 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                 ),
                 const Divider(),
 
+                // الخيار الجديد: حفظ الآية في التحديدات بدون ملاحظة
+                ListTile(
+                  leading: const Icon(
+                    Icons.turned_in_not, // أيقونة تعبر عن الحفظ/التحديد
+                    color: AppColors.primaryColor,
+                  ),
+                  title: Text(
+                    'حفظ الآية في التحديدات',
+                    style: AppTextStyle.style18W900.copyWith(
+                      fontFamily: AppFonts.amiri,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // استدعاء دالة الحفظ مع تمرير نص فارغ للملاحظة
+                    _saveAyahWithNote(ayah, ayahText, '');
+                  },
+                ),
+                const Divider(),
+
+                // الخيار الأصلي: حفظ الآية مع إضافة ملاحظة
                 ListTile(
                   leading: const Icon(
                     Icons.edit_note,
@@ -207,6 +231,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                   ),
                   onTap: () {
                     Navigator.pop(context);
+                    // يمكنك أيضاً تمرير ayahText هنا إذا كانت دالة الـ BottomSheet تحتاجه
                     _showAddNoteBottomSheet(ayah);
                   },
                 ),
@@ -768,8 +793,10 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                       TextSpan(
                                         text: ' $ayahNumber ',
                                         recognizer: TapGestureRecognizer()
-                                          ..onTap = () =>
-                                              _showAyahOptions(index + 1),
+                                          ..onTap = () => _showAyahOptions(
+                                            index + 1,
+                                            ayahText,
+                                          ),
                                         style: AppTextStyle.style20W900
                                             .copyWith(
                                               fontFamily: AppFonts.quran,
@@ -926,32 +953,29 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     );
   }
 
-  void _saveAyahWithNote(int ayah, String ayahText, String note) {
-    final savedNotesStr =
-        CacheHelper.getData(CacheKeys.savedAyahsNotes) as String? ?? '[]';
-    final notesList = SavedAyahNote.decode(savedNotesStr);
-
+  Future<void> _saveAyahWithNote(int ayah, String ayahText, String note) async {
     final newNote = SavedAyahNote(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       surahNumber: widget.surah.number,
+
+      endAyahNumber: ayah,
       surahName: widget.surah.name,
       ayahNumber: ayah,
       ayahText: ayahText,
       note: note,
     );
 
-    notesList.add(newNote);
-    CacheHelper.saveData(
-      key: CacheKeys.savedAyahsNotes,
-      value: SavedAyahNote.encode(notesList),
-    );
+    final dataSource = getIt<NotesDataSource>();
+    await dataSource.saveAyahNote(newNote);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تم حفظ الآية والملاحظة بنجاح'),
-        backgroundColor: AppColors.primaryColor,
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('تم حفظ الآية والملاحظة بنجاح'),
+          backgroundColor: AppColors.primaryColor,
+        ),
+      );
+    }
   }
 
   void _showAddNoteBottomSheet(int ayah) {

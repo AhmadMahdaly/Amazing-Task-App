@@ -1,8 +1,8 @@
 // domain/entities/asmaa_highlight.dart
 import 'dart:convert';
 
-class AsmaaHighlight {
-  AsmaaHighlight({
+class Highlight {
+  Highlight({
     required this.id,
     required this.lessonId,
     required this.startOffset,
@@ -12,8 +12,8 @@ class AsmaaHighlight {
     required this.note,
   });
 
-  factory AsmaaHighlight.fromMap(Map<String, dynamic> map) {
-    return AsmaaHighlight(
+  factory Highlight.fromMap(Map<String, dynamic> map) {
+    return Highlight(
       id: map['id'] as String,
       lessonId: map['lessonId'] as int,
       startOffset: map['startOffset'] as int,
@@ -43,14 +43,14 @@ class AsmaaHighlight {
     };
   }
 
-  static String encode(List<AsmaaHighlight> highlights) => json.encode(
+  static String encode(List<Highlight> highlights) => json.encode(
     highlights.map<Map<String, dynamic>>((h) => h.toMap()).toList(),
   );
 
-  static List<AsmaaHighlight> decode(String highlightsStr) =>
+  static List<Highlight> decode(String highlightsStr) =>
       (json.decode(highlightsStr) as List<dynamic>)
-          .map<AsmaaHighlight>(
-            (item) => AsmaaHighlight.fromMap(item as Map<String, dynamic>),
+          .map<Highlight>(
+            (item) => Highlight.fromMap(item as Map<String, dynamic>),
           )
           .toList();
 }
