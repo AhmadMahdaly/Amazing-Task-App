@@ -1,29 +1,25 @@
-// ignore_for_file: avoid_field_initializers_in_const_classes
+// ignore_for_file: discarded_futures
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:s/core/cache_helper/cache_helper.dart';
+import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/features/islamic_section/friday_sunan/domain/entities/sunnah_entity.dart';
+import 'package:s/features/islamic_section/friday_sunan/presentation/views/widgets/sunnah_card.dart';
 
-class SunnahEntity {
-  const SunnahEntity({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.source,
-  });
-  final int id;
-  final String title;
-  final String description;
-  final String source;
-}
-
-class FridaySunanView extends StatelessWidget {
+class FridaySunanView extends StatefulWidget {
   const FridaySunanView({super.key});
 
-  final List<SunnahEntity> _sunanList = const [
+  @override
+  State<FridaySunanView> createState() => _FridaySunanViewState();
+}
+
+class _FridaySunanViewState extends State<FridaySunanView> {
+  List<SunnahEntity> _sunanList() => const [
     SunnahEntity(
       id: 1,
       title: 'الاغتسال يوم الجمعة',
@@ -109,6 +105,60 @@ class FridaySunanView extends StatelessWidget {
       source: 'رواه أبو داود',
     ),
   ];
+  double _readingProgress = 0;
+  final ScrollController _scrollController = ScrollController();
+  double _fontSize = 18;
+  @override
+  void initState() {
+    super.initState();
+    _fontSize =
+        (CacheHelper.getData(CacheKeys.fridaySunnahFontSize) as num?)
+            ?.toDouble() ??
+        18;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.position.maxScrollExtent;
+      }
+    });
+
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    final max = _scrollController.position.maxScrollExtent;
+    if (max == 0) return;
+
+    setState(() {
+      _readingProgress = (_scrollController.offset / max).clamp(0.0, 1.0);
+    });
+  }
+
+  void _updateFontSize(
+    double value,
+    void Function(void Function()) setModalState,
+  ) {
+    setState(() {
+      _fontSize = value.clamp(18, 48);
+    });
+
+    setModalState(() {});
+
+    CacheHelper.saveData(
+      key: CacheKeys.fridaySunnahFontSize,
+      value: _fontSize,
+    );
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -120,6 +170,7 @@ class FridaySunanView extends StatelessWidget {
             'سنن يوم الجمعة',
             style: AppTextStyle.style20W900.copyWith(
               fontFamily: AppFonts.amiri,
+              fontSize: (_fontSize + 2).sp,
             ),
           ),
           backgroundColor: AppColors.primaryColor,
@@ -129,6 +180,159 @@ class FridaySunanView extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_ios_new),
             onPressed: () => context.pop(),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.text_fields_rounded,
+                color: AppColors.buttonColor.withAlpha(150),
+                size: 24.r,
+              ),
+              onPressed: () async {
+                await showModalBottomSheet<void>(
+                  context: context,
+                  builder: (_) {
+                    return StatefulBuilder(
+                      builder: (context, setModalState) {
+                        return Padding(
+                          padding: EdgeInsets.all(16.r),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('حجم الخط'),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      _updateFontSize(
+                                        _fontSize - 2,
+                                        setModalState,
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.remove_circle_outline,
+                                      color: AppColors.primaryColor.withAlpha(
+                                        100,
+                                      ),
+                                    ),
+                                  ),
+
+                                  Expanded(
+                                    child: Slider(
+                                      activeColor: AppColors.primaryColor,
+                                      value: _fontSize,
+                                      min: 18,
+                                      max: 48,
+                                      divisions: 15,
+                                      label: _fontSize.toString(),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _fontSize = value;
+                                        });
+                                        setModalState(() {});
+                                      },
+                                      onChangeEnd: (value) {
+                                        _updateFontSize(
+                                          value,
+                                          setModalState,
+                                        );
+                                      },
+                                    ),
+                                  ),
+
+                                  IconButton(
+                                    onPressed: () {
+                                      _updateFontSize(
+                                        _fontSize + 2,
+                                        setModalState,
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.add_circle_outline,
+                                      color: AppColors.primaryColor.withAlpha(
+                                        100,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              20.verticalSpace,
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+            InkWell(
+              borderRadius: BorderRadius.circular(320),
+              child: SizedBox(
+                width: 24.w,
+                height: 24.h,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      value: _readingProgress,
+                      strokeWidth: 1,
+                      backgroundColor: AppColors.buttonColor.withAlpha(20),
+                      color: AppColors.buttonColor.withAlpha(150),
+                    ),
+                    Text(
+                      '${(_readingProgress * 100).round()}',
+                      style: AppTextStyle.style9W700.copyWith(
+                        color: AppColors.buttonColor.withAlpha(150),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onTap: () async {
+                await showModalBottomSheet<void>(
+                  context: context,
+                  builder: (_) {
+                    return StatefulBuilder(
+                      builder: (context, setModalState) {
+                        return Padding(
+                          padding: EdgeInsets.all(16.r),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('مستوى التقدم'),
+                              Slider(
+                                activeColor: AppColors.primaryColor,
+                                value: _readingProgress,
+                                onChanged: (value) {
+                                  setModalState(() {
+                                    _readingProgress = value;
+                                  });
+                                  final max = _scrollController
+                                      .position
+                                      .maxScrollExtent;
+                                  _scrollController.animateTo(
+                                    value * max,
+                                    duration: const Duration(
+                                      milliseconds: 150,
+                                    ),
+                                    curve: Curves.easeOut,
+                                  );
+                                },
+                              ),
+                              10.verticalSpace,
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+
+            20.horizontalSpace,
+          ],
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,6 +343,7 @@ class FridaySunanView extends StatelessWidget {
                 'مجموعة من السنن والآداب المستحبة يوم الجمعة، مستندة إلى السنة النبوية الصحيحة',
                 style: AppTextStyle.style14W500.copyWith(
                   fontFamily: AppFonts.amiri,
+                  fontSize: (_fontSize - 4).sp,
                   color: Colors.white.withAlpha(200),
                   height: 1.5,
                 ),
@@ -155,96 +360,17 @@ class FridaySunanView extends StatelessWidget {
                 ),
                 child: ListView.separated(
                   padding: EdgeInsets.all(20.r),
-                  itemCount: _sunanList.length,
+                  itemCount: _sunanList().length,
                   separatorBuilder: (context, index) => 16.verticalSpace,
                   itemBuilder: (context, index) {
-                    final sunnah = _sunanList[index];
-                    return _buildSunnahCard(sunnah);
+                    final sunnah = _sunanList()[index];
+                    return SunnahCard(sunnah: sunnah, fontSize: _fontSize);
                   },
                 ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSunnahCard(SunnahEntity sunnah) {
-    return Container(
-      padding: EdgeInsets.all(16.r),
-      decoration: BoxDecoration(
-        color: AppColors.buttonColor.withAlpha(20),
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.primaryColor.withAlpha(30)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 32.r,
-                height: 32.r,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primaryColor,
-                ),
-                child: Center(
-                  child: Text(
-                    '${sunnah.id}',
-                    style: AppTextStyle.style14W500.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              12.horizontalSpace,
-
-              Expanded(
-                child: Text(
-                  sunnah.title,
-                  style: AppTextStyle.style18W900.copyWith(
-                    fontFamily: AppFonts.amiri,
-                    color: AppColors.primaryColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          12.verticalSpace,
-
-          Text(
-            sunnah.description,
-            style: AppTextStyle.style16W500.copyWith(
-              fontFamily: AppFonts.amiri,
-              height: 1.6,
-              color: Colors.black87,
-            ),
-          ),
-          12.verticalSpace,
-
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.menu_book,
-                size: 16.r,
-                color: AppColors.secondaryColor,
-              ),
-              6.horizontalSpace,
-              Expanded(
-                child: Text(
-                  sunnah.source,
-                  style: AppTextStyle.style12W500.copyWith(
-                    fontFamily: AppFonts.amiri,
-                    color: AppColors.secondaryColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

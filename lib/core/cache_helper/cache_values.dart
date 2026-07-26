@@ -12,6 +12,7 @@ class CacheKeys {
   static const String hisnFontSize = 'hist_font_size';
   static const String tafsirFontSize = 'tafsir_font_size';
   static const String tabeenFontSize = 'tabeen_font_size';
+  static const String fridaySunnahFontSize = 'friday_sunnah_font_size';
 
   /// Screen opacity
   static const String quranScreenOpacity = 'screen_opacity';

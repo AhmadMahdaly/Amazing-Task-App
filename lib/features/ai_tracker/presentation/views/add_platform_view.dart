@@ -17,16 +17,12 @@ class AddPlatformView extends StatefulWidget {
 }
 
 class _AddPlatformViewState extends State<AddPlatformView> {
-  final TextEditingController _nameController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
+  // متغير لتخزين القيمة سواء تم كتابتها أو اختيارها
+  String _enteredPlatformName = '';
+  final List<String> _selectedEmailIds = [];
 
   void _savePlatform() {
-    final name = _nameController.text.trim();
+    final name = _enteredPlatformName.trim();
 
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -38,8 +34,26 @@ class _AddPlatformViewState extends State<AddPlatformView> {
       return;
     }
 
-    context.read<AiTrackerCubit>().addPlatform(name);
+    final currentState = context.read<AiTrackerCubit>().state;
+    if (currentState is AiTrackerLoaded) {
+      if (currentState.availablePlatforms.any(
+        (p) => p.name.toLowerCase() == name.toLowerCase(),
+      )) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('هذه المنصة مسجلة بالفعل!'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+    }
 
+    // استدعاء دالة الإضافة الجديدة مع الإيميلات المحددة
+    context.read<AiTrackerCubit>().addPlatformWithEmails(
+      name,
+      _selectedEmailIds,
+    );
     Navigator.pop(context);
   }
 
@@ -76,19 +90,109 @@ class _AddPlatformViewState extends State<AddPlatformView> {
               ),
               16.verticalSpace,
 
-              CustomPrimaryTextfield(
-                controller: _nameController,
-                text: 'اسم المنصة (مثال: ChatGPT)',
-                prefix: const Icon(Icons.smart_toy_outlined),
+              // استخدام BlocBuilder لجلب المنصات المسجلة للاقتراحات
+              BlocBuilder<AiTrackerCubit, AiTrackerState>(
+                builder: (context, state) {
+                  var existingPlatforms = <String>[];
+                  if (state is AiTrackerLoaded) {
+                    existingPlatforms = state.availablePlatforms
+                        .map((p) => p.name)
+                        .toList();
+                  }
+
+                  return Autocomplete<String>(
+                    optionsBuilder: (textEditingValue) {
+                      if (textEditingValue.text.isEmpty) {
+                        return const Iterable<String>.empty();
+                      }
+                      return existingPlatforms.where((option) {
+                        return option.toLowerCase().contains(
+                          textEditingValue.text.toLowerCase(),
+                        );
+                      });
+                    },
+                    onSelected: (selection) {
+                      _enteredPlatformName = selection;
+                    },
+                    fieldViewBuilder:
+                        (
+                          context,
+                          controller,
+                          focusNode,
+                          onFieldSubmitted,
+                        ) {
+                          // تتبع النص المكتوب يدوياً
+                          controller.addListener(() {
+                            _enteredPlatformName = controller.text;
+                          });
+
+                          return CustomPrimaryTextfield(
+                            controller: controller,
+                            focusNode: focusNode,
+                            text: 'اسم المنصة (مثال: ChatGPT)',
+                            prefix: const Icon(Icons.smart_toy_outlined),
+                          );
+                        },
+                  );
+                },
+              ),
+              24.verticalSpace,
+              Text(
+                'الإيميلات المسجلة بها:',
+                style: AppTextStyle.style16W600.copyWith(
+                  fontFamily: AppFonts.ar,
+                ),
+              ),
+              8.verticalSpace,
+
+              // قائمة اختيار الإيميلات
+              Expanded(
+                child: BlocBuilder<AiTrackerCubit, AiTrackerState>(
+                  builder: (context, state) {
+                    if (state is AiTrackerLoaded && state.emails.isNotEmpty) {
+                      return ListView.builder(
+                        itemCount: state.emails.length,
+                        itemBuilder: (context, index) {
+                          final email = state.emails[index];
+                          final isSelected = _selectedEmailIds.contains(
+                            email.id,
+                          );
+
+                          return CheckboxListTile(
+                            title: Text(
+                              email.emailAddress,
+                              style: AppTextStyle.style14W500,
+                            ),
+                            value: isSelected,
+                            activeColor: AppColors.primaryColor,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value == true) {
+                                  _selectedEmailIds.add(email.id);
+                                } else {
+                                  _selectedEmailIds.remove(email.id);
+                                }
+                              });
+                            },
+                          );
+                        },
+                      );
+                    }
+                    return Text(
+                      'لا توجد إيميلات مسجلة بعد',
+                      style: AppTextStyle.style14W500.copyWith(
+                        color: Colors.grey,
+                      ),
+                    );
+                  },
+                ),
               ),
               16.verticalSpace,
-
               const Spacer(),
 
               CustomPrimaryButton(
                 width: double.infinity,
                 onPressed: _savePlatform,
-
                 text: 'حفظ المنصة',
               ),
             ],

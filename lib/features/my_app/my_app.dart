@@ -8,9 +8,9 @@ import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challen
 import 'package:s/features/task_list/presentation/controllers/cubit/lists_cubit.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 
-import '/../core/di.dart';
-import '/../core/responsive/responsive_config.dart';
-import '/../core/routing/router_generation_config.dart';
+import '/core/di.dart';
+import '/core/responsive/responsive_config.dart';
+import '/core/routing/router_generation_config.dart';
 import '../../core/resources/app_themes.dart';
 
 class MyApp extends StatelessWidget {

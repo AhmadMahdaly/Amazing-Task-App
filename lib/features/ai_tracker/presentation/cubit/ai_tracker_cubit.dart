@@ -141,20 +141,167 @@ class AiTrackerCubit extends Cubit<AiTrackerState> {
     emit(AiTrackerLoaded(List.from(_emails), List.from(_platforms)));
   }
 
-  void editEmailAddress(String emailId, String newEmailAddress) {
-    final index = _emails.indexWhere((e) => e.id == emailId);
-    if (index != -1) {
-      final oldEmail = _emails[index];
-      _emails[index] = EmailAccountEntity(
-        id: oldEmail.id,
-        emailAddress: newEmailAddress,
-        quotas: List.from(
-          oldEmail.quotas,
-        ),
-      );
-      _saveEmailDataLocally();
-      emit(AiTrackerLoaded(List.from(_emails), List.from(_platforms)));
+  // 1. تعديل الإيميل (تحديث الاسم + تحديد المنصات)
+  void editEmail(
+    String emailId,
+    String newEmailAddress,
+    List<String> selectedPlatformIds,
+  ) {
+    final oldIndex = _emails.indexWhere((e) => e.id == emailId);
+    if (oldIndex == -1) return;
+
+    final oldEmail = _emails[oldIndex];
+    var targetEmailId = emailId;
+
+    // التحقق من الدمج
+    final existingEmailIndex = _emails.indexWhere(
+      (e) =>
+          e.emailAddress.toLowerCase() == newEmailAddress.toLowerCase() &&
+          e.id != emailId,
+    );
+
+    final baseQuotas = List<PlatformQuotaEntity>.from(oldEmail.quotas);
+
+    if (existingEmailIndex != -1) {
+      final existingEmail = _emails[existingEmailIndex];
+      targetEmailId = existingEmail.id;
+
+      // دمج الحصص لعدم فقدان التوقيتات
+      for (final q in existingEmail.quotas) {
+        if (!baseQuotas.any((bq) => bq.platformId == q.platformId)) {
+          baseQuotas.add(q);
+        }
+      }
+      _emails.removeAt(oldIndex); // نحذف القديم لدمجه
+    } else {
+      _emails.removeAt(oldIndex);
     }
+
+    // بناء الحصص الجديدة بناءً على ما حدده المستخدم
+    final finalQuotas = <PlatformQuotaEntity>[];
+    for (final pId in selectedPlatformIds) {
+      final existingQ = baseQuotas
+          .where((q) => q.platformId == pId)
+          .firstOrNull;
+      if (existingQ != null) {
+        finalQuotas.add(existingQ); // احتفظ بالوقت القديم
+      } else {
+        finalQuotas.add(
+          PlatformQuotaEntity(platformId: pId, resetTime: DateTime.now()),
+        ); // منصة جديدة
+      }
+    }
+
+    final updatedEmail = EmailAccountEntity(
+      id: targetEmailId,
+      emailAddress: existingEmailIndex != -1
+          ? _emails[existingEmailIndex].emailAddress
+          : newEmailAddress,
+      quotas: finalQuotas,
+    );
+
+    final updateIndex = _emails.indexWhere((e) => e.id == targetEmailId);
+    if (updateIndex != -1) {
+      _emails[updateIndex] = updatedEmail;
+    } else {
+      _emails.add(updatedEmail);
+    }
+
+    _saveEmailDataLocally();
+    emit(AiTrackerLoaded(List.from(_emails), List.from(_platforms)));
+  }
+
+  // 2. إضافة منصة وتحديد إيميلاتها
+  void addPlatformWithEmails(String name, List<String> selectedEmailIds) {
+    final newPlatformId = DateTime.now().millisecondsSinceEpoch.toString();
+    final newPlatform = AiPlatformEntity(id: newPlatformId, name: name);
+
+    _platforms.add(newPlatform);
+
+    for (var i = 0; i < _emails.length; i++) {
+      if (selectedEmailIds.contains(_emails[i].id)) {
+        final updatedQuotas = List<PlatformQuotaEntity>.from(_emails[i].quotas);
+        updatedQuotas.add(
+          PlatformQuotaEntity(
+            platformId: newPlatformId,
+            resetTime: DateTime.now(),
+          ),
+        );
+
+        _emails[i] = EmailAccountEntity(
+          id: _emails[i].id,
+          emailAddress: _emails[i].emailAddress,
+          quotas: updatedQuotas,
+        );
+      }
+    }
+
+    _savePlatformDataLocally();
+    _saveEmailDataLocally();
+    emit(AiTrackerLoaded(List.from(_emails), List.from(_platforms)));
+  }
+
+  // 3. تعديل منصة (الاسم + تحديد إيميلاتها)
+  void editPlatform(
+    String platformId,
+    String newName,
+    List<String> selectedEmailIds,
+  ) {
+    final oldIndex = _platforms.indexWhere((p) => p.id == platformId);
+    if (oldIndex == -1) return;
+
+    var targetPlatformId = platformId;
+
+    final existingPlatformIndex = _platforms.indexWhere(
+      (p) =>
+          p.name.toLowerCase() == newName.toLowerCase() && p.id != platformId,
+    );
+
+    if (existingPlatformIndex != -1) {
+      targetPlatformId = _platforms[existingPlatformIndex].id;
+      _platforms.removeAt(oldIndex); // دمج
+    } else {
+      _platforms[oldIndex] = AiPlatformEntity(id: platformId, name: newName);
+    }
+
+    for (var i = 0; i < _emails.length; i++) {
+      final email = _emails[i];
+      final isSelected = selectedEmailIds.contains(email.id);
+
+      final updatedQuotas = List<PlatformQuotaEntity>.from(email.quotas);
+
+      if (isSelected) {
+        if (!updatedQuotas.any((q) => q.platformId == targetPlatformId)) {
+          final oldQ = email.quotas
+              .where((q) => q.platformId == platformId)
+              .firstOrNull;
+          updatedQuotas.add(
+            PlatformQuotaEntity(
+              platformId: targetPlatformId,
+              resetTime: oldQ?.resetTime ?? DateTime.now(),
+            ),
+          );
+        }
+      } else {
+        updatedQuotas.removeWhere((q) => q.platformId == targetPlatformId);
+      }
+
+      if (targetPlatformId != platformId) {
+        updatedQuotas.removeWhere(
+          (q) => q.platformId == platformId,
+        ); // تنظيف إذا تم دمج
+      }
+
+      _emails[i] = EmailAccountEntity(
+        id: email.id,
+        emailAddress: email.emailAddress,
+        quotas: updatedQuotas,
+      );
+    }
+
+    _savePlatformDataLocally();
+    _saveEmailDataLocally();
+    emit(AiTrackerLoaded(List.from(_emails), List.from(_platforms)));
   }
 
   void deletePlatform(String platformId) {
@@ -174,19 +321,6 @@ class AiTrackerCubit extends Cubit<AiTrackerState> {
     _savePlatformDataLocally();
     _saveEmailDataLocally();
     emit(AiTrackerLoaded(List.from(_emails), List.from(_platforms)));
-  }
-
-  void editPlatform(String platformId, String newName) {
-    final index = _platforms.indexWhere((p) => p.id == platformId);
-    if (index != -1) {
-      _platforms[index] = AiPlatformEntity(
-        id: platformId,
-        name: newName,
-      );
-
-      _savePlatformDataLocally();
-      emit(AiTrackerLoaded(List.from(_emails), List.from(_platforms)));
-    }
   }
 
   void addPlatform(String name) {
