@@ -21,8 +21,9 @@ import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.da
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
 
 class SurahReadingView extends StatefulWidget {
-  const SurahReadingView({required this.surah, super.key});
+  const SurahReadingView({required this.surah, this.startAyah, super.key});
   final SurahEntity surah;
+  final int? startAyah;
 
   @override
   State<SurahReadingView> createState() => _SurahReadingViewState();
@@ -79,9 +80,16 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         final max = _scrollController.position.maxScrollExtent;
+        var finalOffset = offset;
+
+        if (widget.startAyah != null && widget.startAyah! > 1) {
+          final estimatedOffset =
+              (max / surahAyahs.length) * (widget.startAyah! - 1);
+          finalOffset = estimatedOffset;
+        }
 
         _scrollController.jumpTo(
-          offset.clamp(0.0, max),
+          finalOffset.clamp(0.0, max),
         );
       }
     });
@@ -746,13 +754,14 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                               textAlign: TextAlign.justify,
                               textDirection: TextDirection.rtl,
                               text: TextSpan(
-                                children: surahAyahs.asMap().entries.map((
+                                children: surahAyahs.asMap().entries.expand((
                                   entry,
                                 ) {
                                   final index = entry.key;
                                   var ayahText = entry.value;
-                                  final ayahNumber = _convertToArabicNumber(
-                                    index + 1,
+                                  final ayahNumberInt = index + 1;
+                                  final ayahNumberStr = _convertToArabicNumber(
+                                    ayahNumberInt,
                                   );
 
                                   if (widget.surah.number != 9 && index == 0) {
@@ -761,13 +770,69 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                       '',
                                     );
                                   }
-                                  return TextSpan(
-                                    children: [
+
+                                  final juzList = _quranCubit.allJuz.where(
+                                    (j) =>
+                                        j.startSurah == widget.surah.number &&
+                                        j.startAyah == ayahNumberInt,
+                                  );
+                                  final juzStart = juzList.isEmpty
+                                      ? null
+                                      : juzList.first;
+
+                                  final hizbList = _quranCubit.allHizb.where(
+                                    (h) =>
+                                        h.startSurah == widget.surah.number &&
+                                        h.startAyah == ayahNumberInt,
+                                  );
+                                  final hizbStart = hizbList.isEmpty
+                                      ? null
+                                      : hizbList.first;
+
+                                  final spans = <InlineSpan>[];
+
+                                  if (juzStart != null || hizbStart != null) {
+                                    var markerText = '';
+                                    if (juzStart != null && hizbStart != null) {
+                                      markerText =
+                                          '${juzStart.name} - ${hizbStart.name}';
+                                    } else if (juzStart != null) {
+                                      markerText = juzStart.name;
+                                    } else {
+                                      markerText = hizbStart!.name;
+                                    }
+
+                                    spans.add(
+                                      WidgetSpan(
+                                        alignment: PlaceholderAlignment.middle,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              markerText,
+                                              style: AppTextStyle.style12W800
+                                                  .copyWith(
+                                                    fontFamily: AppFonts.amiri,
+                                                    color: _textColor.withAlpha(
+                                                      100,
+                                                    ),
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  // 2. إضافة نص الآية
+                                  spans
+                                    ..add(
                                       TextSpan(
-                                        text: '$ayahText ',
+                                        text: ' $ayahText ',
                                         recognizer: LongPressGestureRecognizer()
                                           ..onLongPress = () =>
-                                              _openTafsir(index + 1),
+                                              _openTafsir(ayahNumberInt),
                                         style: AppTextStyle.style20W900
                                             .copyWith(
                                               fontFamily: AppFonts.quran,
@@ -776,12 +841,13 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                               fontSize: _fontSize.sp,
                                             ),
                                       ),
-
+                                    )
+                                    ..add(
                                       TextSpan(
-                                        text: ' $ayahNumber ',
+                                        text: ' $ayahNumberStr ',
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = () => _showAyahOptions(
-                                            index + 1,
+                                            ayahNumberInt,
                                             ayahText,
                                           ),
                                         style: AppTextStyle.style20W900
@@ -792,8 +858,9 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                               fontSize: _fontSize.sp,
                                             ),
                                       ),
-                                    ],
-                                  );
+                                    );
+
+                                  return spans;
                                 }).toList(),
                               ),
                             ),

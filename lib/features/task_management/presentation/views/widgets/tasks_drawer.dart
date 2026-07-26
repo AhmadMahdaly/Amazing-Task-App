@@ -360,6 +360,13 @@ class TasksDrawer extends StatelessWidget {
                   },
                 ),
                 IconButton(
+                  tooltip: 'Ai tracker',
+                  icon: const Icon(Icons.memory_rounded),
+                  onPressed: () async {
+                    await context.pushNamed(AppRoutes.aiTrackerMainView);
+                  },
+                ),
+                IconButton(
                   tooltip: 'Islamic section',
                   icon: const Icon(Icons.mosque_outlined),
                   onPressed: () async {

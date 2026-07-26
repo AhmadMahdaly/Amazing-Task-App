@@ -22,13 +22,17 @@ class Appthemes {
         iconTheme: const IconThemeData(
           color: AppColors.white,
         ),
-        toolbarHeight: 100.h,
+        toolbarHeight: 70.h,
+
+        centerTitle: true,
+
         titleTextStyle: AppTextStyle.style16Bold.copyWith(
           color: AppColors.white,
           fontFamily: AppFonts.en,
         ),
         backgroundColor: AppColors.primaryColor,
         surfaceTintColor: AppColors.white,
+        child: const Icon(Icons.arrow_back_ios_new),
       ),
       cardTheme: CardThemeData(
         elevation: 2,

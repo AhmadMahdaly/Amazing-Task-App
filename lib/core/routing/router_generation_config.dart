@@ -3,6 +3,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/di.dart';
+import 'package:s/features/ai_tracker/domain/entities/ai_tracker_entities.dart';
+import 'package:s/features/ai_tracker/presentation/cubit/ai_tracker_cubit.dart';
+import 'package:s/features/ai_tracker/presentation/views/add_email_view.dart';
+import 'package:s/features/ai_tracker/presentation/views/add_platform_view.dart';
+import 'package:s/features/ai_tracker/presentation/views/ai_tracker_main_view.dart';
+import 'package:s/features/ai_tracker/presentation/views/platform_details_view.dart';
 import 'package:s/features/analytics/presentation/views/analytics_screen.dart';
 import 'package:s/features/challenges/presentation/screens/add_challenge_screen.dart';
 import 'package:s/features/challenges/presentation/screens/analysis_screen.dart';
@@ -18,6 +24,7 @@ import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_index_
 import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_reading_view.dart';
 import 'package:s/features/islamic_section/azkar/presentation/controllers/cubit/azkar_cubit.dart';
 import 'package:s/features/islamic_section/azkar/presentation/views/azkar_view.dart';
+import 'package:s/features/islamic_section/friday_sunan/presentation/views/friday_sunan_view.dart';
 import 'package:s/features/islamic_section/hisn_azkar/domain/entities/hisn_chapter_entity.dart';
 import 'package:s/features/islamic_section/hisn_azkar/presentation/cubit/hisn_cubit.dart';
 import 'package:s/features/islamic_section/hisn_azkar/presentation/views/hisn_index_view.dart';
@@ -164,12 +171,12 @@ void initRouter() {
         path: AppRoutes.surahReadingView,
         name: AppRoutes.surahReadingView,
         builder: (context, state) {
-          final surah = state.extra! as SurahEntity;
+          final data = state.extra! as Map;
+          final surah = data['surah'] as SurahEntity;
+          final startAyah = data['startAyah'] as int?;
           return BlocProvider.value(
             value: getIt<QuranCubit>(),
-            child: SurahReadingView(
-              surah: surah,
-            ),
+            child: SurahReadingView(surah: surah, startAyah: startAyah),
           );
         },
       ),
@@ -197,16 +204,47 @@ void initRouter() {
         },
       ),
 
-      // GoRoute(
-      //   path: AppRoutes.sunanView,
-      //   name: AppRoutes.sunanView,
-      //   builder: (context, state) {
-      //     return BlocProvider.value(
-      //       value: getIt<SunanCubit>()..loadSunanData(),
-      //       child: const SunanView(),
-      //     );
-      //   },
-      // ),
+      GoRoute(
+        path: AppRoutes.aiTrackerMainView,
+        name: AppRoutes.aiTrackerMainView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<AiTrackerCubit>()..loadTrackerData(),
+            child: const AiTrackerMainView(),
+          );
+        },
+      ),
+      GoRoute(
+        name: AppRoutes.platformDetailsView,
+        path: AppRoutes.platformDetailsView,
+        builder: (context, state) {
+          final platform = state.extra! as AiPlatformEntity;
+          return BlocProvider.value(
+            value: getIt<AiTrackerCubit>(),
+            child: PlatformDetailsView(platform: platform),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.addEmailView,
+        name: AppRoutes.addEmailView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<AiTrackerCubit>(),
+            child: const AddEmailView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.addPlatformView,
+        name: AppRoutes.addPlatformView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<AiTrackerCubit>(),
+            child: const AddPlatformView(),
+          );
+        },
+      ),
       GoRoute(
         path: AppRoutes.asmaaIndexView,
         name: AppRoutes.asmaaIndexView,
@@ -280,7 +318,11 @@ void initRouter() {
           );
         },
       ),
-
+      GoRoute(
+        path: AppRoutes.fridaySunanView,
+        name: AppRoutes.fridaySunanView,
+        builder: (context, state) => const FridaySunanView(),
+      ),
       GoRoute(
         path: AppRoutes.arbaoonIndexView,
         name: AppRoutes.arbaoonIndexView,
@@ -321,7 +363,7 @@ void initRouter() {
           final tabeen = state.extra! as Tabeen;
           return BlocProvider.value(
             value: getIt<TabeenCubit>(),
-            child:TabeenReadingView(
+            child: TabeenReadingView(
               tabeen: tabeen,
             ),
           );

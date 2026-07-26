@@ -13,9 +13,17 @@ class QuranInitial extends QuranState {}
 class QuranLoading extends QuranState {}
 
 class QuranLoaded extends QuranState {
-  QuranLoaded({required this.surahs, this.lastReadSurahNumber});
+  QuranLoaded({
+    required this.surahs,
+    this.lastReadSurahNumber,
+    this.lastReadJuzId,
+    this.lastReadHizbId,
+  });
+
   final List<SurahEntity> surahs;
   final int? lastReadSurahNumber;
+  final int? lastReadJuzId;
+  final int? lastReadHizbId;
 }
 
 class QuranError extends QuranState {

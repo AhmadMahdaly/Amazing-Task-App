@@ -54,48 +54,66 @@ class QuranIndexView extends StatelessWidget {
             20.horizontalSpace,
           ],
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(50.h),
+            preferredSize: Size.fromHeight(40.h),
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: 10.r,
+              padding: EdgeInsets.only(
+                bottom: 12.h,
               ),
-              child: SegmentedButton<QuranIndexType>(
-                style: ButtonStyle(
-                  backgroundColor: const WidgetStatePropertyAll(
-                    AppColors.buttonColor,
-                  ),
-                  textStyle: WidgetStatePropertyAll(
-                    AppTextStyle.style12Bold.copyWith(
-                      color: AppColors.buttonColor,
+              child: BlocBuilder<QuranCubit, QuranState>(
+                builder: (context, state) {
+                  return SegmentedButton<QuranIndexType>(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(
+                        AppColors.buttonColor.withAlpha(200),
+                      ),
+                      foregroundColor: WidgetStatePropertyAll(
+                        AppColors.forthColor.withAlpha(200),
+                      ),
+                      textStyle: WidgetStatePropertyAll(
+                        AppTextStyle.style12Bold.copyWith(
+                          color: AppColors.buttonColor,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                segments: const [
-                  ButtonSegment(
-                    value: QuranIndexType.surahs,
-                    label: Text('السور'),
-                    icon: Icon(Icons.menu_book),
-                  ),
-
-                  ButtonSegment(
-                    value: QuranIndexType.juz,
-                    label: Text('الأجزاء'),
-                    icon: Icon(Icons.grid_view),
-                  ),
-
-                  ButtonSegment(
-                    value: QuranIndexType.hizb,
-                    label: Text('الأحزاب'),
-                    icon: Icon(Icons.view_module),
-                  ),
-                ],
-
-                selected: {
-                  context.read<QuranCubit>().indexType,
-                },
-
-                onSelectionChanged: (value) {
-                  context.read<QuranCubit>().changeIndex(value.first);
+                    segments: [
+                      ButtonSegment(
+                        value: QuranIndexType.surahs,
+                        label: Text(
+                          'السور',
+                          style: AppTextStyle.style16W800.copyWith(
+                            fontFamily: AppFonts.amiri,
+                          ),
+                        ),
+                        icon: const Icon(Icons.menu_book),
+                      ),
+                      ButtonSegment(
+                        value: QuranIndexType.juz,
+                        label: Text(
+                          'الأجزاء',
+                          style: AppTextStyle.style16W800.copyWith(
+                            fontFamily: AppFonts.amiri,
+                          ),
+                        ),
+                        icon: const Icon(Icons.grid_view),
+                      ),
+                      ButtonSegment(
+                        value: QuranIndexType.hizb,
+                        label: Text(
+                          'الأحزاب',
+                          style: AppTextStyle.style16W800.copyWith(
+                            fontFamily: AppFonts.amiri,
+                          ),
+                        ),
+                        icon: const Icon(Icons.view_module),
+                      ),
+                    ],
+                    selected: {
+                      context.read<QuranCubit>().indexType,
+                    },
+                    onSelectionChanged: (value) {
+                      context.read<QuranCubit>().changeIndex(value.first);
+                    },
+                  );
                 },
               ),
             ),
@@ -143,19 +161,15 @@ class QuranIndexView extends StatelessWidget {
                           bookmarkedAyah,
                         ),
                       if (state.lastReadSurahNumber != null)
-                        _buildContinueReadingCard(
-                          context,
-                          state.surahs,
-                          state.lastReadSurahNumber!,
-                        ),
+                        _buildContinueReadingCard(context, cubit, state),
                     ],
                   ),
 
                   Expanded(
                     child: switch (context.read<QuranCubit>().indexType) {
                       QuranIndexType.surahs => _buildSurahsList(state),
-                      QuranIndexType.juz => _buildJuzList(cubit),
-                      QuranIndexType.hizb => _buildHizbList(cubit),
+                      QuranIndexType.juz => _buildJuzList(cubit, state),
+                      QuranIndexType.hizb => _buildHizbList(cubit, state),
                     },
                   ),
                 ],
@@ -168,49 +182,11 @@ class QuranIndexView extends StatelessWidget {
     );
   }
 
-  Widget _buildJuzList(QuranCubit cubit) {
-    return ListView.builder(
-      itemCount: cubit.allJuz.length,
-      itemBuilder: (context, index) {
-        final juz = cubit.allJuz[index];
-
-        return ListTile(
-          leading: CircleAvatar(
-            child: Text('${juz.number}'),
-          ),
-          title: Text(juz.name),
-          subtitle: Text(
-            'من ${cubit.allSurahs[juz.startSurah - 1].name} : ${juz.startAyah}',
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildHizbList(QuranCubit cubit) {
-    return ListView.builder(
-      itemCount: cubit.allHizb.length,
-      itemBuilder: (context, index) {
-        final hizb = cubit.allHizb[index];
-
-        return ListTile(
-          leading: CircleAvatar(
-            child: Text('${hizb.number}'),
-          ),
-          title: Text(hizb.name),
-          subtitle: Text(
-            'الجزء ${hizb.juz}',
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildSurahsList(QuranLoaded state) {
     return ListView.separated(
       itemCount: state.surahs.length,
-      separatorBuilder: (context, index) => const Divider(
-        color: AppColors.thirdColor,
+      separatorBuilder: (context, index) => Divider(
+        color: AppColors.thirdColor.withAlpha(20),
         height: 1,
       ),
       itemBuilder: (context, index) {
@@ -272,15 +248,47 @@ class QuranIndexView extends StatelessWidget {
 
   Widget _buildContinueReadingCard(
     BuildContext context,
-    List<SurahEntity> surahs,
-    int lastReadId,
+    QuranCubit cubit,
+    QuranLoaded state,
   ) {
-    final lastSurah = surahs.firstWhere((s) => s.number == lastReadId);
+    var title = '';
+    var subtitle = '';
+    SurahEntity? targetSurah;
+
+    switch (cubit.indexType) {
+      case QuranIndexType.surahs:
+        if (state.lastReadSurahNumber == null) return const SizedBox.shrink();
+        targetSurah = state.surahs.firstWhere(
+          (s) => s.number == state.lastReadSurahNumber,
+        );
+        title = 'سورة ${targetSurah.name}';
+        subtitle = 'العودة للقراءة';
+      case QuranIndexType.juz:
+        if (state.lastReadJuzId == null) return const SizedBox.shrink();
+        final juz = cubit.allJuz.firstWhere(
+          (j) => j.number == state.lastReadJuzId,
+        );
+        targetSurah = state.surahs.firstWhere(
+          (s) => s.number == juz.startSurah,
+        );
+        title = juz.name;
+        subtitle = 'العودة لقراءة الجزء';
+      case QuranIndexType.hizb:
+        if (state.lastReadHizbId == null) return const SizedBox.shrink();
+        final hizb = cubit.allHizb.firstWhere(
+          (h) => h.number == state.lastReadHizbId,
+        );
+        targetSurah = state.surahs.firstWhere(
+          (s) => s.number == hizb.startSurah,
+        );
+        title = hizb.name;
+        subtitle = 'العودة لقراءة الحزب';
+    }
 
     return GestureDetector(
-      onTap: () => _navigateToReading(context, lastSurah),
+      onTap: () => _navigateToReading(context, targetSurah!),
       child: Container(
-        margin: EdgeInsets.all(16.r),
+        margin: EdgeInsets.only(top: 10.h, right: 16.w, left: 16.w),
         padding: EdgeInsets.all(20.r),
         decoration: BoxDecoration(
           color: AppColors.buttonColor,
@@ -300,7 +308,7 @@ class QuranIndexView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'العودة للقراءة',
+                    subtitle,
                     style: AppTextStyle.style12W500.copyWith(
                       color: AppColors.secondaryColor,
                       fontFamily: AppFonts.amiri,
@@ -308,7 +316,7 @@ class QuranIndexView extends StatelessWidget {
                   ),
                   8.verticalSpace,
                   Text(
-                    'سورة ${lastSurah.name}',
+                    title,
                     style: AppTextStyle.style20W800.copyWith(
                       color: AppColors.primaryColor,
                       fontFamily: AppFonts.amiri,
@@ -321,6 +329,138 @@ class QuranIndexView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildJuzList(QuranCubit cubit, QuranLoaded state) {
+    return ListView.separated(
+      separatorBuilder: (context, index) => Divider(
+        color: AppColors.thirdColor.withAlpha(20),
+        height: 1,
+      ),
+      itemCount: cubit.allJuz.length,
+      itemBuilder: (context, index) {
+        final juz = cubit.allJuz[index];
+        final isLastRead = juz.number == state.lastReadJuzId;
+        return ListTile(
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.r,
+            vertical: 4.r,
+          ),
+          leading: Container(
+            width: 40.r,
+            height: 40.r,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isLastRead
+                  ? AppColors.primaryColor
+                  : AppColors.primaryColor.withAlpha(20),
+            ),
+            child: Center(
+              child: Text(
+                '${juz.number}',
+                style: AppTextStyle.style14W500.copyWith(
+                  color: isLastRead ? Colors.white : AppColors.primaryColor,
+                  fontFamily: AppFonts.amiri,
+                ),
+              ),
+            ),
+          ),
+          title: Text(
+            juz.name,
+            style: AppTextStyle.style18W900.copyWith(
+              color: AppColors.primaryColor,
+              fontFamily: AppFonts.amiri,
+            ),
+          ),
+          subtitle: Text(
+            'من ${cubit.allSurahs[juz.startSurah - 1].name} : ${juz.startAyah}',
+            style: AppTextStyle.style12W500.copyWith(
+              color: AppColors.primaryColor,
+              fontFamily: AppFonts.amiri,
+            ),
+          ),
+          onTap: () async {
+            await cubit.saveLastReadJuz(juz.number);
+            final startSurah = cubit.allSurahs.firstWhere(
+              (s) => s.number == juz.startSurah,
+            );
+            if (context.mounted) {
+              await _navigateToReading(
+                context,
+                startSurah,
+                startAyah: juz.startAyah,
+              );
+            }
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildHizbList(QuranCubit cubit, QuranLoaded state) {
+    return ListView.separated(
+      separatorBuilder: (context, index) => Divider(
+        color: AppColors.thirdColor.withAlpha(20),
+        height: 1,
+      ),
+      itemCount: cubit.allHizb.length,
+      itemBuilder: (context, index) {
+        final hizb = cubit.allHizb[index];
+        final isLastRead = hizb.number == state.lastReadHizbId;
+        return ListTile(
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.r,
+            vertical: 4.r,
+          ),
+          leading: Container(
+            width: 40.r,
+            height: 40.r,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isLastRead
+                  ? AppColors.primaryColor
+                  : AppColors.primaryColor.withAlpha(20),
+            ),
+            child: Center(
+              child: Text(
+                '${hizb.number}',
+                style: AppTextStyle.style14W500.copyWith(
+                  color: isLastRead ? Colors.white : AppColors.primaryColor,
+                  fontFamily: AppFonts.amiri,
+                ),
+              ),
+            ),
+          ),
+          title: Text(
+            hizb.name,
+            style: AppTextStyle.style18W900.copyWith(
+              color: AppColors.primaryColor,
+              fontFamily: AppFonts.amiri,
+            ),
+          ),
+          subtitle: Text(
+            'الجزء ${hizb.juz}',
+            style: AppTextStyle.style12W500.copyWith(
+              color: AppColors.primaryColor,
+              fontFamily: AppFonts.amiri,
+            ),
+          ),
+          onTap: () async {
+            await cubit.saveLastReadHizb(hizb.number);
+            final startSurah = cubit.allSurahs.firstWhere(
+              (s) => s.number == hizb.startSurah,
+            );
+            if (context.mounted) {
+              await _navigateToReading(
+                context,
+                startSurah,
+                startAyah: hizb.startAyah,
+              );
+            }
+          },
+        );
+      },
     );
   }
 
@@ -445,11 +585,15 @@ class QuranIndexView extends StatelessWidget {
 
   Future<void> _navigateToReading(
     BuildContext context,
-    SurahEntity surah,
-  ) async {
+    SurahEntity surah, {
+    int? startAyah,
+  }) async {
     await context.pushNamed(
       AppRoutes.surahReadingView,
-      extra: surah,
+      extra: {
+        'surah': surah,
+        'startAyah': startAyah,
+      },
     );
   }
 }

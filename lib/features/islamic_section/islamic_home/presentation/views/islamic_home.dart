@@ -125,6 +125,13 @@ class IslamicHomeView extends StatelessWidget {
                       },
                     ),
                     _IslamicItem(
+                      title: 'سنن يوم الجمعة',
+                      icon: Icons.today_rounded,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.fridaySunanView);
+                      },
+                    ),
+                    _IslamicItem(
                       title: 'السيرة',
                       icon: Icons.history_edu_rounded,
                       onTap: () async {

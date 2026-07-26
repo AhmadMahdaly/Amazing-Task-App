@@ -24,12 +24,19 @@ class QuranCubit extends Cubit<QuranState> {
   List<HizbEntity> allHizb = [];
   List<String> allAyahsText = [];
   List<TafsirModel> allTafsir = [];
+
   int? lastReadSurah;
+  int? lastReadJuz;
+  int? lastReadHizb;
+
   QuranIndexType indexType = QuranIndexType.surahs;
+
   Future<void> loadSurahs() async {
     emit(QuranLoading());
     try {
       lastReadSurah = CacheHelper.getData(CacheKeys.lastReadSurah) as int?;
+      lastReadJuz = CacheHelper.getData('last_read_juz') as int?;
+      lastReadHizb = CacheHelper.getData('last_read_hizb') as int?;
 
       final jsonString = await rootBundle.loadString('assets/json/surahs.json');
       final jsonList = json.decode(jsonString) as List<dynamic>;
@@ -61,7 +68,8 @@ class QuranCubit extends Cubit<QuranState> {
       allTafsir = tafsirList
           .map((e) => TafsirModel.fromJson(e as Map<String, dynamic>))
           .toList();
-      emit(QuranLoaded(surahs: allSurahs, lastReadSurahNumber: lastReadSurah));
+
+      _emitLoadedState();
     } catch (e) {
       emit(QuranError('حدث خطأ أثناء التحميل'));
     }
@@ -118,21 +126,44 @@ class QuranCubit extends Cubit<QuranState> {
       key: CacheKeys.lastReadSurah,
       value: surahNumber,
     );
-    emit(QuranLoaded(surahs: allSurahs, lastReadSurahNumber: lastReadSurah));
+    _emitLoadedState();
+  }
+
+  Future<void> saveLastReadJuz(int juzNumber) async {
+    lastReadJuz = juzNumber;
+    await CacheHelper.saveData(
+      key: 'last_read_juz',
+      value: juzNumber,
+    );
+    _emitLoadedState();
+  }
+
+  Future<void> saveLastReadHizb(int hizbNumber) async {
+    lastReadHizb = hizbNumber;
+    await CacheHelper.saveData(
+      key: 'last_read_hizb',
+      value: hizbNumber,
+    );
+    _emitLoadedState();
   }
 
   void changeIndex(QuranIndexType type) {
     indexType = type;
+    _emitLoadedState();
+  }
 
+  void refreshIndex() {
+    _emitLoadedState();
+  }
+
+  void _emitLoadedState() {
     emit(
       QuranLoaded(
         surahs: allSurahs,
         lastReadSurahNumber: lastReadSurah,
+        lastReadJuzId: lastReadJuz,
+        lastReadHizbId: lastReadHizb,
       ),
     );
-  }
-
-  void refreshIndex() {
-    emit(QuranLoaded(surahs: allSurahs, lastReadSurahNumber: lastReadSurah));
   }
 }

@@ -26,4 +26,11 @@ class AppRoutes {
   static const String tabeenIndexView = '/tabeenIndexView';
   static const String unifiedNotesView = '/unifiedNotesView';
   static const String sirahView = '/sirahView';
+  static const String fridaySunanView = '/fridaySunanView';
+
+  ///
+  static const String aiTrackerMainView = '/aiTrackerMainView';
+  static const String addEmailView = '/addEmailView';
+  static const String platformDetailsView = '/platformDetailsView';
+  static const String addPlatformView = '/addPlatformView';
 }

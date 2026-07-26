@@ -1030,7 +1030,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       controller: _noteController,
                       text: AppTexts.addNote,
                       maxLines: 6,
-
                       onFieldSubmitted: (_) => _saveNote(task),
                       onEditingComplete: () => _saveNote(task),
                     ),

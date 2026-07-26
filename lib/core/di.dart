@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:s/core/services/task_notification_service.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/core/wallpaper/wallpaper_repository.dart';
+import 'package:s/features/ai_tracker/presentation/cubit/ai_tracker_cubit.dart';
 import 'package:s/features/challenges/data/datasource/challenges_local_datasource.dart';
 import 'package:s/features/challenges/data/repositories/challenge_repository_impl.dart';
 import 'package:s/features/challenges/domain/repositories/challenge_repository.dart';
@@ -98,7 +99,6 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<AzkarCubit>(() => AzkarCubit(getIt()))
     ..registerLazySingleton<QuranCubit>(QuranCubit.new)
     ..registerLazySingleton<HisnCubit>(HisnCubit.new)
-    // ..registerLazySingleton<SunanCubit>(SunanCubit.new)
     ..registerLazySingleton<TafsirCubit>(TafsirCubit.new)
     ..registerLazySingleton<AsmaaLocalDataSource>(
       AsmaaLocalDataSource.new,
@@ -123,5 +123,7 @@ Future<void> setupGetIt() async {
     )
     ..registerLazySingleton<TabeenCubit>(() => TabeenCubit(getIt()))
     ..registerLazySingleton<NotesDataSource>(NotesDataSource.new)
-    ..registerLazySingleton<NotesCubit>(() => NotesCubit(getIt()));
+    ..registerLazySingleton<NotesCubit>(() => NotesCubit(getIt()))
+    ///
+    ..registerLazySingleton<AiTrackerCubit>(AiTrackerCubit.new);
 }
