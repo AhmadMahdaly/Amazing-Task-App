@@ -50,6 +50,59 @@ class SirahView extends StatelessWidget {
                 builder: (context) {
                   final items = [
                     _IslamicItem(
+                      title: 'أنبياء الله',
+                      icon: Icons.history_edu_rounded,
+                      onTap: () async {
+                        // await context.pushNamed(
+                        //   AppRoutes.azkarView,
+                        //   extra: {
+                        //     'title': 'أذكار المساء',
+                        //     'azkarType': AzkarType.evening,
+                        //   },
+                        // );
+                      },
+                    ),
+                    _IslamicItem(
+                      title: 'صور من حياة الرسول',
+                      icon: Icons.menu_book_rounded,
+                      onTap: () async {
+                        // await context.pushNamed(
+                        //   AppRoutes.azkarView,
+                        //   extra: {
+                        //     'title': 'أذكار المساء',
+                        //     'azkarType': AzkarType.evening,
+                        //   },
+                        // );
+                      },
+                    ),
+                    _IslamicItem(
+                      title: 'صور من حياة الصحابة',
+                      icon: Icons.library_books_rounded,
+                      onTap: () async {
+                        // await context.pushNamed(
+                        //   AppRoutes.azkarView,
+                        //   extra: {
+                        //     'title': 'أذكار المساء',
+                        //     'azkarType': AzkarType.evening,
+                        //   },
+                        // );
+                      },
+                    ),
+                    _IslamicItem(
+                      title: 'صور من حياة الصحابيات',
+                      icon: Icons.import_contacts_rounded,
+                      onTap: () async {
+                        // await context.pushNamed(
+                        //   AppRoutes.azkarView,
+                        //   extra: {
+                        //     'title': 'أذكار المساء',
+                        //     'azkarType': AzkarType.evening,
+                        //   },
+                        // );
+                      },
+                    ),
+
+                    _IslamicItem(
                       title: 'صور من حياة التابعين',
                       icon: Icons.auto_stories_rounded,
                       onTap: () async {
@@ -58,75 +111,6 @@ class SirahView extends StatelessWidget {
                         );
                       },
                     ),
-
-                    // _IslamicItem(
-                    //   title: 'أذكار المساء',
-                    //   icon: Icons.nightlight_round,
-                    //   onTap: () async {
-                    //     await context.pushNamed(
-                    //       AppRoutes.azkarView,
-                    //       extra: {
-                    //         'title': 'أذكار المساء',
-                    //         'azkarType': AzkarType.evening,
-                    //       },
-                    //     );
-                    //   },
-                    // ),
-                    // _IslamicItem(
-                    //   title: 'أذكار النوم',
-                    //   icon: Icons.bed_outlined,
-                    //   onTap: () async {
-                    //     await context.pushNamed(
-                    //       AppRoutes.azkarView,
-                    //       extra: {
-                    //         'title': 'أذكار النوم',
-                    //         'azkarType': AzkarType.sleeping,
-                    //       },
-                    //     );
-                    //   },
-                    // ),
-                    // _IslamicItem(
-                    //   title: 'القرآن الكريم',
-                    //   icon: Icons.menu_book_rounded,
-                    //   onTap: () async {
-                    //     await context.pushNamed(AppRoutes.quranIndexView);
-                    //   },
-                    // ),
-                    // _IslamicItem(
-                    //   title: 'تفسير القرآن',
-                    //   icon: Icons.auto_stories_rounded,
-                    //   onTap: () async {
-                    //     await context.pushNamed(AppRoutes.tafsirIndexView);
-                    //   },
-                    // ),
-                    // _IslamicItem(
-                    //   title: 'أسماء الله الحسنى',
-                    //   icon: Icons.all_inclusive_rounded,
-                    //   onTap: () async {
-                    //     await context.pushNamed(AppRoutes.asmaaIndexView);
-                    //   },
-                    // ),
-                    // _IslamicItem(
-                    //   title: 'الأربعون النووية',
-                    //   icon: Icons.import_contacts_rounded,
-                    //   onTap: () async {
-                    //     await context.pushNamed(AppRoutes.arbaoonIndexView);
-                    //   },
-                    // ),
-                    // _IslamicItem(
-                    //   title: 'حصن المسلم',
-                    //   icon: Icons.self_improvement_rounded,
-                    //   onTap: () async {
-                    //     await context.pushNamed(AppRoutes.hisnIndexView);
-                    //   },
-                    // ),
-                    // _IslamicItem(
-                    //   title: 'حسبة الصلوات الفائتة',
-                    //   icon: Icons.calculate_outlined,
-                    //   onTap: () async {
-                    //     await context.pushNamed(AppRoutes.missedPrayersScreen);
-                    //   },
-                    // ),
                   ];
 
                   return SafeArea(

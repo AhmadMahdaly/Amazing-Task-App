@@ -30,7 +30,7 @@ class ArbaoonReadingView extends StatefulWidget {
 
 class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
   double _fontSize = 24;
-  int _screenOpacity = 200;
+  int _screenOpacity = 205;
   Color _textColor = Colors.white;
   final List<Color> colors = [
     Colors.white,
@@ -62,7 +62,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
         24;
     _screenOpacity =
         (CacheHelper.getData(CacheKeys.hadithScreenOpacity) as num?)?.toInt() ??
-        200;
+        205;
 
     final colorValue = CacheHelper.getData(CacheKeys.hadithTextColor) as int?;
     if (colorValue != null) {
@@ -285,7 +285,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                     children: [
                                       IconButton(
                                         onPressed: () {
-                                          if (_screenOpacity > 50) {
+                                          if (_screenOpacity > 35) {
                                             setState(
                                               () => _screenOpacity -= 20,
                                             );
@@ -306,10 +306,10 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                       Slider(
                                         activeColor: AppColors.primaryColor,
                                         value: _screenOpacity
-                                            .clamp(50, 250)
+                                            .clamp(35, 255)
                                             .toDouble(),
-                                        min: 50,
-                                        max: 250,
+                                        min: 35,
+                                        max: 255,
                                         divisions: 10,
                                         label: _screenOpacity.toString(),
                                         onChanged: (value) {
@@ -328,7 +328,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                       ),
                                       IconButton(
                                         onPressed: () {
-                                          if (_screenOpacity < 250) {
+                                          if (_screenOpacity <= 235) {
                                             setState(
                                               () => _screenOpacity += 20,
                                             );
@@ -359,7 +359,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                     onPressed: () {
                                       setState(() {
                                         _fontSize = 24;
-                                        _screenOpacity = 200;
+                                        _screenOpacity = 205;
                                         _textColor = Colors.white;
                                       });
                                       setModalState(() {});
@@ -369,7 +369,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                       );
                                       CacheHelper.saveData(
                                         key: CacheKeys.hadithScreenOpacity,
-                                        value: 200,
+                                        value: 205,
                                       );
                                       CacheHelper.saveData(
                                         key: CacheKeys.hadithTextColor,
@@ -492,7 +492,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                 buttonItems.insert(
                                   0,
                                   ContextMenuButtonItem(
-                                    label: 'Highlight / Note',
+                                    label: 'تحديد / ملاحظة',
                                     type: ContextMenuButtonType.liveTextInput,
                                     onPressed: () {
                                       final selection = editableTextState

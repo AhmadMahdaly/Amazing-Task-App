@@ -1,5 +1,11 @@
 part of 'quran_cubit.dart';
 
+enum QuranIndexType {
+  surahs,
+  juz,
+  hizb,
+}
+
 abstract class QuranState {}
 
 class QuranInitial extends QuranState {}

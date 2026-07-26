@@ -18,7 +18,6 @@ class NotesDataSource {
             ? SavedAyahNote.decode(savedNotesStr)
             : <SavedAyahNote>[];
 
-        // الترتيب وفق المصحف (رقم السورة ثم رقم الآية)
         notes.sort((a, b) {
           final surahCompare = a.surahNumber.compareTo(b.surahNumber);
           if (surahCompare != 0) return surahCompare;
@@ -69,7 +68,7 @@ class NotesDataSource {
             surahName: existingAyah.surahName,
             ayahNumber: existingAyah.ayahNumber,
             endAyahNumber: newAyah.endAyahNumber,
-            ayahText: '${existingAyah.ayahText} ۝ ${newAyah.ayahText} ۝',
+            ayahText: '${existingAyah.ayahText} ۝ ${newAyah.ayahText}',
             note: existingAyah.note.isNotEmpty
                 ? existingAyah.note
                 : newAyah.note,
@@ -83,7 +82,7 @@ class NotesDataSource {
             surahName: existingAyah.surahName,
             ayahNumber: newAyah.ayahNumber,
             endAyahNumber: existingAyah.endAyahNumber,
-            ayahText: '${newAyah.ayahText} ۝ ${existingAyah.ayahText} ۝',
+            ayahText: '${newAyah.ayahText} ۝ ${existingAyah.ayahText}',
             note: existingAyah.note.isNotEmpty
                 ? existingAyah.note
                 : newAyah.note,

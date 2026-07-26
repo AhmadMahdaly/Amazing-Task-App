@@ -30,7 +30,7 @@ class SurahReadingView extends StatefulWidget {
 
 class _SurahReadingViewState extends State<SurahReadingView> {
   double _fontSize = 28;
-  int _screenOpacity = 200;
+  int _screenOpacity = 205;
   Color _textColor = Colors.white;
   final List<Color> colors = [
     Colors.white,
@@ -185,7 +185,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                     color: AppColors.primaryColor,
                   ),
                   title: Text(
-                    'حفظ الموضع (علامة مرجعية)',
+                    'علامة مرجعية',
                     style: AppTextStyle.style18W900.copyWith(
                       fontFamily: AppFonts.amiri,
                     ),
@@ -197,41 +197,37 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                 ),
                 const Divider(),
 
-                // الخيار الجديد: حفظ الآية في التحديدات بدون ملاحظة
                 ListTile(
                   leading: const Icon(
-                    Icons.turned_in_not, // أيقونة تعبر عن الحفظ/التحديد
+                    Icons.turned_in_not,
                     color: AppColors.primaryColor,
                   ),
                   title: Text(
-                    'حفظ الآية في التحديدات',
+                    'حفظ الآية',
                     style: AppTextStyle.style18W900.copyWith(
                       fontFamily: AppFonts.amiri,
                     ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    // استدعاء دالة الحفظ مع تمرير نص فارغ للملاحظة
                     _saveAyahWithNote(ayah, ayahText, '');
                   },
                 ),
                 const Divider(),
 
-                // الخيار الأصلي: حفظ الآية مع إضافة ملاحظة
                 ListTile(
                   leading: const Icon(
                     Icons.edit_note,
                     color: AppColors.primaryColor,
                   ),
                   title: Text(
-                    'إضافة ملاحظة وحفظ الآية',
+                    'إضافة ملاحظة',
                     style: AppTextStyle.style18W900.copyWith(
                       fontFamily: AppFonts.amiri,
                     ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    // يمكنك أيضاً تمرير ayahText هنا إذا كانت دالة الـ BottomSheet تحتاجه
                     _showAddNoteBottomSheet(ayah);
                   },
                 ),
@@ -285,24 +281,6 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     CacheHelper.saveData(
       key: CacheKeys.quranFontSize,
       value: _fontSize,
-    );
-  }
-
-  void _updateOpacity(
-    int value,
-    void Function(void Function()) setModalState,
-  ) {
-    final newValue = value.clamp(50, 250);
-
-    setState(() {
-      _screenOpacity = newValue;
-    });
-
-    setModalState(() {});
-
-    CacheHelper.saveData(
-      key: CacheKeys.quranScreenOpacity,
-      value: newValue,
     );
   }
 
@@ -455,10 +433,16 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                     children: [
                                       IconButton(
                                         onPressed: () {
-                                          _updateOpacity(
-                                            _screenOpacity - 20,
-                                            setModalState,
-                                          );
+                                          if (_screenOpacity > 35) {
+                                            setState(
+                                              () => _screenOpacity -= 20,
+                                            );
+                                            setModalState(() {});
+                                            CacheHelper.saveData(
+                                              key: CacheKeys.quranScreenOpacity,
+                                              value: _screenOpacity,
+                                            );
+                                          }
                                         },
                                         icon: Icon(
                                           Icons.remove_circle_outline,
@@ -466,38 +450,41 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                               .withAlpha(100),
                                         ),
                                       ),
-
-                                      Expanded(
-                                        child: Slider(
-                                          activeColor: AppColors.primaryColor,
-                                          value: _screenOpacity
-                                              .clamp(50, 250)
-                                              .toDouble(),
-                                          min: 50,
-                                          max: 250,
-                                          divisions: 10,
-                                          label: _screenOpacity.toString(),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _screenOpacity = value.toInt();
-                                            });
-                                            setModalState(() {});
-                                          },
-                                          onChangeEnd: (value) {
-                                            _updateOpacity(
-                                              value.toInt(),
-                                              setModalState,
-                                            );
-                                          },
-                                        ),
+                                      Slider(
+                                        activeColor: AppColors.primaryColor,
+                                        value: _screenOpacity
+                                            .clamp(35, 255)
+                                            .toDouble(),
+                                        min: 35,
+                                        max: 255,
+                                        divisions: 10,
+                                        label: _screenOpacity.toString(),
+                                        onChanged: (value) {
+                                          setState(
+                                            () =>
+                                                _screenOpacity = value.toInt(),
+                                          );
+                                          setModalState(() {});
+                                        },
+                                        onChangeEnd: (value) {
+                                          CacheHelper.saveData(
+                                            key: CacheKeys.quranScreenOpacity,
+                                            value: value,
+                                          );
+                                        },
                                       ),
-
                                       IconButton(
                                         onPressed: () {
-                                          _updateOpacity(
-                                            _screenOpacity + 20,
-                                            setModalState,
-                                          );
+                                          if (_screenOpacity <= 235) {
+                                            setState(
+                                              () => _screenOpacity += 20,
+                                            );
+                                            setModalState(() {});
+                                            CacheHelper.saveData(
+                                              key: CacheKeys.quranScreenOpacity,
+                                              value: _screenOpacity,
+                                            );
+                                          }
                                         },
                                         icon: Icon(
                                           Icons.add_circle_outline,
@@ -517,7 +504,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                     onPressed: () {
                                       setState(() {
                                         _fontSize = 28;
-                                        _screenOpacity = 200;
+                                        _screenOpacity = 205;
                                         _textColor = Colors.white;
                                       });
 
@@ -530,7 +517,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
 
                                       CacheHelper.saveData(
                                         key: CacheKeys.quranScreenOpacity,
-                                        value: 200,
+                                        value: 205,
                                       );
 
                                       CacheHelper.saveData(

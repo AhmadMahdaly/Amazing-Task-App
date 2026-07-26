@@ -30,7 +30,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
   late List<String> surahAyahs;
   late List<TafsirEntity> tafsirList;
   double _fontSize = 28;
-  int _screenOpacity = 200;
+  int _screenOpacity = 205;
   Color _textColor = Colors.white;
   double _readingProgress = 0;
   final List<Color> colors = [
@@ -59,7 +59,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
         24;
     _screenOpacity =
         (CacheHelper.getData(CacheKeys.tafsirScreenOpacity) as num?)?.toInt() ??
-        200;
+        205;
 
     final colorValue = CacheHelper.getData(CacheKeys.tafsirTextColor) as int?;
     if (colorValue != null) {
@@ -125,24 +125,6 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
     CacheHelper.saveData(
       key: CacheKeys.tafsirFontSize,
       value: _fontSize,
-    );
-  }
-
-  void _updateOpacity(
-    int value,
-    void Function(void Function()) setModalState,
-  ) {
-    final newValue = value.clamp(50, 250);
-
-    setState(() {
-      _screenOpacity = newValue;
-    });
-
-    setModalState(() {});
-
-    CacheHelper.saveData(
-      key: CacheKeys.tafsirScreenOpacity,
-      value: newValue,
     );
   }
 
@@ -384,10 +366,17 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
                                     children: [
                                       IconButton(
                                         onPressed: () {
-                                          _updateOpacity(
-                                            _screenOpacity - 20,
-                                            setModalState,
-                                          );
+                                          if (_screenOpacity > 35) {
+                                            setState(
+                                              () => _screenOpacity -= 20,
+                                            );
+                                            setModalState(() {});
+                                            CacheHelper.saveData(
+                                              key:
+                                                  CacheKeys.tafsirScreenOpacity,
+                                              value: _screenOpacity,
+                                            );
+                                          }
                                         },
                                         icon: Icon(
                                           Icons.remove_circle_outline,
@@ -395,38 +384,42 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
                                               .withAlpha(100),
                                         ),
                                       ),
-
-                                      Expanded(
-                                        child: Slider(
-                                          activeColor: AppColors.primaryColor,
-                                          value: _screenOpacity
-                                              .clamp(50, 250)
-                                              .toDouble(),
-                                          min: 50,
-                                          max: 250,
-                                          divisions: 10,
-                                          label: _screenOpacity.toString(),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _screenOpacity = value.toInt();
-                                            });
-                                            setModalState(() {});
-                                          },
-                                          onChangeEnd: (value) {
-                                            _updateOpacity(
-                                              value.toInt(),
-                                              setModalState,
-                                            );
-                                          },
-                                        ),
+                                      Slider(
+                                        activeColor: AppColors.primaryColor,
+                                        value: _screenOpacity
+                                            .clamp(35, 255)
+                                            .toDouble(),
+                                        min: 35,
+                                        max: 255,
+                                        divisions: 10,
+                                        label: _screenOpacity.toString(),
+                                        onChanged: (value) {
+                                          setState(
+                                            () =>
+                                                _screenOpacity = value.toInt(),
+                                          );
+                                          setModalState(() {});
+                                        },
+                                        onChangeEnd: (value) {
+                                          CacheHelper.saveData(
+                                            key: CacheKeys.tafsirScreenOpacity,
+                                            value: value,
+                                          );
+                                        },
                                       ),
-
                                       IconButton(
                                         onPressed: () {
-                                          _updateOpacity(
-                                            _screenOpacity + 20,
-                                            setModalState,
-                                          );
+                                          if (_screenOpacity <= 235) {
+                                            setState(
+                                              () => _screenOpacity += 20,
+                                            );
+                                            setModalState(() {});
+                                            CacheHelper.saveData(
+                                              key:
+                                                  CacheKeys.tafsirScreenOpacity,
+                                              value: _screenOpacity,
+                                            );
+                                          }
                                         },
                                         icon: Icon(
                                           Icons.add_circle_outline,
@@ -436,6 +429,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
                                       ),
                                     ],
                                   ),
+
                                   10.verticalSpace,
                                   FilledButton.icon(
                                     style: const ButtonStyle(
@@ -446,7 +440,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
                                     onPressed: () {
                                       setState(() {
                                         _fontSize = 28;
-                                        _screenOpacity = 200;
+                                        _screenOpacity = 205;
                                         _textColor = Colors.white;
                                       });
 
@@ -459,7 +453,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
 
                                       CacheHelper.saveData(
                                         key: CacheKeys.tafsirScreenOpacity,
-                                        value: 200,
+                                        value: 205,
                                       );
 
                                       CacheHelper.saveData(

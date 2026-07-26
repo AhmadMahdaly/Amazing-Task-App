@@ -30,7 +30,7 @@ class AsmaaReadingView extends StatefulWidget {
 
 class _AsmaaReadingViewState extends State<AsmaaReadingView> {
   double _fontSize = 24;
-  int _screenOpacity = 200;
+  int _screenOpacity = 205;
   Color _textColor = Colors.white;
   final List<Color> colors = [
     Colors.white,
@@ -62,7 +62,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
         24;
     _screenOpacity =
         (CacheHelper.getData(CacheKeys.asmaaScreenOpacity) as num?)?.toInt() ??
-        200;
+        205;
 
     final colorValue = CacheHelper.getData(CacheKeys.asmaaTextColor) as int?;
     if (colorValue != null) {
@@ -283,7 +283,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                     children: [
                                       IconButton(
                                         onPressed: () {
-                                          if (_screenOpacity > 50) {
+                                          if (_screenOpacity > 35) {
                                             setState(
                                               () => _screenOpacity -= 20,
                                             );
@@ -303,10 +303,10 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                       Slider(
                                         activeColor: AppColors.primaryColor,
                                         value: _screenOpacity
-                                            .clamp(50, 250)
+                                            .clamp(35, 255)
                                             .toDouble(),
-                                        min: 50,
-                                        max: 250,
+                                        min: 35,
+                                        max: 255,
                                         divisions: 10,
                                         label: _screenOpacity.toString(),
                                         onChanged: (value) {
@@ -325,7 +325,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                       ),
                                       IconButton(
                                         onPressed: () {
-                                          if (_screenOpacity < 250) {
+                                          if (_screenOpacity <= 235) {
                                             setState(
                                               () => _screenOpacity += 20,
                                             );
@@ -355,7 +355,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                     onPressed: () {
                                       setState(() {
                                         _fontSize = 24;
-                                        _screenOpacity = 200;
+                                        _screenOpacity = 205;
                                         _textColor = Colors.white;
                                       });
                                       setModalState(() {});
@@ -365,7 +365,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                       );
                                       CacheHelper.saveData(
                                         key: CacheKeys.asmaaScreenOpacity,
-                                        value: 200,
+                                        value: 205,
                                       );
                                       CacheHelper.saveData(
                                         key: CacheKeys.asmaaTextColor,
@@ -488,7 +488,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                 buttonItems.insert(
                                   0,
                                   ContextMenuButtonItem(
-                                    label: 'Highlight / Note',
+                                    label: 'تحديد / ملاحظة',
                                     type: ContextMenuButtonType.liveTextInput,
                                     onPressed: () {
                                       final selection = editableTextState
@@ -595,13 +595,10 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
 
   void _addAndMergeHighlight(Highlight newHighlight) {
     setState(() {
-      // 1. إضافة التحديد الجديد
       _highlights.add(newHighlight);
 
-      // 2. الترتيب المكاني (حسب بداية التحديد)
       _highlights.sort((a, b) => a.startOffset.compareTo(b.startOffset));
 
-      // 3. خوارزمية الدمج (Merge Intervals)
       final mergedHighlights = <Highlight>[];
       if (_highlights.isEmpty) return;
 
@@ -610,44 +607,36 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
       for (var i = 1; i < _highlights.length; i++) {
         final next = _highlights[i];
 
-        // التحقق مما إذا كان التحديدان متقاطعين أو متلامسين
         if (current.endOffset >= next.startOffset) {
-          // دمج الأرقام
           final mergedStart = current.startOffset;
           final mergedEnd = math.max(current.endOffset, next.endOffset);
 
-          // استخراج النص المدمج بسلاسة من محتوى الدرس الأصلي
           final mergedText = widget.lesson.content.substring(
             mergedStart,
             mergedEnd,
           );
 
-          // دمج الملاحظات (نحتفظ بالقديمة إن وجدت، وإلا نأخذ الجديدة)
           final mergedNote = current.note.isNotEmpty ? current.note : next.note;
 
-          // إنشاء الكائن المدمج
           current = Highlight(
-            id: current.id, // نحتفظ بالـ ID القديم
+            id: current.id,
             lessonId: current.lessonId,
             startOffset: mergedStart,
             endOffset: mergedEnd,
             selectedText: mergedText,
-            colorValue: next.colorValue, // اللون الجديد يطغى على القديم
+            colorValue: next.colorValue,
             note: mergedNote,
           );
         } else {
-          // إذا لم يتقاطعا، نضيف الحالي للقائمة وننتقل للتالي
           mergedHighlights.add(current);
           current = next;
         }
       }
       mergedHighlights.add(current);
 
-      // 4. تحديث القائمة الأساسية
       _highlights = mergedHighlights;
     });
 
-    // حفظ التغييرات بعد الدمج
     _saveHighlights();
   }
 
@@ -721,7 +710,6 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                       ),
                     ),
                     onPressed: () {
-                      // بناء كائن التحديد الجديد
                       final newHighlight = Highlight(
                         id: DateTime.now().millisecondsSinceEpoch.toString(),
                         lessonId: widget.lesson.id,
@@ -732,7 +720,6 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                         note: noteController.text,
                       );
 
-                      // استدعاء دالة الدمج الذكية بدلاً من الإضافة المباشرة
                       _addAndMergeHighlight(newHighlight);
 
                       Navigator.pop(context);
