@@ -23,9 +23,7 @@ class Appthemes {
           color: AppColors.white,
         ),
         toolbarHeight: 70.h,
-
         centerTitle: true,
-
         titleTextStyle: AppTextStyle.style16Bold.copyWith(
           color: AppColors.white,
           fontFamily: AppFonts.en,
@@ -54,6 +52,7 @@ class Appthemes {
         elevation: 5,
         titleTextStyle: AppTextStyle.style20Bold.copyWith(
           fontFamily: AppFonts.en,
+          backgroundColor: AppColors.primaryColor,
         ),
       ),
 

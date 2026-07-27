@@ -252,7 +252,11 @@ class _SurahReadingViewState extends State<SurahReadingView> {
 
     context.pushReplacement(
       AppRoutes.surahReadingView,
-      extra: nextSurah,
+
+      extra: {
+        'surah': nextSurah,
+        'startAyah': 1,
+      },
     );
   }
 
@@ -260,7 +264,10 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     final prevSurah = _quranCubit.allSurahs[widget.surah.number - 2];
     context.pushReplacement(
       AppRoutes.surahReadingView,
-      extra: prevSurah,
+      extra: {
+        'surah': prevSurah,
+        'startAyah': 1,
+      },
     );
   }
 

@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/resources/app_colors.dart';
-import 'package:s/core/resources/app_images.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
@@ -241,7 +240,7 @@ class TasksDrawer extends StatelessWidget {
               count: context.select<TasksCubit, String>((cubit) {
                 final state = cubit.state;
                 if (state is TasksLoaded) {
-                  final allCount = state.allTasks
+                  final allCount = state.tasks
                       .where((t) => !t.isCompleted)
                       .length;
                   return allCount > 0 ? '$allCount' : '';
@@ -336,65 +335,27 @@ class TasksDrawer extends StatelessWidget {
               },
             ),
             Divider(color: AppColors.white.withAlpha(40)),
-            // SizedBox(
-            //   height: 50.h,
-            //   child: ListView(
-            //     scrollDirection: Axis.horizontal,
-            //     children: [
-            //       8.horizontalSpace,
-            //       IconButton(
-            //         tooltip: 'Change wallpaper',
-            //         icon: const Icon(Icons.wallpaper_outlined),
-            //         onPressed: () {
-            //           unawaited(showWallpaperPickerSheet(context));
-            //         },
-            //       ),
-            //       IconButton(
-            //         tooltip: 'Add Challenge',
-            //         icon: const Icon(Icons.add_task_rounded),
-            //         onPressed: () async {
-            //           await context.pushNamed(AppRoutes.challengesScreen);
-            //         },
-            //       ),
-            //       IconButton(
-            //         tooltip: 'Open a planner',
-            //         icon: const Icon(Icons.calendar_month_outlined),
-            //         onPressed: () async {
-            //           await context.pushNamed(AppRoutes.plannerView);
-            //         },
-            //       ),
-            //       IconButton(
-            //         tooltip: 'Ai tracker',
-            //         icon: const Icon(Icons.memory_rounded),
-            //         onPressed: () async {
-            //           await context.pushNamed(AppRoutes.aiTrackerMainView);
-            //         },
-            //       ),
-            //       IconButton(
-            //         tooltip: 'Islamic section',
-            //         icon: const Icon(Icons.mosque_outlined),
-            //         onPressed: () async {
-            //           await context.pushNamed(AppRoutes.islamicHomeView);
-            //         },
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // 16.verticalSpace,
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                24.horizontalSpace,
+                8.horizontalSpace,
                 SpeedDial(
-                  buttonSize: Size(40.r, 40.r),
+                  icon: Icons.settings,
+                  iconTheme: IconThemeData(
+                    color: AppColors.buttonColor.withAlpha(100),
+                  ),
                   switchLabelPosition: true,
                   activeIcon: Icons.close_rounded,
-                  backgroundColor: AppColors.thirdColor,
-                  foregroundColor: AppColors.buttonColor,
+                  backgroundColor: AppColors.transparent,
                   spacing: 10,
                   spaceBetweenChildren: 10,
-                  elevation: 12,
+                  elevation: 0,
+                  mini: true,
+                  activeForegroundColor: AppColors.transparent,
+                  // activeBackgroundColor: AppColors.buttonColor,
                   overlayColor: AppColors.buttonColor,
                   overlayOpacity: .4,
+
                   direction: SpeedDialDirection.up,
                   animationCurve: Curves.easeOutBack,
                   animationDuration: const Duration(milliseconds: 250),
@@ -406,53 +367,42 @@ class TasksDrawer extends StatelessWidget {
                         unawaited(showWallpaperPickerSheet(context));
                       },
                     ),
+
                     SpeedDialChild(
-                      child: const Icon(Icons.add_task_rounded),
-                      label: 'Add Challenge',
-                      onTap: () async {
-                        await context.pushNamed(AppRoutes.challengesScreen);
-                      },
-                    ),
-                    SpeedDialChild(
-                      child: const Icon(Icons.calendar_month_outlined),
-                      label: 'Planner',
-                      onTap: () async {
-                        await context.pushNamed(AppRoutes.plannerView);
-                      },
-                    ),
-                    SpeedDialChild(
-                      child: const Icon(Icons.memory_rounded),
+                      child: const Icon(Icons.auto_awesome_rounded),
                       label: 'AI Tracker',
                       onTap: () async {
                         await context.pushNamed(AppRoutes.aiTrackerMainView);
                       },
                     ),
-                    SpeedDialChild(
-                      child: const Icon(Icons.mosque_outlined),
-                      label: 'Islamic Section',
-                      onTap: () async {
-                        await context.pushNamed(AppRoutes.islamicHomeView);
-                      },
-                    ),
                   ],
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(320),
-                    ),
-                    child: Image.asset(
-                      fit: BoxFit.cover,
-                      AppImages.appLogo,
-                      height: 50.r,
-                    ),
-                  ),
                 ),
-                24.horizontalSpace,
-                const AppVersionWidget(),
-                24.horizontalSpace,
+
+                IconButton(
+                  tooltip: 'Add Challenge',
+                  icon: const Icon(Icons.add_task_rounded),
+                  onPressed: () async {
+                    await context.pushNamed(AppRoutes.challengesScreen);
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Open a planner',
+                  icon: const Icon(Icons.calendar_month_outlined),
+                  onPressed: () async {
+                    await context.pushNamed(AppRoutes.plannerView);
+                  },
+                ),
+
+                IconButton(
+                  tooltip: 'Islamic section',
+                  icon: const Icon(Icons.mosque_outlined),
+                  onPressed: () async {
+                    await context.pushNamed(AppRoutes.islamicHomeView);
+                  },
+                ),
               ],
             ),
-            16.verticalSpace,
+            const AppVersionWidget(), 12.verticalSpace,
           ],
         ),
       ),
