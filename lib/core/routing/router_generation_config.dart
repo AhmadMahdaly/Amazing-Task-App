@@ -47,6 +47,7 @@ import 'package:s/features/islamic_section/tabeen/presentation/views/tabeen_read
 import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/views/tafsir_index_view.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/views/tafsir_reading_view.dart';
+import 'package:s/features/my_app/backup_screen.dart';
 import 'package:s/features/planner/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
@@ -357,13 +358,13 @@ void initRouter() {
           );
         },
       ),
-      // GoRoute(
-      //   path: AppRoutes.arbaoonNotesView,
-      //   name: AppRoutes.arbaoonNotesView,
-      //   builder: (context, state) {
-      //     return const ArbaoonNotesView();
-      //   },
-      // ),
+      GoRoute(
+        path: AppRoutes.backupScreen,
+        name: AppRoutes.backupScreen,
+        builder: (context, state) {
+          return const BackupScreen();
+        },
+      ),
       // GoRoute(
       //   path: AppRoutes.errorScreen,
       //   name: AppRoutes.errorScreen,

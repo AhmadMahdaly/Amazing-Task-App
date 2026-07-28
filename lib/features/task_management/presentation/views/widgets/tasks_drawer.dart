@@ -240,7 +240,8 @@ class TasksDrawer extends StatelessWidget {
               count: context.select<TasksCubit, String>((cubit) {
                 final state = cubit.state;
                 if (state is TasksLoaded) {
-                  final allCount = state.tasks
+                  final allCount = state.allTasks
+                      .where((t) => t.listId == null)
                       .where((t) => !t.isCompleted)
                       .length;
                   return allCount > 0 ? '$allCount' : '';
@@ -360,6 +361,13 @@ class TasksDrawer extends StatelessWidget {
                   animationCurve: Curves.easeOutBack,
                   animationDuration: const Duration(milliseconds: 250),
                   children: [
+                    SpeedDialChild(
+                      child: const Icon(Icons.restart_alt),
+                      label: 'Backup & restore',
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.backupScreen);
+                      },
+                    ),
                     SpeedDialChild(
                       child: const Icon(Icons.wallpaper_outlined),
                       label: 'Change wallpaper',

@@ -262,12 +262,37 @@ class AppTexts {
       'Updating the dates here will automatically recalculate the total remaining prayers while preserving your completed progress.';
   static String settingsUpdatedSuccessfully = 'Settings updated successfully';
   static String negativeValueNotAllowed = 'Negative values are not allowed';
-
   static String doubtPeriodExceedsAbandonmentPeriod =
       'The doubt period exceeds the abandonment period! Maximum allowed:';
-
   static String month = 'Month';
-
   static String commitmentDateBeforeAccountabilityAge =
       'The commitment date is before or equal to the age of accountability!';
+
+  ///
+  static String importFile = 'Import File';
+
+  static String importFileDescription =
+      'Import data from a file and completely replace the current data with the data from the backup.';
+
+  static String restoreFromBackup = 'Restore from Backup File';
+
+  static String shareBackup = 'Share Backup';
+
+  static String shareBackupDescription =
+      'Save all your data (transactions, wallets, categories, and monthly plans) into a file that you can share or keep as a backup.';
+
+  static String exportBackup = 'Export Backup File';
+
+  static String restoreWarning =
+      'Restoring will permanently delete your current data and replace it with the backup. Make sure to create a backup first if needed.';
+
+  static String backupAndRestore = 'Backup & Restore';
+
+  static String restoreBackupFailed = 'Failed to restore backup';
+
+  static String restoreBackupSuccess = 'Backup restored successfully';
+
+  static String backupSaveFailed = 'Failed to save backup';
+
+  static String backupSaveSuccess = 'Backup saved successfully';
 }

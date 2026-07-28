@@ -60,3 +60,17 @@ void unfocusScope(BuildContext context) {
     currentFocus.unfocus();
   }
 }
+
+class GlobalVariable {
+  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
+  static void showMessage(String msg, {bool isError = false}) {
+    scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: isError ? Colors.red : Colors.green,
+      ),
+    );
+  }
+}

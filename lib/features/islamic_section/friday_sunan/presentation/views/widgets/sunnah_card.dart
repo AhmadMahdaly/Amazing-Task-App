@@ -61,36 +61,37 @@ class SunnahCard extends StatelessWidget {
 
           Text(
             sunnah.description,
-            style: AppTextStyle.style16W500.copyWith(
+            style: AppTextStyle.style16W700.copyWith(
               fontFamily: AppFonts.amiri,
-              height: 1.6,
+              height: 1.9,
               fontSize: fontSize.sp,
-              color: Colors.black87,
+              color: AppColors.primaryColor,
             ),
           ),
           12.verticalSpace,
 
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Icon(
-                Icons.menu_book,
-                size: 16.r,
-                color: AppColors.secondaryColor,
-              ),
-              6.horizontalSpace,
-              Expanded(
-                child: Text(
-                  sunnah.source,
-                  style: AppTextStyle.style12W500.copyWith(
-                    fontFamily: AppFonts.amiri,
-                    fontSize: (fontSize - 4).sp,
-                    color: AppColors.secondaryColor,
+          if (sunnah.source != null)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.menu_book,
+                  size: 18.r,
+                  color: AppColors.primaryColor,
+                ),
+                8.horizontalSpace,
+                Expanded(
+                  child: Text(
+                    sunnah.source!,
+                    style: AppTextStyle.style12W500.copyWith(
+                      fontFamily: AppFonts.amiri,
+                      fontSize: (fontSize - 2).sp,
+                      color: AppColors.primaryColor,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );

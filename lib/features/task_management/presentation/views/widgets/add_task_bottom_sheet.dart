@@ -112,6 +112,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   Future<void> _showRepeatOptions() async {
     await showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
@@ -304,6 +305,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   Future<void> _showNotificationOptions() async {
     await showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
@@ -370,6 +372,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   Future<void> _showDueDateOptions() async {
     await showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),

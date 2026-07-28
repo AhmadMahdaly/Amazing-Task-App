@@ -1,4 +1,4 @@
-// ignore_for_file: discarded_futures
+// ignore_for_file: unawaited_futures, discarded_futures
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -44,11 +44,16 @@ class _SurahReadingViewState extends State<SurahReadingView> {
   late List<String> surahAyahs;
   late QuranCubit _quranCubit;
   double _readingProgress = 0;
+  final Map<int, GlobalKey> _ayahKeys = {};
   @override
   void initState() {
     super.initState();
     _quranCubit = context.read<QuranCubit>();
     surahAyahs = _quranCubit.getAyahsForSurah(widget.surah.number);
+
+    for (var i = 1; i <= surahAyahs.length; i++) {
+      _ayahKeys[i] = GlobalKey();
+    }
     _fontSize =
         (CacheHelper.getData(CacheKeys.quranFontSize) as num?)?.toDouble() ??
         28;
@@ -77,20 +82,21 @@ class _SurahReadingViewState extends State<SurahReadingView> {
           0;
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        final max = _scrollController.position.maxScrollExtent;
-        var finalOffset = offset;
-
-        if (widget.startAyah != null && widget.startAyah! > 1) {
-          final estimatedOffset =
-              (max / surahAyahs.length) * (widget.startAyah! - 1);
-          finalOffset = estimatedOffset;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (widget.startAyah != null && widget.startAyah! > 1) {
+        final targetKey = _ayahKeys[widget.startAyah];
+        if (targetKey != null && targetKey.currentContext != null) {
+          Scrollable.ensureVisible(
+            targetKey.currentContext!,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            alignment: 0.1,
+          );
         }
-
-        _scrollController.jumpTo(
-          finalOffset.clamp(0.0, max),
-        );
+      } else if (_scrollController.hasClients) {
+        final max = _scrollController.position.maxScrollExtent;
+        _scrollController.jumpTo(offset.clamp(0.0, max));
       }
     });
 
@@ -831,9 +837,16 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                       ),
                                     );
                                   }
-
-                                  // 2. إضافة نص الآية
                                   spans
+                                    ..add(
+                                      WidgetSpan(
+                                        child: SizedBox(
+                                          key: _ayahKeys[ayahNumberInt],
+                                          width: 1,
+                                          height: 1,
+                                        ),
+                                      ),
+                                    )
                                     ..add(
                                       TextSpan(
                                         text: ' $ayahText ',

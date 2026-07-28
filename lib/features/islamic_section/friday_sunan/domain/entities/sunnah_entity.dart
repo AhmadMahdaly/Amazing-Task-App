@@ -4,10 +4,10 @@ class SunnahEntity {
     required this.id,
     required this.title,
     required this.description,
-    required this.source,
+     this.source,
   });
   final int id;
   final String title;
   final String description;
-  final String source;
+  final String? source;
 }

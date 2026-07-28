@@ -124,6 +124,7 @@ class IslamicHomeView extends StatelessWidget {
                         await context.pushNamed(AppRoutes.hisnIndexView);
                       },
                     ),
+                    // if (shouldShowFridayWidget())
                     _IslamicItem(
                       title: 'سنن يوم الجمعة',
                       icon: Icons.today_rounded,

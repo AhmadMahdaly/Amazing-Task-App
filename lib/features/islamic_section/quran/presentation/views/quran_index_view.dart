@@ -440,7 +440,7 @@ class QuranIndexView extends StatelessWidget {
             ),
           ),
           subtitle: Text(
-            'الجزء ${hizb.juz}',
+            'من ${cubit.allSurahs[hizb.startSurah - 1].name} : ${hizb.startAyah}',
             style: AppTextStyle.style12W500.copyWith(
               color: AppColors.primaryColor,
               fontFamily: AppFonts.amiri,
