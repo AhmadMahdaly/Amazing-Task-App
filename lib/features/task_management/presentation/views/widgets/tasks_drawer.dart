@@ -25,6 +25,7 @@ class TasksDrawer extends StatelessWidget {
   final bool isPermanent;
   @override
   Widget build(BuildContext context) {
+    final isTablet = SizeConfig.isTablet;
     return Drawer(
       backgroundColor: AppColors.forthColor,
       elevation: 0,
@@ -331,7 +332,8 @@ class TasksDrawer extends StatelessWidget {
                 await showModalBottomSheet<void>(
                   context: context,
                   isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
+                  showDragHandle: true,
+                  backgroundColor: AppColors.white,
                   builder: (ctx) => const AddListBottomSheet(),
                 );
               },
@@ -341,71 +343,82 @@ class TasksDrawer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 8.horizontalSpace,
-                SpeedDial(
-                  icon: Icons.settings,
-                  iconTheme: IconThemeData(
-                    color: AppColors.buttonColor.withAlpha(100),
+                if (!isTablet)
+                  SpeedDial(
+                    icon: Icons.settings,
+                    iconTheme: IconThemeData(
+                      color: AppColors.buttonColor.withAlpha(100),
+                    ),
+                    switchLabelPosition: true,
+                    activeIcon: Icons.close_rounded,
+                    backgroundColor: AppColors.transparent,
+                    spacing: 10,
+                    spaceBetweenChildren: 10,
+                    elevation: 0,
+                    mini: true,
+                    activeForegroundColor: AppColors.transparent,
+                    // activeBackgroundColor: AppColors.buttonColor,
+                    overlayColor: AppColors.buttonColor,
+                    overlayOpacity: .4,
+
+                    direction: SpeedDialDirection.up,
+                    animationCurve: Curves.easeOutBack,
+                    animationDuration: const Duration(milliseconds: 250),
+                    children: [
+                      SpeedDialChild(
+                        child: const Icon(Icons.restart_alt),
+                        label: AppTexts.backupAndRestore,
+                        onTap: () async {
+                          await context.pushNamed(AppRoutes.backupScreen);
+                        },
+                      ),
+
+                      SpeedDialChild(
+                        child: const Icon(Icons.edit_attributes_outlined),
+                        label: 'Customize NavBar Sheet',
+                        onTap: () async {
+                          await Future.delayed(
+                            const Duration(milliseconds: 300),
+                          );
+                          if (!context.mounted) return;
+                          if (!isPermanent) {
+                            Navigator.pop(context);
+                          }
+                          await showModalBottomSheet<void>(
+                            context: context,
+                            isScrollControlled: true,
+                            showDragHandle: true,
+                            backgroundColor: AppColors.white,
+                            builder: (context) => const CustomizeNavBarSheet(),
+                          );
+                        },
+                      ),
+
+                      SpeedDialChild(
+                        child: const Icon(Icons.wallpaper_outlined),
+                        label: 'Change wallpaper',
+                        onTap: () async {
+                          await showWallpaperPickerSheet(context);
+                        },
+                      ),
+
+                      // SpeedDialChild(
+                      //   child: const Icon(Icons.auto_awesome_rounded),
+                      //   label: 'AI Tracker',
+                      //   onTap: () async {
+                      //     await context.pushNamed(AppRoutes.aiTrackerMainView);
+                      //   },
+                      // ),
+                    ],
                   ),
-                  switchLabelPosition: true,
-                  activeIcon: Icons.close_rounded,
-                  backgroundColor: AppColors.transparent,
-                  spacing: 10,
-                  spaceBetweenChildren: 10,
-                  elevation: 0,
-                  mini: true,
-                  activeForegroundColor: AppColors.transparent,
-                  // activeBackgroundColor: AppColors.buttonColor,
-                  overlayColor: AppColors.buttonColor,
-                  overlayOpacity: .4,
-
-                  direction: SpeedDialDirection.up,
-                  animationCurve: Curves.easeOutBack,
-                  animationDuration: const Duration(milliseconds: 250),
-                  children: [
-                    SpeedDialChild(
-                      child: const Icon(Icons.restart_alt),
-                      label: AppTexts.backupAndRestore,
-                      onTap: () async {
-                        await context.pushNamed(AppRoutes.backupScreen);
-                      },
-                    ),
-                    SpeedDialChild(
-                      child: const Icon(Icons.wallpaper_outlined),
-                      label: 'Change wallpaper',
-                      onTap: () {
-                        unawaited(showWallpaperPickerSheet(context));
-                      },
-                    ),
-                    SpeedDialChild(
-                      child: const Icon(Icons.edit_attributes_rounded),
-                      label: 'Customize NavBar Sheet',
-                      onTap: () async {
-                        await Future.delayed(const Duration(milliseconds: 300));
-
-                        if (!context.mounted) return;
-
-                        if (!isPermanent) {
-                          Navigator.pop(context);
-                        }
-
-                        await showModalBottomSheet<void>(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => const CustomizeNavBarSheet(),
-                        );
-                      },
-                    ),
-                    SpeedDialChild(
-                      child: const Icon(Icons.auto_awesome_rounded),
-                      label: 'AI Tracker',
-                      onTap: () async {
-                        await context.pushNamed(AppRoutes.aiTrackerMainView);
-                      },
-                    ),
-                  ],
-                ),
-
+                if (isTablet)
+                  IconButton(
+                    tooltip: 'Change wallpaper',
+                    icon: const Icon(Icons.wallpaper_outlined),
+                    onPressed: () async {
+                      await showWallpaperPickerSheet(context);
+                    },
+                  ),
                 IconButton(
                   tooltip: 'Add Challenge',
                   icon: const Icon(Icons.add_task_rounded),
@@ -420,7 +433,6 @@ class TasksDrawer extends StatelessWidget {
                     await context.pushNamed(AppRoutes.plannerView);
                   },
                 ),
-
                 IconButton(
                   tooltip: AppTexts.islamicSection,
                   icon: const Icon(Icons.mosque_outlined),

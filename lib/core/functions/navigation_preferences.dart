@@ -16,9 +16,9 @@ class NavigationPreferences {
 
   static const List<String> defaultItems = [
     'myDay',
-    'important',
-    'planned',
-    'tasks',
+    // 'important',
+    // 'planned',
+    // 'tasks',
   ];
 
   static final ValueNotifier<List<String>> navItemsNotifier =
@@ -47,7 +47,7 @@ class NavigationPreferences {
       ..remove('myDay')
       ..insert(0, 'myDay');
 
-    if (mutableItems.length < 2 || mutableItems.length > 4) return false;
+    if (mutableItems.isEmpty || mutableItems.length > 4) return false;
 
     final success = await CacheHelper.saveData(key: _key, value: mutableItems);
     if (success) {

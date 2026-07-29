@@ -1,3 +1,5 @@
+// ignore_for_file: no_default_cases
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -95,15 +97,14 @@ class MainTasksScreen extends StatelessWidget {
                       ? Colors.transparent
                       : AppColors.primaryColor,
                   drawer: isTablet ? null : const TasksDrawer(),
-
-                  bottomNavigationBar: !isTablet && activeNavItems.isNotEmpty
+                  bottomNavigationBar: !isTablet && activeNavItems.length > 1
                       ? BlocBuilder<TasksCubit, TasksState>(
                           builder: (context, tasksState) {
                             return BottomNavigationBar(
                               backgroundColor: AppColors.forthColor,
                               selectedItemColor: AppColors.white,
                               unselectedItemColor: AppColors.white.withAlpha(
-                                120,
+                                170,
                               ),
                               type: BottomNavigationBarType.fixed,
                               currentIndex: _getCurrentSelectedIndex(

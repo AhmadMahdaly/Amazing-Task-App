@@ -20,7 +20,6 @@ class _CustomizeNavBarSheetState extends State<CustomizeNavBarSheet> {
   late List<String> otherKeys;
   late Set<String> selectedOtherKeys;
   final Map<String, String> allTitles = {
-    'myDay': AppTexts.myDay,
     'important': AppTexts.important,
     'planned': AppTexts.planned,
     'tasks': AppTexts.tasks,
@@ -49,17 +48,20 @@ class _CustomizeNavBarSheetState extends State<CustomizeNavBarSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
+      height: MediaQuery.of(context).size.height * 0.8,
       padding: EdgeInsets.only(top: 20.h, left: 20.w, right: 20.w),
       decoration: BoxDecoration(
-        color: AppColors.forthColor,
+        color: AppColors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
       child: Column(
         children: [
           Text(
             AppTexts.selectBottomBarItems,
-            style: AppTextStyle.style14Bold.copyWith(color: AppColors.white),
+            textAlign: TextAlign.center,
+            style: AppTextStyle.style18Bold.copyWith(
+              color: AppColors.primaryColor,
+            ),
           ),
           16.verticalSpace,
           Material(
@@ -67,13 +69,13 @@ class _CustomizeNavBarSheetState extends State<CustomizeNavBarSheet> {
             child: ListTile(
               title: Text(
                 AppTexts.myDay,
-                style: AppTextStyle.style12W300.copyWith(
-                  color: AppColors.white,
+                style: AppTextStyle.style16W500.copyWith(
+                  color: AppColors.primaryColor,
                 ),
               ),
               leading: Icon(
                 Icons.lock,
-                color: AppColors.white.withAlpha(150),
+                color: AppColors.primaryColor.withAlpha(150),
                 size: 18.r,
               ),
               trailing: const Icon(
@@ -82,7 +84,7 @@ class _CustomizeNavBarSheetState extends State<CustomizeNavBarSheet> {
               ),
             ),
           ),
-          Divider(color: AppColors.white.withAlpha(50)),
+          Divider(color: AppColors.primaryColor.withAlpha(50)),
 
           Expanded(
             child: ReorderableListView.builder(
@@ -109,8 +111,8 @@ class _CustomizeNavBarSheetState extends State<CustomizeNavBarSheet> {
                     child: CheckboxListTile(
                       title: Text(
                         allTitles[key]!,
-                        style: AppTextStyle.style12W300.copyWith(
-                          color: AppColors.white,
+                        style: AppTextStyle.style16W500.copyWith(
+                          color: AppColors.primaryColor,
                         ),
                       ),
                       value: isSelected,
@@ -119,7 +121,7 @@ class _CustomizeNavBarSheetState extends State<CustomizeNavBarSheet> {
 
                       secondary: Icon(
                         Icons.drag_handle_rounded,
-                        color: AppColors.white.withAlpha(150),
+                        color: AppColors.primaryColor.withAlpha(150),
                       ),
                       onChanged: (val) {
                         setState(() {
@@ -128,9 +130,9 @@ class _CustomizeNavBarSheetState extends State<CustomizeNavBarSheet> {
                               selectedOtherKeys.add(key);
                             }
                           } else {
-                            if (selectedOtherKeys.length > 1) {
-                              selectedOtherKeys.remove(key);
-                            }
+                            // if (selectedOtherKeys.length > 1) {
+                            selectedOtherKeys.remove(key);
+                            // }
                           }
                         });
                       },
@@ -141,23 +143,22 @@ class _CustomizeNavBarSheetState extends State<CustomizeNavBarSheet> {
             ),
           ),
 
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.h),
-            child: CustomPrimaryButton(
-              text: AppTexts.save,
-              onPressed: () async {
-                final finalSaved = ['myDay'];
-                for (final key in otherKeys) {
-                  if (selectedOtherKeys.contains(key)) {
-                    finalSaved.add(key);
-                  }
+          CustomPrimaryButton(
+            width: double.infinity,
+            text: AppTexts.save,
+            onPressed: () async {
+              final finalSaved = ['myDay'];
+              for (final key in otherKeys) {
+                if (selectedOtherKeys.contains(key)) {
+                  finalSaved.add(key);
                 }
+              }
 
-                await NavigationPreferences.saveSelectedItems(finalSaved);
-                if (context.mounted) Navigator.pop(context);
-              },
-            ),
+              await NavigationPreferences.saveSelectedItems(finalSaved);
+              if (context.mounted) Navigator.pop(context);
+            },
           ),
+          24.verticalSpace,
           SizedBox(height: MediaQuery.of(context).padding.bottom),
         ],
       ),

@@ -1432,6 +1432,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                           ],
                         ),
                       ),
+                      24.verticalSpace,
                     ],
                   ),
                 );

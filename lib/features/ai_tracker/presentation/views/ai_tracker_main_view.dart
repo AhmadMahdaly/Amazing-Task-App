@@ -483,50 +483,18 @@ class PlatformsTabView extends StatelessWidget {
             );
           }
 
-          // final allPlatformsList = state.availablePlatforms
-          //     .map((p) => p.name)
-          //     .toList();
-
           return ListView.builder(
             itemCount: state.availablePlatforms.length,
             itemBuilder: (context, index) {
               final platform = state.availablePlatforms[index];
 
-              final children = state.emails
+              // تحديد الإيميلات المرتبطة بهذه المنصة لمعرفة العدد الصحيح
+              final platformEmails = state.emails
                   .where(
                     (email) =>
                         email.quotas.any((q) => q.platformId == platform.id),
                   )
-                  .map((email) {
-                    final quota = email.quotas.firstWhere(
-                      (q) => q.platformId == platform.id,
-                    );
-
-                    return InkWell(
-                      onTap: () {
-                        context.pushNamed(
-                          AppRoutes.platformDetailsView,
-                          extra: platform,
-                        );
-                      },
-                      child: QuotaControlCard(
-                        title: email.emailAddress,
-                        emailId: email.id,
-                        quota: quota,
-                      ),
-                    );
-                  })
-                  .expand(
-                    (widget) => [
-                      widget,
-                      const Divider(height: 1),
-                    ],
-                  )
                   .toList();
-
-              if (children.isNotEmpty) {
-                children.removeLast();
-              }
 
               return Theme(
                 data: Theme.of(
@@ -555,116 +523,38 @@ class PlatformsTabView extends StatelessWidget {
                         color: AppColors.successColor.withAlpha(60),
                       ),
                     ),
-                    child:
-                        //  ExpansionTile(
-                        //   collapsedShape: RoundedRectangleBorder(
-                        //     borderRadius: BorderRadius.circular(16.r),
-                        //   ),
-                        //   shape: RoundedRectangleBorder(
-                        //     borderRadius: BorderRadius.circular(16.r),
-                        //   ),
-                        //   title:
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.smart_toy,
-                                    size: 24.r,
-                                    color: AppColors.primaryColor,
-                                  ),
-                                  8.horizontalSpace,
-                                  Expanded(
-                                    child: Text(
-                                      platform.name,
-                                      style: AppTextStyle.style14W900.copyWith(
-                                        fontFamily: AppFonts.ar,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.smart_toy,
+                                size: 24.r,
+                                color: AppColors.primaryColor,
                               ),
-                            ),
-                            if (children.isNotEmpty)
-                              Text(
-                                children.length.toString(),
-                                style: AppTextStyle.style12Bold.copyWith(
-                                  color: AppColors.secondaryColor,
+                              8.horizontalSpace,
+                              Expanded(
+                                child: Text(
+                                  platform.name,
+                                  style: AppTextStyle.style14W900.copyWith(
+                                    fontFamily: AppFonts.ar,
+                                  ),
                                 ),
                               ),
-                          ],
+                            ],
+                          ),
                         ),
-                    // trailing: Row(
-                    //   mainAxisSize: MainAxisSize.min,
-                    //   children: [
-                    //     PopupMenuButton<String>(
-                    //       onSelected: (value) {
-                    //         if (value == 'edit') {
-                    //           _showEditPlatformDialog(
-                    //             context,
-                    //             platform,
-                    //             allPlatformsList,
-                    //             state.emails,
-                    //           );
-                    //         } else if (value == 'delete') {
-                    //           _confirmDeletePlatform(context, platform.id);
-                    //         }
-                    //       },
-                    //       itemBuilder: (context) => [
-                    //         PopupMenuItem(
-                    //           value: 'edit',
-                    //           child: Row(
-                    //             children: [
-                    //               const Icon(Icons.edit, color: Colors.blue),
-                    //               8.horizontalSpace,
-                    //               Text(
-                    //                 'تعديل / دمج',
-                    //                 style: AppTextStyle.style14W500.copyWith(
-                    //                   fontFamily: AppFonts.ar,
-                    //                   color: Colors.blue,
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //         PopupMenuItem(
-                    //           value: 'delete',
-                    //           child: Row(
-                    //             children: [
-                    //               const Icon(Icons.delete, color: Colors.red),
-                    //               8.horizontalSpace,
-                    //               Text(
-                    //                 'حذف',
-                    //                 style: AppTextStyle.style14W500.copyWith(
-                    //                   fontFamily: AppFonts.ar,
-                    //                   color: AppColors.errorColor,
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //     const Icon(Icons.expand_more),
-                    //   ],
-                    // ),
-                    // children: children.isEmpty
-                    //     ? [
-                    //         Padding(
-                    //           padding: EdgeInsets.all(16.r),
-                    //           child: Text(
-                    //             'لا توجد إيميلات مرتبطة بهذه المنصة',
-                    //             style: AppTextStyle.style14W500.copyWith(
-                    //               fontFamily: AppFonts.ar,
-                    //               color: AppColors.thirdColor,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ]
-                    //     : children,
-                    // ),
+                        if (platformEmails.isNotEmpty)
+                          Text(
+                            platformEmails.length.toString(),
+                            style: AppTextStyle.style12Bold.copyWith(
+                              color: AppColors.secondaryColor,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               );
