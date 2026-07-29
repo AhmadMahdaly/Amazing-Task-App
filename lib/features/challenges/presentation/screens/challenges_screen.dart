@@ -37,6 +37,10 @@ class ChallengesScreen extends StatelessWidget {
           appBar: AppBar(
             title: Text(AppTexts.yourChallengesList),
             centerTitle: true,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new),
+              onPressed: () => context.pop(),
+            ),
             actions: [
               IconButton(
                 onPressed: () =>

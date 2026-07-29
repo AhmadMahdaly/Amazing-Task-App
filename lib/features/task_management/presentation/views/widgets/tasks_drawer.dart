@@ -18,6 +18,7 @@ import 'package:s/features/task_list/presentation/views/add_list_bottom_sheet.da
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
 import 'package:s/features/task_management/domain/utils/my_day_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
+import 'package:s/features/task_management/presentation/views/customize_nav_bar_sheet.dart';
 
 class TasksDrawer extends StatelessWidget {
   const TasksDrawer({super.key, this.isPermanent = false});
@@ -363,7 +364,7 @@ class TasksDrawer extends StatelessWidget {
                   children: [
                     SpeedDialChild(
                       child: const Icon(Icons.restart_alt),
-                      label: 'Backup & restore',
+                      label: AppTexts.backupAndRestore,
                       onTap: () async {
                         await context.pushNamed(AppRoutes.backupScreen);
                       },
@@ -375,7 +376,26 @@ class TasksDrawer extends StatelessWidget {
                         unawaited(showWallpaperPickerSheet(context));
                       },
                     ),
+                    SpeedDialChild(
+                      child: const Icon(Icons.edit_attributes_rounded),
+                      label: 'Customize NavBar Sheet',
+                      onTap: () async {
+                        await Future.delayed(const Duration(milliseconds: 300));
 
+                        if (!context.mounted) return;
+
+                        if (!isPermanent) {
+                          Navigator.pop(context);
+                        }
+
+                        await showModalBottomSheet<void>(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => const CustomizeNavBarSheet(),
+                        );
+                      },
+                    ),
                     SpeedDialChild(
                       child: const Icon(Icons.auto_awesome_rounded),
                       label: 'AI Tracker',
@@ -402,7 +422,7 @@ class TasksDrawer extends StatelessWidget {
                 ),
 
                 IconButton(
-                  tooltip: 'Islamic section',
+                  tooltip: AppTexts.islamicSection,
                   icon: const Icon(Icons.mosque_outlined),
                   onPressed: () async {
                     await context.pushNamed(AppRoutes.islamicHomeView);

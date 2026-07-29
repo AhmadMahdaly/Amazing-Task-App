@@ -270,29 +270,21 @@ class AppTexts {
 
   ///
   static String importFile = 'Import File';
-
   static String importFileDescription =
       'Import data from a file and completely replace the current data with the data from the backup.';
-
   static String restoreFromBackup = 'Restore from Backup File';
-
   static String shareBackup = 'Share Backup';
-
   static String shareBackupDescription =
       'Save all your data (transactions, wallets, categories, and monthly plans) into a file that you can share or keep as a backup.';
-
   static String exportBackup = 'Export Backup File';
-
   static String restoreWarning =
       'Restoring will permanently delete your current data and replace it with the backup. Make sure to create a backup first if needed.';
-
   static String backupAndRestore = 'Backup & Restore';
-
   static String restoreBackupFailed = 'Failed to restore backup';
-
   static String restoreBackupSuccess = 'Backup restored successfully';
-
   static String backupSaveFailed = 'Failed to save backup';
-
   static String backupSaveSuccess = 'Backup saved successfully';
+  static String selectBottomBarItems =
+      'Select 2 to 4 items for the bottom navigation bar';
+  static String islamicSection = 'Islamic section';
 }

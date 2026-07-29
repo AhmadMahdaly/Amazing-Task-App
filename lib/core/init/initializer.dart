@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:s/core/bloc_observer.dart';
+import 'package:s/core/functions/navigation_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '/core/di.dart';
@@ -44,6 +45,7 @@ Future<void> initializeApp() async {
   initRouter();
   await setupGetIt();
   if (Platform.isAndroid || Platform.isIOS) {
+    await NavigationPreferences.init();
     await getIt<TaskNotificationService>().initialize();
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.your_app.channel.audio',
