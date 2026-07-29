@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:s/core/bloc_observer.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -44,6 +45,13 @@ Future<void> initializeApp() async {
   await setupGetIt();
   if (Platform.isAndroid || Platform.isIOS) {
     await getIt<TaskNotificationService>().initialize();
+    await JustAudioBackground.init(
+      androidNotificationChannelId: 'com.your_app.channel.audio',
+      androidNotificationChannelName: 'مشغل القرآن',
+      androidNotificationOngoing: true,
+      // androidNotificationIcon: 'mipmap/ic_launcher',
+    );
   }
+
   Bloc.observer = MyBlocObserver();
 }

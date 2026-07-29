@@ -8,6 +8,7 @@ import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:s/features/islamic_section/quran/data/models/reciter_model.dart';
 
@@ -24,7 +25,7 @@ class AudioCubit extends Cubit<AudioState> {
 
   ReciterModel? currentReciter;
   int? currentSurah;
-
+  String? currentSurahName;
   void _initPlayerListener() {
     _playerStateSubscription = _audioPlayer.playerStateStream.listen((
       playerState,
@@ -64,10 +65,14 @@ class AudioCubit extends Cubit<AudioState> {
     }
   }
 
-  Future<void> playSurah(ReciterModel reciter, int surahNumber) async {
+  Future<void> playSurah(
+    ReciterModel reciter,
+    int surahNumber,
+    String surahName,
+  ) async {
     currentReciter = reciter;
     currentSurah = surahNumber;
-
+    currentSurahName = surahName;
     try {
       emit(AudioLoading());
 
@@ -104,9 +109,27 @@ class AudioCubit extends Cubit<AudioState> {
     }
   }
 
+  AudioPlayer get player => _audioPlayer;
+
+  Future<void> seek(Duration position) async {
+    await _audioPlayer.seek(position);
+  }
+
   Future<void> _setupAndPlay(String filePath) async {
     try {
-      await _audioPlayer.setFilePath(filePath);
+      final mediaItem = MediaItem(
+        id: currentSurah.toString(),
+        album: currentReciter?.name ?? 'القرآن الكريم',
+        title: 'سورة $currentSurahName',
+        // artUri: Uri.parse('https://example.com/image.jpg'),
+      );
+
+      final audioSource = AudioSource.uri(
+        Uri.parse(filePath),
+        tag: mediaItem,
+      );
+
+      await _audioPlayer.setAudioSource(audioSource);
       _audioPlayer.play();
     } catch (e) {
       emit(AudioError('لا يمكن تشغيل الملف الصوتي.'));

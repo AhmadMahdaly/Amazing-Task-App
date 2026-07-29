@@ -1,4 +1,4 @@
-// ignore_for_file: unawaited_futures, discarded_futures
+// ignore_for_file: omit_local_variable_types, prefer_int_literals, unawaited_futures, discarded_futures
 import 'dart:io';
 
 import 'package:flutter/gestures.dart';
@@ -510,10 +510,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
       ),
       onTap: () {
         Navigator.pop(context);
-        cubit.playSurah(
-          reciter,
-          widget.surah.number,
-        );
+        cubit.playSurah(reciter, widget.surah.number, widget.surah.name);
       },
     );
   }
@@ -1230,84 +1227,210 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                   return const SizedBox.shrink();
                 }
 
-                return Container(
-                  height: 80.h,
-                  color: AppColors.primaryColor,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Positioned(
-                        left: 8.w,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.close_rounded,
-                            color: Colors.white.withAlpha(200),
-                            size: 24.r,
-                          ),
-                          onPressed: () => context.read<AudioCubit>().stop(),
-                        ),
-                      ),
+                final cubit = context.read<AudioCubit>();
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (audioState is AudioLoading) ...[
-                            const CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                            16.horizontalSpace,
-                            Text(
-                              'جاري الاتصال وتحضير الملف...',
-                              style: AppTextStyle.style14W500.copyWith(
-                                color: Colors.white,
+                return Container(
+                  height: 100.h,
+                  color: AppColors.primaryColor,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (audioState is AudioPlaying ||
+                          audioState is AudioPaused)
+                        StreamBuilder<Duration>(
+                          stream: cubit.player.positionStream,
+                          builder: (context, snapshot) {
+                            final position = snapshot.data ?? Duration.zero;
+                            final duration =
+                                cubit.player.duration ?? Duration.zero;
+
+                            double progressValue = 0.0;
+                            if (duration.inMilliseconds > 0) {
+                              progressValue =
+                                  position.inMilliseconds /
+                                  duration.inMilliseconds;
+                            }
+                            String formatDuration(Duration d) {
+                              final minutes = d.inMinutes
+                                  .remainder(60)
+                                  .toString()
+                                  .padLeft(2, '0');
+                              final seconds = d.inSeconds
+                                  .remainder(60)
+                                  .toString()
+                                  .padLeft(2, '0');
+                              final hours = d.inHours > 0
+                                  ? '${d.inHours}:'
+                                  : '';
+                              return '$hours$minutes:$seconds';
+                            }
+
+                            return Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 24.w,
+                                ),
+
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      formatDuration(position),
+                                      style: AppTextStyle.style12W500.copyWith(
+                                        color: Colors.white,
+                                      ),
+                                      textDirection: TextDirection
+                                          .ltr, // لضمان عرض الأرقام بشكل صحيح
+                                    ),
+                                    Expanded(
+                                      child: SliderTheme(
+                                        data: SliderThemeData(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 24.w,
+                                            vertical: 16.h,
+                                          ),
+
+                                          trackHeight: 3.h,
+                                          thumbShape: RoundSliderThumbShape(
+                                            enabledThumbRadius: 6.r,
+                                          ),
+                                          overlayShape: RoundSliderOverlayShape(
+                                            overlayRadius: 12.r,
+                                          ),
+                                          activeTrackColor:
+                                              AppColors.buttonColor,
+                                          inactiveTrackColor: Colors.white
+                                              .withAlpha(50),
+                                          thumbColor: AppColors.buttonColor,
+                                        ),
+                                        child: Slider(
+                                          value: progressValue.clamp(0.0, 1.0),
+                                          onChanged: (value) {
+                                            final newPosition = Duration(
+                                              milliseconds:
+                                                  (duration.inMilliseconds *
+                                                          value)
+                                                      .round(),
+                                            );
+                                            cubit.seek(newPosition);
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      formatDuration(duration),
+                                      style: AppTextStyle.style12W500.copyWith(
+                                        color: Colors.white.withAlpha(150),
+                                      ),
+                                      textDirection: TextDirection.ltr,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      else if (audioState is AudioDownloading)
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24.w,
+                            vertical: 16.h,
+                          ),
+
+                          child: LinearProgressIndicator(
+                            value: audioState.progress,
+                            backgroundColor: Colors.white.withAlpha(50),
+                            color: AppColors.buttonColor,
+                            minHeight: 3.h,
+                          ),
+                        )
+                      else
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24.w,
+                            vertical: 16.h,
+                          ),
+                          child: LinearProgressIndicator(
+                            backgroundColor: Colors.white.withAlpha(50),
+                            color: AppColors.buttonColor,
+                            minHeight: 3.h,
+                          ),
+                        ),
+
+                      Expanded(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // زر الإغلاق
+                            Positioned(
+                              left: 8.w,
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.close_rounded,
+                                  color: Colors.white.withAlpha(200),
+                                  size: 24.r,
+                                ),
+                                onPressed: cubit.stop,
                               ),
                             ),
-                          ] else if (audioState is AudioDownloading) ...[
-                            CircularProgressIndicator(
-                              value: audioState.progress,
-                              color: Colors.white,
-                            ),
-                            16.horizontalSpace,
-                            Text(
-                              'جاري التحميل... ${(audioState.progress * 100).toInt()}%',
-                              style: AppTextStyle.style14W500.copyWith(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ] else if (audioState is AudioPlaying) ...[
-                            IconButton(
-                              icon: Icon(
-                                Icons.pause_circle_filled,
-                                size: 40.r,
-                                color: Colors.white,
-                              ),
-                              onPressed: () =>
-                                  context.read<AudioCubit>().pause(),
-                            ),
-                            Text(
-                              'قيد التشغيل',
-                              style: AppTextStyle.style14W500.copyWith(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ] else if (audioState is AudioPaused) ...[
-                            IconButton(
-                              icon: Icon(
-                                Icons.play_circle_filled,
-                                size: 40.r,
-                                color: Colors.white,
-                              ),
-                              onPressed: () =>
-                                  context.read<AudioCubit>().resume(),
-                            ),
-                            Text(
-                              'متوقف',
-                              style: AppTextStyle.style14W500.copyWith(
-                                color: Colors.white,
-                              ),
+
+                            // أزرار التشغيل وحالة التحميل
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (audioState is AudioLoading) ...[
+                                  const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
+                                  16.horizontalSpace,
+                                  Text(
+                                    'جاري الاتصال وتحضير الملف...',
+                                    style: AppTextStyle.style14W500.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ] else if (audioState is AudioDownloading) ...[
+                                  Text(
+                                    'جاري التحميل... ${(audioState.progress * 100).toInt()}%',
+                                    style: AppTextStyle.style14W500.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ] else if (audioState is AudioPlaying) ...[
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.pause_circle_filled,
+                                      size: 40.r,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: cubit.pause,
+                                  ),
+                                  Text(
+                                    'قيد التشغيل',
+                                    style: AppTextStyle.style14W500.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ] else if (audioState is AudioPaused) ...[
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.play_circle_filled,
+                                      size: 40.r,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: cubit.resume,
+                                  ),
+                                  Text(
+                                    'متوقف',
+                                    style: AppTextStyle.style14W500.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                           ],
-                        ],
+                        ),
                       ),
                     ],
                   ),
