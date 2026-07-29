@@ -1,4 +1,4 @@
-// ignore_for_file: discarded_futures, cascade_invocations
+// ignore_for_file: use_string_buffers, discarded_futures
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,7 +55,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
     tafsirList = _tafsirCubit.getTafsirForSurah(
       widget.surah.number,
     );
-_groupTafsirData();
+    _groupTafsirData();
     _fontSize =
         (CacheHelper.getData(CacheKeys.tafsirFontSize) as num?)?.toDouble() ??
         24;
@@ -88,33 +88,33 @@ _groupTafsirData();
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
 
     _tafsirCubit.saveLastRead(widget.surah.number);
 
     super.dispose();
   }
-void _groupTafsirData() {
+
+  void _groupTafsirData() {
     if (surahAyahs.isEmpty || tafsirList.isEmpty) return;
 
     final count = surahAyahs.length < tafsirList.length
         ? surahAyahs.length
         : tafsirList.length;
 
-    List<String> currentAyahs = [surahAyahs[0]];
-    List<int> currentAyahNums = [1];
-    String currentTafsir = tafsirList[0].tafsirText;
+    var currentAyahs = <String>[surahAyahs[0]];
+    var currentAyahNums = <int>[1];
+    var currentTafsir = tafsirList[0].tafsirText;
 
     for (var i = 1; i < count; i++) {
       final tafsir = tafsirList[i].tafsirText;
 
-      // إذا كان التفسير مطابقاً للتفسير السابق، أضف الآية لنفس المجموعة
       if (tafsir == currentTafsir) {
         currentAyahs.add(surahAyahs[i]);
         currentAyahNums.add(i + 1);
       } else {
-        // إذا اختلف التفسير، احفظ المجموعة السابقة وابدأ مجموعة جديدة
         groupedTafsirList.add(
           GroupedAyaTafsir(
             ayahs: currentAyahs,
@@ -129,7 +129,6 @@ void _groupTafsirData() {
       }
     }
 
-    // إضافة آخر مجموعة بعد انتهاء الحلقة
     groupedTafsirList.add(
       GroupedAyaTafsir(
         ayahs: currentAyahs,
@@ -138,6 +137,7 @@ void _groupTafsirData() {
       ),
     );
   }
+
   void _saveOffset() {
     CacheHelper.saveData(
       key: 'tafsir_lesson_${widget.surah.number}_offset',
@@ -598,7 +598,7 @@ void _groupTafsirData() {
               settings: wallpaperState.settings,
               child: ColoredBox(
                 color: AppColors.primaryColor.withAlpha(_screenOpacity),
-           child: (surahAyahs.isEmpty || tafsirList.isEmpty)
+                child: (surahAyahs.isEmpty || tafsirList.isEmpty)
                     ? Center(
                         child: Text(
                           'التفسير غير متوفر لهذه السورة حالياً',
@@ -610,8 +610,7 @@ void _groupTafsirData() {
                     : ListView.separated(
                         controller: _scrollController,
                         padding: EdgeInsets.all(16.r),
-                        itemCount: groupedTafsirList
-                            .length, // الاعتماد على طول القائمة المجمعة
+                        itemCount: groupedTafsirList.length,
                         separatorBuilder: (context, index) => 24.verticalSpace,
                         itemBuilder: (context, index) {
                           final group = groupedTafsirList[index];
@@ -620,9 +619,8 @@ void _groupTafsirData() {
                             group.tafsir,
                           );
 
-                          // دمج الآيات الخاصة بهذه المجموعة في نص واحد
-                          String combinedAyahs = '';
-                          for (int i = 0; i < group.ayahs.length; i++) {
+                          var combinedAyahs = '';
+                          for (var i = 0; i < group.ayahs.length; i++) {
                             final ayaNum = _convertToArabicNumber(
                               group.ayahNumbers[i],
                             );
@@ -643,7 +641,7 @@ void _groupTafsirData() {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  combinedAyahs.trim(), // عرض الآيات المدمجة
+                                  combinedAyahs.trim(),
                                   style: AppTextStyle.style20W900.copyWith(
                                     fontFamily: AppFonts.quran,
                                     color: _textColor,
@@ -660,7 +658,8 @@ void _groupTafsirData() {
                             ),
                           );
                         },
-                      ),  ),
+                      ),
+              ),
             ),
           ),
         );

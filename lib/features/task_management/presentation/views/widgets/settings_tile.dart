@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use, discarded_futures, parameter_assignments
-
 import 'package:flutter/material.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text_style.dart';

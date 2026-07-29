@@ -34,8 +34,9 @@ class AudioCubit extends Cubit<AudioState> {
       }
 
       if (playerState.processingState == ProcessingState.completed) {
-        _audioPlayer.pause();
-        _audioPlayer.seek(Duration.zero);
+        _audioPlayer
+          ..pause()
+          ..seek(Duration.zero);
         emit(AudioPaused());
       } else if (playerState.playing) {
         emit(AudioPlaying());

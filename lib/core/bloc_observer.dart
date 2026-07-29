@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '/../core/functions/debug_print_extension.dart';
+
+import '/core/functions/debug_print_extension.dart';
 
 class MyBlocObserver extends BlocObserver {
   @override

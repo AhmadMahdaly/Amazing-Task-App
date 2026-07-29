@@ -1,3 +1,5 @@
+// ignore_for_file: discarded_futures
+
 import 'package:bloc/bloc.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
 import 'package:s/features/ai_tracker/domain/entities/ai_tracker_entities.dart';
@@ -220,13 +222,13 @@ class AiTrackerCubit extends Cubit<AiTrackerState> {
 
     for (var i = 0; i < _emails.length; i++) {
       if (selectedEmailIds.contains(_emails[i].id)) {
-        final updatedQuotas = List<PlatformQuotaEntity>.from(_emails[i].quotas);
-        updatedQuotas.add(
-          PlatformQuotaEntity(
-            platformId: newPlatformId,
-            resetTime: DateTime.now(),
-          ),
-        );
+        final updatedQuotas = List<PlatformQuotaEntity>.from(_emails[i].quotas)
+          ..add(
+            PlatformQuotaEntity(
+              platformId: newPlatformId,
+              resetTime: DateTime.now(),
+            ),
+          );
 
         _emails[i] = EmailAccountEntity(
           id: _emails[i].id,
