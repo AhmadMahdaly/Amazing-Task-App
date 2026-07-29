@@ -6,6 +6,7 @@ import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/shared_widgets/custom_primary_button.dart';
+import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/features/ai_tracker/domain/entities/ai_tracker_entities.dart';
 import 'package:s/features/ai_tracker/presentation/cubit/ai_tracker_cubit.dart';
@@ -15,12 +16,13 @@ class PlatformDetailsView extends StatelessWidget {
   const PlatformDetailsView({required this.platform, super.key});
   final AiPlatformEntity platform;
 
-  void _showEditPlatformDialog(
+  Future<void> _showEditPlatformDialog(
     BuildContext context,
+    AiTrackerCubit cubit,
     AiPlatformEntity currentPlatform,
     List<String> existingPlatforms,
     List<EmailAccountEntity> allEmails,
-  ) {
+  ) async {
     var selectedOrEnteredValue = currentPlatform.name;
 
     final selectedEmailIds = allEmails
@@ -28,7 +30,7 @@ class PlatformDetailsView extends StatelessWidget {
         .map((e) => e.id)
         .toList();
 
-    showDialog<void>(
+    await showDialog<void>(
       context: context,
       builder: (_) => StatefulBuilder(
         builder: (context, setState) {
@@ -71,15 +73,10 @@ class PlatformDetailsView extends StatelessWidget {
                             controller.addListener(() {
                               selectedOrEnteredValue = controller.text;
                             });
-                            return TextFormField(
+                            return CustomPrimaryTextfield(
                               controller: controller,
                               focusNode: focusNode,
-                              decoration: InputDecoration(
-                                labelText: 'اسم المنصة الجديد أو الحالي',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                              ),
+                              text: 'اسم المنصة الجديد أو الحالي',
                             );
                           },
                     ),
@@ -138,7 +135,7 @@ class PlatformDetailsView extends StatelessWidget {
                       width: 100.w,
                       onPressed: () {
                         if (selectedOrEnteredValue.trim().isNotEmpty) {
-                          context.read<AiTrackerCubit>().editPlatform(
+                          cubit.editPlatform(
                             currentPlatform.id,
                             selectedOrEnteredValue.trim(),
                             selectedEmailIds,
@@ -167,8 +164,12 @@ class PlatformDetailsView extends StatelessWidget {
     );
   }
 
-  void _confirmDeletePlatform(BuildContext context, String platformId) {
-    showDialog<void>(
+  Future<void> _confirmDeletePlatform(
+    BuildContext context,
+    AiTrackerCubit cubit,
+    String platformId,
+  ) async {
+    await showDialog<void>(
       context: context,
       builder: (_) => Directionality(
         textDirection: TextDirection.rtl,
@@ -196,7 +197,7 @@ class PlatformDetailsView extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                context.read<AiTrackerCubit>().deletePlatform(platformId);
+                cubit.deletePlatform(platformId);
                 Navigator.pop(context); // إغلاق المربع الحواري
                 context.pop(); // الرجوع للصفحة السابقة
               },
@@ -251,19 +252,24 @@ class PlatformDetailsView extends StatelessWidget {
                 ),
                 actions: [
                   PopupMenuButton<String>(
-                    onSelected: (value) {
+                    onSelected: (value) async {
                       if (value == 'edit') {
                         final allPlatformsList = state.availablePlatforms
                             .map((p) => p.name)
                             .toList();
-                        _showEditPlatformDialog(
+                        await _showEditPlatformDialog(
                           context,
+                          context.read<AiTrackerCubit>(),
                           currentPlatform,
                           allPlatformsList,
                           state.emails,
                         );
                       } else if (value == 'delete') {
-                        _confirmDeletePlatform(context, currentPlatform.id);
+                        await _confirmDeletePlatform(
+                          context,
+                          context.read<AiTrackerCubit>(),
+                          currentPlatform.id,
+                        );
                       }
                     },
                     itemBuilder: (context) => [
