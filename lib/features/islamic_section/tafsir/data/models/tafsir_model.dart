@@ -17,3 +17,14 @@ class TafsirModel extends TafsirEntity {
     );
   }
 }
+
+class GroupedAyaTafsir {
+  GroupedAyaTafsir({
+    required this.ayahs,
+    required this.ayahNumbers,
+    required this.tafsir,
+  });
+  final List<String> ayahs;
+  final List<int> ayahNumbers;
+  final String tafsir;
+}

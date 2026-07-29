@@ -61,6 +61,7 @@ class SunnahCard extends StatelessWidget {
 
           Text(
             sunnah.description,
+            textAlign: TextAlign.justify,
             style: AppTextStyle.style16W700.copyWith(
               fontFamily: AppFonts.amiri,
               height: 1.9,
@@ -72,7 +73,7 @@ class SunnahCard extends StatelessWidget {
 
           if (sunnah.source != null)
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
                   Icons.menu_book,
@@ -83,8 +84,10 @@ class SunnahCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     sunnah.source!,
-                    style: AppTextStyle.style12W500.copyWith(
+                    textAlign: TextAlign.justify,
+                    style: AppTextStyle.style12W900.copyWith(
                       fontFamily: AppFonts.amiri,
+                      height: 1.9,
                       fontSize: (fontSize - 2).sp,
                       color: AppColors.primaryColor,
                     ),

@@ -52,7 +52,7 @@ class Appthemes {
         elevation: 5,
         titleTextStyle: AppTextStyle.style20Bold.copyWith(
           fontFamily: AppFonts.en,
-          backgroundColor: AppColors.primaryColor,
+          color: AppColors.primaryColor,
         ),
       ),
 

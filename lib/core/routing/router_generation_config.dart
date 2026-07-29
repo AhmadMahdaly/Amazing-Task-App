@@ -22,6 +22,7 @@ import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_index_
 import 'package:s/features/islamic_section/asmaa/presentation/views/asmaa_reading_view.dart';
 import 'package:s/features/islamic_section/azkar/presentation/controllers/cubit/azkar_cubit.dart';
 import 'package:s/features/islamic_section/azkar/presentation/views/azkar_view.dart';
+import 'package:s/features/islamic_section/friday_sunan/presentation/cubit/friday_sunan_cubit.dart';
 import 'package:s/features/islamic_section/friday_sunan/presentation/views/friday_sunan_view.dart';
 import 'package:s/features/islamic_section/hisn_azkar/domain/entities/hisn_chapter_entity.dart';
 import 'package:s/features/islamic_section/hisn_azkar/presentation/cubit/hisn_cubit.dart';
@@ -310,7 +311,10 @@ void initRouter() {
       GoRoute(
         path: AppRoutes.fridaySunanView,
         name: AppRoutes.fridaySunanView,
-        builder: (context, state) => const FridaySunanView(),
+        builder: (context, state) => BlocProvider.value(
+          value: getIt<FridaySunnahCubit>()..getSunanData(),
+          child: const FridaySunanView(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.arbaoonIndexView,

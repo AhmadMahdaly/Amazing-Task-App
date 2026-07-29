@@ -13,6 +13,7 @@ import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
 import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
+import 'package:s/features/islamic_section/tafsir/data/models/tafsir_model.dart';
 import 'package:s/features/islamic_section/tafsir/domain/entities/tafsir_entity.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
 
@@ -29,6 +30,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
 
   late List<String> surahAyahs;
   late List<TafsirEntity> tafsirList;
+  List<GroupedAyaTafsir> groupedTafsirList = [];
   double _fontSize = 28;
   int _screenOpacity = 205;
   Color _textColor = Colors.white;
@@ -53,7 +55,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
     tafsirList = _tafsirCubit.getTafsirForSurah(
       widget.surah.number,
     );
-
+_groupTafsirData();
     _fontSize =
         (CacheHelper.getData(CacheKeys.tafsirFontSize) as num?)?.toDouble() ??
         24;
@@ -93,7 +95,49 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
 
     super.dispose();
   }
+void _groupTafsirData() {
+    if (surahAyahs.isEmpty || tafsirList.isEmpty) return;
 
+    final count = surahAyahs.length < tafsirList.length
+        ? surahAyahs.length
+        : tafsirList.length;
+
+    List<String> currentAyahs = [surahAyahs[0]];
+    List<int> currentAyahNums = [1];
+    String currentTafsir = tafsirList[0].tafsirText;
+
+    for (var i = 1; i < count; i++) {
+      final tafsir = tafsirList[i].tafsirText;
+
+      // إذا كان التفسير مطابقاً للتفسير السابق، أضف الآية لنفس المجموعة
+      if (tafsir == currentTafsir) {
+        currentAyahs.add(surahAyahs[i]);
+        currentAyahNums.add(i + 1);
+      } else {
+        // إذا اختلف التفسير، احفظ المجموعة السابقة وابدأ مجموعة جديدة
+        groupedTafsirList.add(
+          GroupedAyaTafsir(
+            ayahs: currentAyahs,
+            ayahNumbers: currentAyahNums,
+            tafsir: currentTafsir,
+          ),
+        );
+
+        currentAyahs = [surahAyahs[i]];
+        currentAyahNums = [i + 1];
+        currentTafsir = tafsir;
+      }
+    }
+
+    // إضافة آخر مجموعة بعد انتهاء الحلقة
+    groupedTafsirList.add(
+      GroupedAyaTafsir(
+        ayahs: currentAyahs,
+        ayahNumbers: currentAyahNums,
+        tafsir: currentTafsir,
+      ),
+    );
+  }
   void _saveOffset() {
     CacheHelper.saveData(
       key: 'tafsir_lesson_${widget.surah.number}_offset',
@@ -554,7 +598,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
               settings: wallpaperState.settings,
               child: ColoredBox(
                 color: AppColors.primaryColor.withAlpha(_screenOpacity),
-                child: (surahAyahs.isEmpty || tafsirList.isEmpty)
+           child: (surahAyahs.isEmpty || tafsirList.isEmpty)
                     ? Center(
                         child: Text(
                           'التفسير غير متوفر لهذه السورة حالياً',
@@ -566,17 +610,24 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
                     : ListView.separated(
                         controller: _scrollController,
                         padding: EdgeInsets.all(16.r),
-                        itemCount: surahAyahs.length < tafsirList.length
-                            ? surahAyahs.length
-                            : tafsirList.length,
+                        itemCount: groupedTafsirList
+                            .length, // الاعتماد على طول القائمة المجمعة
                         separatorBuilder: (context, index) => 24.verticalSpace,
                         itemBuilder: (context, index) {
-                          final ayahText = surahAyahs[index];
+                          final group = groupedTafsirList[index];
 
                           final cleanTafsirText = _cleanHtmlTags(
-                            tafsirList[index].tafsirText,
+                            group.tafsir,
                           );
-                          final ayaNum = _convertToArabicNumber(index + 1);
+
+                          // دمج الآيات الخاصة بهذه المجموعة في نص واحد
+                          String combinedAyahs = '';
+                          for (int i = 0; i < group.ayahs.length; i++) {
+                            final ayaNum = _convertToArabicNumber(
+                              group.ayahNumbers[i],
+                            );
+                            combinedAyahs += '${group.ayahs[i]} $ayaNum ';
+                          }
 
                           return Container(
                             padding: EdgeInsets.all(16.r),
@@ -592,7 +643,7 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '$ayahText $ayaNum',
+                                  combinedAyahs.trim(), // عرض الآيات المدمجة
                                   style: AppTextStyle.style20W900.copyWith(
                                     fontFamily: AppFonts.quran,
                                     color: _textColor,
@@ -601,42 +652,15 @@ class _TafsirReadingViewState extends State<TafsirReadingView> {
                                   ),
                                   textAlign: TextAlign.justify,
                                 ),
-
-                                // 8.verticalSpace,
                                 Divider(
                                   color: AppColors.buttonColor.withAlpha(30),
                                 ),
-
-                                // 12.verticalSpace,
-                                // Row(
-                                //   crossAxisAlignment: CrossAxisAlignment.start,
-                                //   children: [
-                                //     Icon(
-                                //       Icons.menu_book_rounded,
-                                //       color: _textColor,
-                                //       size: 18.r,
-                                //     ),
-                                //     8.horizontalSpace,
-                                //     Expanded(
-                                //       child: Text(
-                                //         'التفسير الميسر:',
-                                //         style: AppTextStyle.style14W800
-                                //             .copyWith(
-                                //               color: _textColor.withAlpha(200),
-                                //               fontFamily: AppFonts.amiri,
-                                //             ),
-                                //       ),
-                                //     ),
-                                //   ],
-                                // ),
-                                // 16.verticalSpace,
                                 _buildTafsirText(cleanTafsirText),
                               ],
                             ),
                           );
                         },
-                      ),
-              ),
+                      ),  ),
             ),
           ),
         );

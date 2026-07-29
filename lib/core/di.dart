@@ -21,6 +21,7 @@ import 'package:s/features/islamic_section/azkar/data/data_sources/base_azkar_da
 import 'package:s/features/islamic_section/azkar/data/repository/azkar_repository_impl.dart';
 import 'package:s/features/islamic_section/azkar/domain/repositories/base_azkar_repository.dart';
 import 'package:s/features/islamic_section/azkar/presentation/controllers/cubit/azkar_cubit.dart';
+import 'package:s/features/islamic_section/friday_sunan/presentation/cubit/friday_sunan_cubit.dart';
 import 'package:s/features/islamic_section/hisn_azkar/presentation/cubit/hisn_cubit.dart';
 import 'package:s/features/islamic_section/missed_prayers/data/datasource/missed_prayers_local_data_source.dart';
 import 'package:s/features/islamic_section/missed_prayers/data/repo/missed_prayers_repository_impl.dart';
@@ -125,5 +126,6 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<NotesDataSource>(NotesDataSource.new)
     ..registerLazySingleton<NotesCubit>(() => NotesCubit(getIt()))
     ///
-    ..registerLazySingleton<AiTrackerCubit>(AiTrackerCubit.new);
+    ..registerLazySingleton<AiTrackerCubit>(AiTrackerCubit.new)
+    ..registerLazySingleton<FridaySunnahCubit>(FridaySunnahCubit.new);
 }
