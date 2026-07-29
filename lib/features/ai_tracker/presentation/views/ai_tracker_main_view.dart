@@ -100,6 +100,8 @@ class _AiTrackerMainViewState extends State<AiTrackerMainView>
                   ),
                 ),
                 icon: const Icon(Icons.add),
+                backgroundColor: AppColors.primaryColor,
+                foregroundColor: Colors.white,
               )
             : FloatingActionButton.extended(
                 onPressed: () async {
@@ -115,8 +117,8 @@ class _AiTrackerMainViewState extends State<AiTrackerMainView>
                     fontFamily: AppFonts.ar,
                   ),
                 ),
-                icon: const Icon(Icons.add_box),
-                backgroundColor: Colors.indigo,
+                icon: const Icon(Icons.add),
+                backgroundColor: AppColors.primaryColor,
                 foregroundColor: Colors.white,
               ),
       ),
@@ -463,202 +465,6 @@ class EmailsTabView extends StatelessWidget {
 class PlatformsTabView extends StatelessWidget {
   const PlatformsTabView({required this.cubit, super.key});
   final AiTrackerCubit cubit;
-  void _showEditPlatformDialog(
-    BuildContext context,
-    AiPlatformEntity platform,
-    List<String> existingPlatforms,
-    List<EmailAccountEntity> allEmails,
-  ) {
-    var selectedOrEnteredValue = platform.name;
-
-    final selectedEmailIds = allEmails
-        .where((e) => e.quotas.any((q) => q.platformId == platform.id))
-        .map((e) => e.id)
-        .toList();
-
-    showDialog<void>(
-      context: context,
-      builder: (_) => StatefulBuilder(
-        builder: (context, setState) {
-          return Directionality(
-            textDirection: TextDirection.rtl,
-            child: AlertDialog(
-              title: Text(
-                'تعديل المنصة والإيميلات',
-                style: AppTextStyle.style20W600.copyWith(
-                  fontFamily: AppFonts.ar,
-                  color: AppColors.primaryColor,
-                ),
-              ),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Autocomplete<String>(
-                      initialValue: TextEditingValue(text: platform.name),
-                      optionsBuilder: (textEditingValue) {
-                        if (textEditingValue.text.isEmpty) {
-                          return const Iterable<String>.empty();
-                        }
-                        return existingPlatforms.where((option) {
-                          return option.toLowerCase().contains(
-                                textEditingValue.text.toLowerCase(),
-                              ) &&
-                              option != platform.name;
-                        });
-                      },
-                      onSelected: (selection) {
-                        selectedOrEnteredValue = selection;
-                      },
-                      fieldViewBuilder:
-                          (context, controller, focusNode, onFieldSubmitted) {
-                            controller.addListener(() {
-                              selectedOrEnteredValue = controller.text;
-                            });
-                            return TextFormField(
-                              controller: controller,
-                              focusNode: focusNode,
-                              decoration: InputDecoration(
-                                labelText: 'اسم المنصة الجديد أو الحالي',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                              ),
-                            );
-                          },
-                    ),
-                    16.verticalSpace,
-                    Text(
-                      'الإيميلات المرتبطة:',
-                      style: AppTextStyle.style16W600.copyWith(
-                        fontFamily: AppFonts.ar,
-                      ),
-                    ),
-                    8.verticalSpace,
-
-                    SizedBox(
-                      height: 300.h,
-                      child: allEmails.isEmpty
-                          ? Text(
-                              'لا توجد إيميلات مسجلة',
-                              style: AppTextStyle.style14W500.copyWith(
-                                color: Colors.grey,
-                              ),
-                            )
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: allEmails.length,
-                              itemBuilder: (context, index) {
-                                final email = allEmails[index];
-                                final isSelected = selectedEmailIds.contains(
-                                  email.id,
-                                );
-                                return CheckboxListTile(
-                                  title: Text(
-                                    email.emailAddress,
-                                    style: AppTextStyle.style14W500,
-                                  ),
-                                  value: isSelected,
-                                  activeColor: AppColors.primaryColor,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (value == true) {
-                                        selectedEmailIds.add(email.id);
-                                      } else {
-                                        selectedEmailIds.remove(email.id);
-                                      }
-                                    });
-                                  },
-                                );
-                              },
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                Row(
-                  children: [
-                    CustomPrimaryButton(
-                      width: 100.w,
-                      onPressed: () {
-                        if (selectedOrEnteredValue.trim().isNotEmpty) {
-                          cubit.editPlatform(
-                            platform.id,
-                            selectedOrEnteredValue.trim(),
-                            selectedEmailIds,
-                          );
-                          Navigator.pop(context);
-                        }
-                      },
-                      text: 'حفظ',
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        'إلغاء',
-                        style: AppTextStyle.style14W500.copyWith(
-                          fontFamily: AppFonts.ar,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _confirmDeletePlatform(BuildContext context, String platformId) {
-    showDialog<void>(
-      context: context,
-      builder: (_) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          title: Text(
-            'حذف المنصة',
-            style: AppTextStyle.style20W900.copyWith(
-              fontFamily: AppFonts.ar,
-              color: AppColors.thirdColor,
-            ),
-          ),
-          content: Text(
-            'هل أنت متأكد من حذف هذه المنصة من جميع الإيميلات؟',
-            style: AppTextStyle.style16W600.copyWith(fontFamily: AppFonts.ar),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'إلغاء',
-                style: AppTextStyle.style14W500.copyWith(
-                  fontFamily: AppFonts.ar,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                context.read<AiTrackerCubit>().deletePlatform(platformId);
-                Navigator.pop(context);
-              },
-              child: Text(
-                'حذف',
-                style: AppTextStyle.style14W500.copyWith(
-                  fontFamily: AppFonts.ar,
-                  color: AppColors.errorColor,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -677,9 +483,9 @@ class PlatformsTabView extends StatelessWidget {
             );
           }
 
-          final allPlatformsList = state.availablePlatforms
-              .map((p) => p.name)
-              .toList();
+          // final allPlatformsList = state.availablePlatforms
+          //     .map((p) => p.name)
+          //     .toList();
 
           return ListView.builder(
             itemCount: state.availablePlatforms.length,
@@ -696,10 +502,18 @@ class PlatformsTabView extends StatelessWidget {
                       (q) => q.platformId == platform.id,
                     );
 
-                    return QuotaControlCard(
-                      title: email.emailAddress,
-                      emailId: email.id,
-                      quota: quota,
+                    return InkWell(
+                      onTap: () {
+                        context.pushNamed(
+                          AppRoutes.platformDetailsView,
+                          extra: platform,
+                        );
+                      },
+                      child: QuotaControlCard(
+                        title: email.emailAddress,
+                        emailId: email.id,
+                        quota: quota,
+                      ),
                     );
                   })
                   .expand(
@@ -718,111 +532,139 @@ class PlatformsTabView extends StatelessWidget {
                 data: Theme.of(
                   context,
                 ).copyWith(dividerColor: Colors.transparent),
-                child: Container(
-                  margin: EdgeInsets.only(
-                    right: 24.w,
-                    left: 24.w,
-                    top: 16.h,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: AppColors.successColor.withAlpha(60),
+                child: InkWell(
+                  onTap: () {
+                    context.pushNamed(
+                      AppRoutes.platformDetailsView,
+                      extra: platform,
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      right: 24.w,
+                      left: 24.w,
+                      top: 16.h,
                     ),
-                  ),
-                  child: ExpansionTile(
-                    collapsedShape: RoundedRectangleBorder(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 16.h,
+                      horizontal: 20.w,
+                    ),
+                    decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: AppColors.successColor.withAlpha(60),
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.r),
-                    ),
-                    title: Row(
-                      children: [
-                        Icon(
-                          Icons.smart_toy,
-                          size: 24.r,
-                          color: AppColors.primaryColor,
-                        ),
-                        8.horizontalSpace,
-                        Expanded(
-                          child: Text(
-                            platform.name,
-                            style: AppTextStyle.style14W900.copyWith(
-                              fontFamily: AppFonts.ar,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        PopupMenuButton<String>(
-                          onSelected: (value) {
-                            if (value == 'edit') {
-                              _showEditPlatformDialog(
-                                context,
-                                platform,
-                                allPlatformsList,
-                                state.emails,
-                              );
-                            } else if (value == 'delete') {
-                              _confirmDeletePlatform(context, platform.id);
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: 'edit',
+                    child:
+                        //  ExpansionTile(
+                        //   collapsedShape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(16.r),
+                        //   ),
+                        //   shape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(16.r),
+                        //   ),
+                        //   title:
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
                               child: Row(
                                 children: [
-                                  const Icon(Icons.edit, color: Colors.blue),
+                                  Icon(
+                                    Icons.smart_toy,
+                                    size: 24.r,
+                                    color: AppColors.primaryColor,
+                                  ),
                                   8.horizontalSpace,
-                                  Text(
-                                    'تعديل / دمج',
-                                    style: AppTextStyle.style14W500.copyWith(
-                                      fontFamily: AppFonts.ar,
-                                      color: Colors.blue,
+                                  Expanded(
+                                    child: Text(
+                                      platform.name,
+                                      style: AppTextStyle.style14W900.copyWith(
+                                        fontFamily: AppFonts.ar,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            PopupMenuItem(
-                              value: 'delete',
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.delete, color: Colors.red),
-                                  8.horizontalSpace,
-                                  Text(
-                                    'حذف',
-                                    style: AppTextStyle.style14W500.copyWith(
-                                      fontFamily: AppFonts.ar,
-                                      color: AppColors.errorColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Icon(Icons.expand_more),
-                      ],
-                    ),
-                    children: children.isEmpty
-                        ? [
-                            Padding(
-                              padding: EdgeInsets.all(16.r),
-                              child: Text(
-                                'لا توجد إيميلات مرتبطة بهذه المنصة',
-                                style: AppTextStyle.style14W500.copyWith(
-                                  fontFamily: AppFonts.ar,
-                                  color: AppColors.thirdColor,
+                            if (children.isNotEmpty)
+                              Text(
+                                children.length.toString(),
+                                style: AppTextStyle.style12Bold.copyWith(
+                                  color: AppColors.secondaryColor,
                                 ),
                               ),
-                            ),
-                          ]
-                        : children,
+                          ],
+                        ),
+                    // trailing: Row(
+                    //   mainAxisSize: MainAxisSize.min,
+                    //   children: [
+                    //     PopupMenuButton<String>(
+                    //       onSelected: (value) {
+                    //         if (value == 'edit') {
+                    //           _showEditPlatformDialog(
+                    //             context,
+                    //             platform,
+                    //             allPlatformsList,
+                    //             state.emails,
+                    //           );
+                    //         } else if (value == 'delete') {
+                    //           _confirmDeletePlatform(context, platform.id);
+                    //         }
+                    //       },
+                    //       itemBuilder: (context) => [
+                    //         PopupMenuItem(
+                    //           value: 'edit',
+                    //           child: Row(
+                    //             children: [
+                    //               const Icon(Icons.edit, color: Colors.blue),
+                    //               8.horizontalSpace,
+                    //               Text(
+                    //                 'تعديل / دمج',
+                    //                 style: AppTextStyle.style14W500.copyWith(
+                    //                   fontFamily: AppFonts.ar,
+                    //                   color: Colors.blue,
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //         PopupMenuItem(
+                    //           value: 'delete',
+                    //           child: Row(
+                    //             children: [
+                    //               const Icon(Icons.delete, color: Colors.red),
+                    //               8.horizontalSpace,
+                    //               Text(
+                    //                 'حذف',
+                    //                 style: AppTextStyle.style14W500.copyWith(
+                    //                   fontFamily: AppFonts.ar,
+                    //                   color: AppColors.errorColor,
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //     const Icon(Icons.expand_more),
+                    //   ],
+                    // ),
+                    // children: children.isEmpty
+                    //     ? [
+                    //         Padding(
+                    //           padding: EdgeInsets.all(16.r),
+                    //           child: Text(
+                    //             'لا توجد إيميلات مرتبطة بهذه المنصة',
+                    //             style: AppTextStyle.style14W500.copyWith(
+                    //               fontFamily: AppFonts.ar,
+                    //               color: AppColors.thirdColor,
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ]
+                    //     : children,
+                    // ),
                   ),
                 ),
               );

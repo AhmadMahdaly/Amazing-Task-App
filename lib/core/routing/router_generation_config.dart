@@ -3,10 +3,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/di.dart';
+import 'package:s/features/ai_tracker/domain/entities/ai_tracker_entities.dart';
 import 'package:s/features/ai_tracker/presentation/cubit/ai_tracker_cubit.dart';
 import 'package:s/features/ai_tracker/presentation/views/add_email_view.dart';
 import 'package:s/features/ai_tracker/presentation/views/add_platform_view.dart';
 import 'package:s/features/ai_tracker/presentation/views/ai_tracker_main_view.dart';
+import 'package:s/features/ai_tracker/presentation/views/platform_details_view.dart';
 import 'package:s/features/analytics/presentation/views/analytics_screen.dart';
 import 'package:s/features/challenges/presentation/screens/add_challenge_screen.dart';
 import 'package:s/features/challenges/presentation/screens/analysis_screen.dart';
@@ -222,7 +224,18 @@ void initRouter() {
           );
         },
       ),
-
+      GoRoute(
+        path: AppRoutes.platformDetailsView,
+        name: AppRoutes.platformDetailsView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<AiTrackerCubit>(),
+            child: PlatformDetailsView(
+              platform: state.extra! as AiPlatformEntity,
+            ),
+          );
+        },
+      ),
       GoRoute(
         path: AppRoutes.addEmailView,
         name: AppRoutes.addEmailView,

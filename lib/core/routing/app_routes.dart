@@ -30,6 +30,7 @@ class AppRoutes {
 
   ///
   static const String aiTrackerMainView = '/aiTrackerMainView';
+  static const String platformDetailsView = '/platformDetailsView';
   static const String addEmailView = '/addEmailView';
   static const String addPlatformView = '/addPlatformView';
   static const String backupScreen = '/backupScreen';
