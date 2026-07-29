@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures, deprecated_member_use, discarded_futures, parameter_assignments
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -19,6 +21,8 @@ import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/domain/utils/task_steps_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 import 'package:s/features/task_management/presentation/views/widgets/custom_repeat_dialog.dart';
+import 'package:s/features/task_management/presentation/views/widgets/section_card.dart';
+import 'package:s/features/task_management/presentation/views/widgets/settings_tile.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   const TaskDetailScreen({required this.taskId, super.key});
@@ -108,7 +112,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       title: title,
     );
     _stepController.clear();
-    FocusScope.of(context).unfocus();
+    // FocusScope.of(context).unfocus();
 
     await _persist(syncTaskStepCounts(task, [...task.steps, newStep]));
   }
@@ -180,7 +184,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     }
 
     final title = controller.text.trim();
-    controller.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.dispose();
+    });
     if (title.isEmpty) return;
 
     final steps = List<TaskStep>.from(task.steps);
@@ -810,7 +816,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             body: ListView(
               padding: EdgeInsets.all(16.w),
               children: [
-                _SectionCard(
+                SectionCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -895,7 +901,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       ),
                   ],
                 ),
-                _SectionCard(
+                SectionCard(
                   child: Column(
                     children: [
                       Row(
@@ -904,6 +910,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             child: CustomPrimaryTextfield(
                               controller: _stepController,
                               text: AppTexts.stepHint,
+                              onChanged: (_) => setState(() {}),
                               onFieldSubmitted: (_) => _addStep(task),
                             ),
                           ),
@@ -1043,34 +1050,37 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   await _deleteStep(task, index);
                                 }
                               },
-                              child: ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                leading: InkWell(
-                                  onTap: () => _toggleStep(task, index),
-                                  child: Icon(
-                                    step.isCompleted
-                                        ? Icons.check_box
-                                        : Icons.check_box_outline_blank,
-                                    color: AppColors.primaryColor,
+                              child: Material(
+                                color: AppColors.transparent,
+                                child: ListTile(
+                                  // contentPadding: EdgeInsets.zero,
+                                  leading: InkWell(
+                                    onTap: () => _toggleStep(task, index),
+                                    child: Icon(
+                                      step.isCompleted
+                                          ? Icons.check_box
+                                          : Icons.check_box_outline_blank,
+                                      color: AppColors.primaryColor,
+                                    ),
                                   ),
-                                ),
-                                title: DirectionalText(
-                                  step.title,
-                                  style: AppTextStyle.style9W300.copyWith(
-                                    decoration: step.isCompleted
-                                        ? TextDecoration.lineThrough
-                                        : null,
-                                    color: step.isCompleted
-                                        ? AppColors.secondaryColor
-                                        : AppColors.forthColor,
+                                  title: DirectionalText(
+                                    step.title,
+                                    style: AppTextStyle.style9W300.copyWith(
+                                      decoration: step.isCompleted
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      color: step.isCompleted
+                                          ? AppColors.secondaryColor
+                                          : AppColors.forthColor,
+                                    ),
                                   ),
-                                ),
-                                onTap: () => _editStep(task, index),
-                                trailing: ReorderableDragStartListener(
-                                  index: index,
-                                  child: const Icon(
-                                    Icons.drag_handle,
-                                    color: AppColors.secondaryColor,
+                                  onTap: () => _editStep(task, index),
+                                  trailing: ReorderableDragStartListener(
+                                    index: index,
+                                    child: const Icon(
+                                      Icons.drag_handle,
+                                      color: AppColors.secondaryColor,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1083,10 +1093,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 20.verticalSpace,
                 Text(AppTexts.taskSettings, style: AppTextStyle.style16Bold),
                 8.verticalSpace,
-                _SectionCard(
+                SectionCard(
                   child: Column(
                     children: [
-                      _SettingsTile(
+                      SettingsTile(
                         icon: Icons.calendar_today,
                         title: AppTexts.next,
                         subtitle: task.dueDate != null
@@ -1095,14 +1105,14 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         onTap: () => _showDueDateOptions(task),
                       ),
                       const Divider(height: 1),
-                      _SettingsTile(
+                      SettingsTile(
                         icon: Icons.repeat,
                         title: AppTexts.repeat,
                         subtitle: _repeatLabel(task.repeatMode),
                         onTap: () => _showRepeatOptions(task),
                       ),
                       const Divider(height: 1),
-                      _SettingsTile(
+                      SettingsTile(
                         icon: Icons.star,
                         title: AppTexts.important,
                         trailing: Switch(
@@ -1113,7 +1123,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         ),
                       ),
                       const Divider(height: 1),
-                      _SettingsTile(
+                      SettingsTile(
                         icon: Icons.wb_sunny_outlined,
                         title: AppTexts.myDay,
                         subtitle: inMyDay
@@ -1134,7 +1144,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         ),
                       ),
                       const Divider(height: 1),
-                      _SettingsTile(
+                      SettingsTile(
                         icon: Icons.alarm,
                         title: AppTexts.remindMe,
                         subtitle: task.reminderDate != null
@@ -1142,8 +1152,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             : AppTexts.noReminder,
                         onTap: () => _showReminderOptions(task),
                       ),
+                      // subtitle: task.isPinnedToNotification
+                      //     ? AppTexts.pinnedToNotification
+                      //     : AppTexts.unpinFromNotification,
                       const Divider(height: 1),
-                      _SettingsTile(
+                      SettingsTile(
                         icon: Icons.notifications_active,
                         title: AppTexts.pinToNotification,
                         trailing: Switch(
@@ -1165,7 +1178,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         ),
                       ),
                       const Divider(height: 1),
-                      _SettingsTile(
+                      SettingsTile(
                         icon: Icons.list,
                         title: AppTexts.selectList,
                         subtitle: listName,
@@ -1177,7 +1190,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 24.verticalSpace,
                 Text(AppTexts.notes, style: AppTextStyle.style16Bold),
                 8.verticalSpace,
-                _SectionCard(
+                SectionCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -1197,66 +1210,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(14.w),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.forthColor.withAlpha(15),
-            blurRadius: 8.r,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: child,
-    );
-  }
-}
-
-class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({
-    required this.icon,
-    required this.title,
-    this.subtitle,
-    this.onTap,
-    this.trailing,
-  });
-
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final VoidCallback? onTap;
-  final Widget? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: AppColors.primaryColor),
-      title: Text(title, style: AppTextStyle.style12W300),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: AppTextStyle.style12W300.copyWith(
-                color: AppColors.secondaryColor,
-              ),
-            )
-          : null,
-      trailing: trailing ?? const Icon(Icons.chevron_right),
-      onTap: onTap,
     );
   }
 }

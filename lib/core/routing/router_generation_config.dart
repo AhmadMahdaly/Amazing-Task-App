@@ -38,7 +38,8 @@ import 'package:s/features/islamic_section/notes/presentation/cubit/notes_cubit.
 import 'package:s/features/islamic_section/notes/presentation/utils/notes_section_type.dart';
 import 'package:s/features/islamic_section/notes/presentation/views/unified_notes_view.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
-import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/controllers/audio_cubit/audio_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/controllers/quran_cubit/quran_cubit.dart';
 import 'package:s/features/islamic_section/quran/presentation/views/quran_index_view.dart';
 import 'package:s/features/islamic_section/quran/presentation/views/surah_reading_view.dart';
 import 'package:s/features/islamic_section/tabeen/domain/entities/tabeen.dart';
@@ -174,8 +175,15 @@ void initRouter() {
           final data = state.extra! as Map;
           final surah = data['surah'] as SurahEntity;
           final startAyah = data['startAyah'] as int?;
-          return BlocProvider.value(
-            value: getIt<QuranCubit>(),
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: getIt<QuranCubit>(),
+              ),
+              BlocProvider.value(
+                value: getIt<AudioCubit>(),
+              ),
+            ],
             child: SurahReadingView(surah: surah, startAyah: startAyah),
           );
         },

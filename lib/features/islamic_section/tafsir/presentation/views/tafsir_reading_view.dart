@@ -12,7 +12,7 @@ import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
-import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/controllers/quran_cubit/quran_cubit.dart';
 import 'package:s/features/islamic_section/tafsir/data/models/tafsir_model.dart';
 import 'package:s/features/islamic_section/tafsir/domain/entities/tafsir_entity.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';

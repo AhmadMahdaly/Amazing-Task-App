@@ -1,9 +1,11 @@
 // ignore_for_file: unawaited_futures, discarded_futures
+import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:s/core/cache_helper/cache_helper.dart';
 import 'package:s/core/cache_helper/cache_values.dart';
 import 'package:s/core/di.dart';
@@ -16,9 +18,11 @@ import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/islamic_section/notes/data/data_sources/notes_data_source.dart';
+import 'package:s/features/islamic_section/quran/data/models/reciter_model.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/saved_ayah_note_entity.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
-import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/controllers/audio_cubit/audio_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/controllers/quran_cubit/quran_cubit.dart';
 
 class SurahReadingView extends StatefulWidget {
   const SurahReadingView({required this.surah, this.startAyah, super.key});
@@ -305,6 +309,215 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     );
   }
 
+  void _showReciterSelectionBottomSheet(
+    BuildContext context,
+    AudioCubit cubit,
+  ) {
+    final reciters = cubit.allReciters;
+
+    if (reciters.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('جاري تجهيز قائمة القراء، يرجى المحاولة بعد قليل'),
+          backgroundColor: AppColors.primaryColor,
+        ),
+      );
+
+      cubit.loadReciters();
+      return;
+    }
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (context) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.9,
+          padding: EdgeInsets.symmetric(vertical: 20.h),
+          child: Column(
+            children: [
+              Text(
+                'اختر القارئ',
+                style: AppTextStyle.style18W900.copyWith(
+                  fontFamily: AppFonts.amiri,
+                  color: AppColors.primaryColor,
+                ),
+              ),
+              10.verticalSpace,
+              const Divider(),
+              Expanded(
+                child: FutureBuilder<List<List<ReciterModel>>>(
+                  future: _sortRecitersByDownloadStatus(
+                    reciters,
+                    widget.surah.number,
+                  ),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryColor,
+                        ),
+                      );
+                    }
+
+                    final downloaded = snapshot.data![0];
+                    final notDownloaded = snapshot.data![1];
+
+                    return CustomScrollView(
+                      slivers: [
+                        if (downloaded.isNotEmpty) ...[
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                right: 20.w,
+                                bottom: 8.h,
+                                top: 8.h,
+                              ),
+                              child: Text(
+                                'السور المحملة مسبقاً',
+                                style: AppTextStyle.style14W800.copyWith(
+                                  color: AppColors.secondaryColor,
+                                  fontFamily: AppFonts.amiri,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) => _buildReciterTile(
+                                context,
+                                cubit,
+                                downloaded[index],
+                                isDownloaded: true,
+                              ),
+                              childCount: downloaded.length,
+                            ),
+                          ),
+
+                          SliverToBoxAdapter(
+                            child: Divider(
+                              color: AppColors.primaryColor.withAlpha(30),
+                              thickness: 1,
+                              indent: 20.w,
+                              endIndent: 20.w,
+                              height: 30.h,
+                            ),
+                          ),
+
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                right: 20.w,
+                                bottom: 8.h,
+                              ),
+                              child: Text(
+                                'جميع القراء',
+                                style: AppTextStyle.style14W800.copyWith(
+                                  color: AppColors.secondaryColor,
+                                  fontFamily: AppFonts.amiri,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => _buildReciterTile(
+                              context,
+                              cubit,
+                              notDownloaded[index],
+                              isDownloaded: false,
+                            ),
+                            childCount: notDownloaded.length,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<List<List<ReciterModel>>> _sortRecitersByDownloadStatus(
+    List<ReciterModel> reciters,
+    int surahNumber,
+  ) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final surahPadded = surahNumber.toString().padLeft(3, '0');
+
+    final downloaded = <ReciterModel>[];
+    final notDownloaded = <ReciterModel>[];
+
+    for (final reciter in reciters) {
+      if (reciter.server.isEmpty) continue;
+
+      final filePath = '${dir.path}/quran_audio/${reciter.id}/$surahPadded.mp3';
+
+      if (File(filePath).existsSync()) {
+        downloaded.add(reciter);
+      } else {
+        notDownloaded.add(reciter);
+      }
+    }
+
+    return [downloaded, notDownloaded];
+  }
+
+  Widget _buildReciterTile(
+    BuildContext context,
+    AudioCubit cubit,
+    ReciterModel reciter, {
+    required bool isDownloaded,
+  }) {
+    return ListTile(
+      leading: Container(
+        width: 40.r,
+        height: 40.r,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColors.primaryColor.withAlpha(20),
+        ),
+        child: Center(
+          child: Text(
+            reciter.name.characters.first,
+            style: AppTextStyle.style14W500.copyWith(
+              color: AppColors.primaryColor,
+              fontFamily: AppFonts.amiri,
+            ),
+          ),
+        ),
+      ),
+      title: Text(
+        reciter.name,
+        style: AppTextStyle.style16W800.copyWith(
+          fontFamily: AppFonts.amiri,
+        ),
+      ),
+      trailing: Icon(
+        isDownloaded ? Icons.play_circle_filled : Icons.cloud_download_outlined,
+        color: AppColors.primaryColor,
+      ),
+      onTap: () {
+        Navigator.pop(context);
+        cubit.playSurah(
+          reciter,
+          widget.surah.number,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WallpaperCubit, WallpaperState>(
@@ -312,6 +525,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
               toolbarHeight: 70.h,
               title: Text(
@@ -321,12 +535,26 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                   fontFamily: AppFonts.quran,
                 ),
               ),
-              centerTitle: true,
+              centerTitle: false,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new),
                 onPressed: () => context.pop(),
               ),
               actions: [
+                IconButton(
+                  icon: Icon(
+                    Icons.headset_mic_outlined,
+                    color: AppColors.buttonColor.withAlpha(150),
+                    size: 22.r,
+                  ),
+                  onPressed: () async {
+                    await context.read<AudioCubit>().loadReciters();
+                    _showReciterSelectionBottomSheet(
+                      context,
+                      context.read<AudioCubit>(),
+                    );
+                  },
+                ),
                 IconButton(
                   icon: Icon(
                     Icons.tune,
@@ -391,6 +619,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
+                                      20.horizontalSpace,
                                       IconButton(
                                         onPressed: () {
                                           _updateFontSize(
@@ -441,6 +670,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                               .withAlpha(100),
                                         ),
                                       ),
+                                      20.horizontalSpace,
                                     ],
                                   ),
                                   10.verticalSpace,
@@ -452,6 +682,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
+                                      20.horizontalSpace,
                                       IconButton(
                                         onPressed: () {
                                           if (_screenOpacity > 35) {
@@ -471,28 +702,30 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                               .withAlpha(100),
                                         ),
                                       ),
-                                      Slider(
-                                        activeColor: AppColors.primaryColor,
-                                        value: _screenOpacity
-                                            .clamp(35, 255)
-                                            .toDouble(),
-                                        min: 35,
-                                        max: 255,
-                                        divisions: 10,
-                                        label: _screenOpacity.toString(),
-                                        onChanged: (value) {
-                                          setState(
-                                            () =>
-                                                _screenOpacity = value.toInt(),
-                                          );
-                                          setModalState(() {});
-                                        },
-                                        onChangeEnd: (value) {
-                                          CacheHelper.saveData(
-                                            key: CacheKeys.quranScreenOpacity,
-                                            value: value,
-                                          );
-                                        },
+                                      Expanded(
+                                        child: Slider(
+                                          activeColor: AppColors.primaryColor,
+                                          value: _screenOpacity
+                                              .clamp(35, 255)
+                                              .toDouble(),
+                                          min: 35,
+                                          max: 255,
+                                          divisions: 10,
+                                          label: _screenOpacity.toString(),
+                                          onChanged: (value) {
+                                            setState(
+                                              () => _screenOpacity = value
+                                                  .toInt(),
+                                            );
+                                            setModalState(() {});
+                                          },
+                                          onChangeEnd: (value) {
+                                            CacheHelper.saveData(
+                                              key: CacheKeys.quranScreenOpacity,
+                                              value: value,
+                                            );
+                                          },
+                                        ),
                                       ),
                                       IconButton(
                                         onPressed: () {
@@ -513,6 +746,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                               .withAlpha(100),
                                         ),
                                       ),
+                                      20.horizontalSpace,
                                     ],
                                   ),
                                   10.verticalSpace,
@@ -735,7 +969,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                 20.horizontalSpace,
               ],
             ),
-            resizeToAvoidBottomInset: false,
+
             backgroundColor: wallpaperState.settings.hasWallpaper
                 ? Colors.transparent
                 : AppColors.primaryColor,
@@ -974,6 +1208,111 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                         ),
                       ),
               ),
+            ),
+            bottomNavigationBar: BlocConsumer<AudioCubit, AudioState>(
+              listener: (context, audioState) {
+                if (audioState is AudioError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        audioState.message,
+                        style: AppTextStyle.style14W500.copyWith(
+                          fontFamily: AppFonts.amiri,
+                        ),
+                      ),
+                      backgroundColor: AppColors.errorColor,
+                    ),
+                  );
+                }
+              },
+              builder: (context, audioState) {
+                if (audioState is AudioInitial || audioState is AudioError) {
+                  return const SizedBox.shrink();
+                }
+
+                return Container(
+                  height: 80.h,
+                  color: AppColors.primaryColor,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Positioned(
+                        left: 8.w,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.close_rounded,
+                            color: Colors.white.withAlpha(200),
+                            size: 24.r,
+                          ),
+                          onPressed: () => context.read<AudioCubit>().stop(),
+                        ),
+                      ),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (audioState is AudioLoading) ...[
+                            const CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                            16.horizontalSpace,
+                            Text(
+                              'جاري الاتصال وتحضير الملف...',
+                              style: AppTextStyle.style14W500.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ] else if (audioState is AudioDownloading) ...[
+                            CircularProgressIndicator(
+                              value: audioState.progress,
+                              color: Colors.white,
+                            ),
+                            16.horizontalSpace,
+                            Text(
+                              'جاري التحميل... ${(audioState.progress * 100).toInt()}%',
+                              style: AppTextStyle.style14W500.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ] else if (audioState is AudioPlaying) ...[
+                            IconButton(
+                              icon: Icon(
+                                Icons.pause_circle_filled,
+                                size: 40.r,
+                                color: Colors.white,
+                              ),
+                              onPressed: () =>
+                                  context.read<AudioCubit>().pause(),
+                            ),
+                            Text(
+                              'قيد التشغيل',
+                              style: AppTextStyle.style14W500.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ] else if (audioState is AudioPaused) ...[
+                            IconButton(
+                              icon: Icon(
+                                Icons.play_circle_filled,
+                                size: 40.r,
+                                color: Colors.white,
+                              ),
+                              onPressed: () =>
+                                  context.read<AudioCubit>().resume(),
+                            ),
+                            Text(
+                              'متوقف',
+                              style: AppTextStyle.style14W500.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         );

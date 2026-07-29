@@ -8,7 +8,7 @@ import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
-import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/controllers/quran_cubit/quran_cubit.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
 
 class TafsirIndexView extends StatelessWidget {

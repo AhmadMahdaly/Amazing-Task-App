@@ -29,7 +29,8 @@ import 'package:s/features/islamic_section/missed_prayers/domain/repo/missed_pra
 import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
 import 'package:s/features/islamic_section/notes/data/data_sources/notes_data_source.dart';
 import 'package:s/features/islamic_section/notes/presentation/cubit/notes_cubit.dart';
-import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/controllers/audio_cubit/audio_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/controllers/quran_cubit/quran_cubit.dart';
 import 'package:s/features/islamic_section/tabeen/data/data_source/tabeen_local_data_source.dart';
 import 'package:s/features/islamic_section/tabeen/data/repositories/tabeen_repository_impl.dart';
 import 'package:s/features/islamic_section/tabeen/domain/repository/tabeen_repository.dart';
@@ -127,5 +128,6 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<NotesCubit>(() => NotesCubit(getIt()))
     ///
     ..registerLazySingleton<AiTrackerCubit>(AiTrackerCubit.new)
-    ..registerLazySingleton<FridaySunnahCubit>(FridaySunnahCubit.new);
+    ..registerLazySingleton<FridaySunnahCubit>(FridaySunnahCubit.new)
+    ..registerLazySingleton<AudioCubit>(AudioCubit.new);
 }

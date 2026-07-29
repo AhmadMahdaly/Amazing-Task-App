@@ -13,7 +13,7 @@ import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/custom_progress_indicator.dart';
 import 'package:s/features/islamic_section/notes/presentation/utils/notes_section_type.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
-import 'package:s/features/islamic_section/quran/presentation/cubit/quran_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/controllers/quran_cubit/quran_cubit.dart';
 
 class QuranIndexView extends StatelessWidget {
   const QuranIndexView({super.key});
@@ -535,7 +535,11 @@ class QuranIndexView extends StatelessWidget {
       onTap: () async {
         await CacheHelper.saveData(key: CacheKeys.isFromBookmark, value: true);
         if (context.mounted) {
-          await _navigateToReading(context, bookmarkedSurah);
+          await _navigateToReading(
+            context,
+            bookmarkedSurah,
+            startAyah: ayahNumber,
+          );
         }
       },
       child: Container(
