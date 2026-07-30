@@ -7,11 +7,13 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_highlight.dart';
 import 'package:s/features/islamic_section/notes/presentation/cubit/notes_cubit.dart';
 import 'package:s/features/islamic_section/notes/presentation/utils/notes_section_type.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/saved_ayah_note_entity.dart';
+import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
 
 class UnifiedNotesView extends StatelessWidget {
   const UnifiedNotesView({required this.sectionType, super.key});
@@ -51,6 +53,9 @@ class UnifiedNotesView extends StatelessWidget {
         ),
         body: BlocConsumer<NotesCubit, NotesState>(
           listener: (context, state) {
+            // إخفاء الـ SnackBar الحالي لتجنب التكرار المزعج عند حذف عدة آيات متتالية
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
             if (state is NotesActionSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
@@ -87,26 +92,57 @@ class UnifiedNotesView extends StatelessWidget {
                 );
               }
 
-              return ListView.builder(
-                padding: EdgeInsets.all(16.r),
-                itemCount: notes.length,
-                itemBuilder: (context, index) {
-                  final note = notes[index];
+              // منطق عرض القرآن (مدمج في كروت للآيات المتتالية)
+              if (sectionType == NotesSectionType.quran) {
+                final quranNotes = notes.cast<SavedAyahNote>();
+                final groupedNotes = <List<SavedAyahNote>>[];
+                var currentGroup = <SavedAyahNote>[];
 
-                  if (sectionType == NotesSectionType.quran) {
-                    return _QuranNoteCard(
-                      note: note as SavedAyahNote,
+                // خوارزمية تجميع الآيات المتتالية
+                for (final note in quranNotes) {
+                  if (currentGroup.isEmpty) {
+                    currentGroup.add(note);
+                  } else {
+                    final last = currentGroup.last;
+                    // إذا كانت نفس السورة والآية التالية مباشرة
+                    if (note.surahNumber == last.surahNumber &&
+                        note.ayahNumber == last.ayahNumber + 1) {
+                      currentGroup.add(note);
+                    } else {
+                      groupedNotes.add(List.from(currentGroup));
+                      currentGroup = [note];
+                    }
+                  }
+                }
+                if (currentGroup.isNotEmpty) {
+                  groupedNotes.add(currentGroup);
+                }
+
+                return ListView.builder(
+                  padding: EdgeInsets.all(16.r),
+                  itemCount: groupedNotes.length,
+                  itemBuilder: (context, index) {
+                    return _QuranNoteGroupCard(
+                      notesGroup: groupedNotes[index],
                       sectionType: sectionType,
                     );
-                  } else {
+                  },
+                );
+              }
+              // منطق عرض باقي الأقسام (بدون دمج)
+              else {
+                return ListView.builder(
+                  padding: EdgeInsets.all(16.r),
+                  itemCount: notes.length,
+                  itemBuilder: (context, index) {
                     return _HighlightNoteCard(
-                      highlight: note as Highlight,
+                      highlight: notes[index] as Highlight,
                       isArbaoon: sectionType == NotesSectionType.arbaoon,
                       sectionType: sectionType,
                     );
-                  }
-                },
-              );
+                  },
+                );
+              }
             }
             return const SizedBox.shrink();
           },
@@ -116,83 +152,153 @@ class UnifiedNotesView extends StatelessWidget {
   }
 }
 
-class _QuranNoteCard extends StatelessWidget {
-  const _QuranNoteCard({required this.sectionType, required this.note});
-  final SavedAyahNote note;
+class _QuranNoteGroupCard extends StatelessWidget {
+  const _QuranNoteGroupCard({
+    required this.sectionType,
+    required this.notesGroup,
+  });
+
+  final List<SavedAyahNote> notesGroup;
   final NotesSectionType sectionType;
+
+  String _convertToArabicNumber(int number) {
+    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    var numStr = number.toString();
+    for (var i = 0; i < english.length; i++) {
+      numStr = numStr.replaceAll(english[i], arabic[i]);
+    }
+    return numStr;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final ayahRangeText = note.ayahNumber == note.endAyahNumber
-        ? 'آية ${note.ayahNumber}'
-        : 'آيات ${note.ayahNumber} - ${note.endAyahNumber}';
-    return Card(
-      elevation: 3,
-      margin: EdgeInsets.only(bottom: 16.r),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      child: Padding(
-        padding: EdgeInsets.all(16.r),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.r,
-                    vertical: 8.r,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryColor,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Text(
-                    'سورة ${note.surahName} - $ayahRangeText',
-                    style: AppTextStyle.style14W500.copyWith(
-                      color: Colors.white,
-                      fontFamily: AppFonts.amiri,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () => _confirmDelete(context, note, sectionType),
-                ),
-              ],
-            ),
-            12.verticalSpace,
-            Text(
-              note.ayahText,
-              style: AppTextStyle.style20W900.copyWith(
-                fontFamily: AppFonts.quran,
-                color: AppColors.primaryColor,
-                height: 1.8,
-              ),
-              textAlign: TextAlign.justify,
-            ),
-            if (note.note.trim().isNotEmpty) ...[
-              16.verticalSpace,
-              const Divider(),
-              8.verticalSpace,
+    final firstNote = notesGroup.first;
+    final lastNote = notesGroup.last;
+
+    final ayahRangeText = notesGroup.length == 1
+        ? 'آية ${firstNote.ayahNumber}'
+        : 'آيات ${firstNote.ayahNumber} - ${lastNote.ayahNumber}';
+
+    final combinedAyahText = notesGroup
+        .map((n) {
+          final arabicNum = _convertToArabicNumber(n.ayahNumber);
+          return '${n.ayahText} $arabicNum'; //۝
+        })
+        .join(' ');
+
+    final notesWithText = notesGroup
+        .where((n) => n.note.trim().isNotEmpty)
+        .toList();
+
+    return InkWell(
+      onTap: () async => context.pushNamed(
+        AppRoutes.surahReadingView,
+        extra: {
+          'surah': SurahEntity(
+            name: firstNote.surahName,
+            number: firstNote.surahNumber,
+            numberOfAyahs: 0,
+            revelationType: '',
+            startPage: 0,
+          ),
+          'startAyah': firstNote.ayahNumber,
+        },
+      ),
+      child: Card(
+        elevation: 3,
+        margin: EdgeInsets.only(bottom: 16.r),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.r),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.edit_note, color: AppColors.secondaryColor),
-                  8.horizontalSpace,
-                  Expanded(
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.r,
+                      vertical: 8.r,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor,
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
                     child: Text(
-                      note.note,
-                      style: AppTextStyle.style16W800.copyWith(
+                      'سورة ${firstNote.surahName} - $ayahRangeText',
+                      style: AppTextStyle.style14W500.copyWith(
+                        color: Colors.white,
                         fontFamily: AppFonts.amiri,
-                        height: 1.5,
                       ),
                     ),
                   ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    onPressed: () =>
+                        _confirmDelete(context, notesGroup, sectionType),
+                  ),
                 ],
               ),
+              12.verticalSpace,
+              Text(
+                combinedAyahText,
+                style: AppTextStyle.style20W900.copyWith(
+                  fontFamily: AppFonts.quran,
+                  color: AppColors.primaryColor,
+                  height: 1.8,
+                ),
+                textAlign: TextAlign.justify,
+              ),
+              if (notesWithText.isNotEmpty) ...[
+                16.verticalSpace,
+                const Divider(),
+                8.verticalSpace,
+                ...notesWithText.map(
+                  (n) => Padding(
+                    padding: EdgeInsets.only(bottom: 12.r),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.edit_note,
+                          color: AppColors.secondaryColor,
+                        ),
+                        8.horizontalSpace,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (notesGroup.length > 1) ...[
+                                Text(
+                                  'ملاحظة آية ${n.ayahNumber}:',
+                                  style: AppTextStyle.style12W700.copyWith(
+                                    color: AppColors.secondaryColor,
+                                    fontFamily: AppFonts.amiri,
+                                  ),
+                                ),
+                                4.verticalSpace,
+                              ],
+                              Text(
+                                n.note,
+                                style: AppTextStyle.style16W800.copyWith(
+                                  fontFamily: AppFonts.amiri,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -200,7 +306,7 @@ class _QuranNoteCard extends StatelessWidget {
 
   void _confirmDelete(
     BuildContext context,
-    SavedAyahNote note,
+    List<SavedAyahNote> groupToDelete,
     NotesSectionType sectionType,
   ) {
     showDialog<void>(
@@ -216,7 +322,9 @@ class _QuranNoteCard extends StatelessWidget {
             ),
           ),
           content: Text(
-            'هل أنت متأكد من أنك تريد حذف هذه الملاحظة؟',
+            groupToDelete.length > 1
+                ? 'هل أنت متأكد من أنك تريد حذف هذه المجموعة المتتالية من الآيات؟'
+                : 'هل أنت متأكد من أنك تريد حذف هذه الملاحظة؟',
             style: AppTextStyle.style16W600.copyWith(
               fontFamily: AppFonts.amiri,
               color: AppColors.primaryColor,
@@ -224,9 +332,14 @@ class _QuranNoteCard extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pop(dialogContext);
-                context.read<NotesCubit>().deleteNote(note, sectionType);
+                for (final note in groupToDelete) {
+                  await context.read<NotesCubit>().deleteNote(
+                    note,
+                    sectionType,
+                  );
+                }
               },
               child: Text(
                 'حذف',

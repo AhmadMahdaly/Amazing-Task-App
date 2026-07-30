@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -117,18 +118,27 @@ class AudioCubit extends Cubit<AudioState> {
 
   Future<void> _setupAndPlay(String filePath) async {
     try {
-      final mediaItem = MediaItem(
-        id: currentSurah.toString(),
-        album: currentReciter?.name ?? 'القرآن الكريم',
-        title: 'سورة $currentSurahName',
-        // artUri: Uri.parse('https://example.com/image.jpg'),
-      );
+      AudioSource audioSource;
 
-      final audioSource = AudioSource.uri(
-        Uri.parse(filePath),
-        tag: mediaItem,
-      );
+      final supportsBackground =
+          !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS);
 
+      if (supportsBackground) {
+        final mediaItem = MediaItem(
+          id: currentSurah.toString(),
+          album: currentReciter?.name ?? 'القرآن الكريم',
+          title: 'سورة رقم $currentSurah',
+        );
+
+        audioSource = AudioSource.uri(
+          Uri.parse(filePath),
+          tag: mediaItem,
+        );
+      } else {
+        audioSource = AudioSource.uri(
+          Uri.parse(filePath),
+        );
+      }
       await _audioPlayer.setAudioSource(audioSource);
       _audioPlayer.play();
     } catch (e) {

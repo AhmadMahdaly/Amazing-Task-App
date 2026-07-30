@@ -13,6 +13,7 @@ class NotesCubit extends Cubit<NotesState> {
 
   Future<void> loadNotes(NotesSectionType sectionType) async {
     emit(NotesLoading());
+
     try {
       final notes = await _dataSource.getNotes(sectionType);
       emit(NotesLoaded(notes));

@@ -343,36 +343,37 @@ class TasksDrawer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 8.horizontalSpace,
-                if (!isTablet)
-                  SpeedDial(
-                    icon: Icons.settings,
-                    iconTheme: IconThemeData(
-                      color: AppColors.buttonColor.withAlpha(100),
+
+                SpeedDial(
+                  icon: Icons.settings,
+                  iconTheme: IconThemeData(
+                    color: AppColors.buttonColor.withAlpha(100),
+                  ),
+                  switchLabelPosition: true,
+                  activeIcon: Icons.close_rounded,
+                  backgroundColor: AppColors.transparent,
+                  spacing: 10,
+                  spaceBetweenChildren: 10,
+                  elevation: 0,
+                  mini: true,
+                  activeForegroundColor: AppColors.transparent,
+                  // activeBackgroundColor: AppColors.buttonColor,
+                  overlayColor: AppColors.buttonColor,
+                  overlayOpacity: .4,
+
+                  direction: SpeedDialDirection.up,
+                  animationCurve: Curves.easeOutBack,
+                  animationDuration: const Duration(milliseconds: 250),
+                  children: [
+                    SpeedDialChild(
+                      child: const Icon(Icons.restart_alt),
+                      label: AppTexts.backupAndRestore,
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.backupScreen);
+                      },
                     ),
-                    switchLabelPosition: true,
-                    activeIcon: Icons.close_rounded,
-                    backgroundColor: AppColors.transparent,
-                    spacing: 10,
-                    spaceBetweenChildren: 10,
-                    elevation: 0,
-                    mini: true,
-                    activeForegroundColor: AppColors.transparent,
-                    // activeBackgroundColor: AppColors.buttonColor,
-                    overlayColor: AppColors.buttonColor,
-                    overlayOpacity: .4,
 
-                    direction: SpeedDialDirection.up,
-                    animationCurve: Curves.easeOutBack,
-                    animationDuration: const Duration(milliseconds: 250),
-                    children: [
-                      SpeedDialChild(
-                        child: const Icon(Icons.restart_alt),
-                        label: AppTexts.backupAndRestore,
-                        onTap: () async {
-                          await context.pushNamed(AppRoutes.backupScreen);
-                        },
-                      ),
-
+                    if (!isTablet)
                       SpeedDialChild(
                         child: const Icon(Icons.edit_attributes_outlined),
                         label: 'Customize NavBar Sheet',
@@ -394,31 +395,31 @@ class TasksDrawer extends StatelessWidget {
                         },
                       ),
 
-                      SpeedDialChild(
-                        child: const Icon(Icons.wallpaper_outlined),
-                        label: 'Change wallpaper',
-                        onTap: () async {
-                          await showWallpaperPickerSheet(context);
-                        },
-                      ),
+                    SpeedDialChild(
+                      child: const Icon(Icons.wallpaper_outlined),
+                      label: 'Change wallpaper',
+                      onTap: () async {
+                        await showWallpaperPickerSheet(context);
+                      },
+                    ),
 
-                      // SpeedDialChild(
-                      //   child: const Icon(Icons.auto_awesome_rounded),
-                      //   label: 'AI Tracker',
-                      //   onTap: () async {
-                      //     await context.pushNamed(AppRoutes.aiTrackerMainView);
-                      //   },
-                      // ),
-                    ],
-                  ),
-                if (isTablet)
-                  IconButton(
-                    tooltip: 'Change wallpaper',
-                    icon: const Icon(Icons.wallpaper_outlined),
-                    onPressed: () async {
-                      await showWallpaperPickerSheet(context);
-                    },
-                  ),
+                    // SpeedDialChild(
+                    //   child: const Icon(Icons.auto_awesome_rounded),
+                    //   label: 'AI Tracker',
+                    //   onTap: () async {
+                    //     await context.pushNamed(AppRoutes.aiTrackerMainView);
+                    //   },
+                    // ),
+                  ],
+                ),
+                // if (isTablet)
+                //   IconButton(
+                //     tooltip: 'Change wallpaper',
+                //     icon: const Icon(Icons.wallpaper_outlined),
+                //     onPressed: () async {
+                //       await showWallpaperPickerSheet(context);
+                //     },
+                //   ),
                 IconButton(
                   tooltip: 'Add Challenge',
                   icon: const Icon(Icons.add_task_rounded),

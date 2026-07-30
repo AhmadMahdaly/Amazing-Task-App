@@ -185,6 +185,9 @@ void initRouter() {
               BlocProvider.value(
                 value: getIt<AudioCubit>(),
               ),
+              BlocProvider.value(
+                value: getIt<NotesCubit>(),
+              ),
             ],
             child: SurahReadingView(surah: surah, startAyah: startAyah),
           );

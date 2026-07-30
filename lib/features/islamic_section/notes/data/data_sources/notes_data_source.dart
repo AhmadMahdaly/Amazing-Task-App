@@ -56,44 +56,15 @@ class NotesDataSource {
   Future<void> saveAyahNote(SavedAyahNote newAyah) async {
     final notes = await getNotes(NotesSectionType.quran) as List<SavedAyahNote>;
 
-    var merged = false;
-    for (var i = 0; i < notes.length; i++) {
-      final existingAyah = notes[i];
+    final existingIndex = notes.indexWhere(
+      (note) =>
+          note.surahNumber == newAyah.surahNumber &&
+          note.ayahNumber == newAyah.ayahNumber,
+    );
 
-      if (existingAyah.surahNumber == newAyah.surahNumber) {
-        if (newAyah.ayahNumber == existingAyah.endAyahNumber! + 1) {
-          notes[i] = SavedAyahNote(
-            id: existingAyah.id,
-            surahNumber: existingAyah.surahNumber,
-            surahName: existingAyah.surahName,
-            ayahNumber: existingAyah.ayahNumber,
-            endAyahNumber: newAyah.endAyahNumber,
-            ayahText: '${existingAyah.ayahText} ۝ ${newAyah.ayahText}',
-            note: existingAyah.note.isNotEmpty
-                ? existingAyah.note
-                : newAyah.note,
-          );
-          merged = true;
-          break;
-        } else if (newAyah.ayahNumber == existingAyah.ayahNumber - 1) {
-          notes[i] = SavedAyahNote(
-            id: existingAyah.id,
-            surahNumber: existingAyah.surahNumber,
-            surahName: existingAyah.surahName,
-            ayahNumber: newAyah.ayahNumber,
-            endAyahNumber: existingAyah.endAyahNumber,
-            ayahText: '${newAyah.ayahText} ۝ ${existingAyah.ayahText}',
-            note: existingAyah.note.isNotEmpty
-                ? existingAyah.note
-                : newAyah.note,
-          );
-          merged = true;
-          break;
-        }
-      }
-    }
-
-    if (!merged) {
+    if (existingIndex != -1) {
+      notes[existingIndex] = newAyah;
+    } else {
       notes.add(newAyah);
     }
 
