@@ -53,13 +53,9 @@ class SirahView extends StatelessWidget {
                       title: 'أنبياء الله',
                       icon: Icons.history_edu_rounded,
                       onTap: () async {
-                        // await context.pushNamed(
-                        //   AppRoutes.azkarView,
-                        //   extra: {
-                        //     'title': 'أذكار المساء',
-                        //     'azkarType': AzkarType.evening,
-                        //   },
-                        // );
+                        await context.pushNamed(
+                          AppRoutes.anbyaaIndexView,
+                        );
                       },
                     ),
                     _IslamicItem(

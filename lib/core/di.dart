@@ -9,6 +9,10 @@ import 'package:s/features/challenges/data/datasource/challenges_local_datasourc
 import 'package:s/features/challenges/data/repositories/challenge_repository_impl.dart';
 import 'package:s/features/challenges/domain/repositories/challenge_repository.dart';
 import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
+import 'package:s/features/islamic_section/anbyaa/data/data_source/anbyaa_local_data_source.dart';
+import 'package:s/features/islamic_section/anbyaa/data/repositories/anbyaa_repository_impl.dart';
+import 'package:s/features/islamic_section/anbyaa/domain/repository/anbyaa_repository.dart';
+import 'package:s/features/islamic_section/anbyaa/presentation/cubit/anbyaa_cubit.dart';
 import 'package:s/features/islamic_section/arbaoon/data/data_source/arbaoon_local_data_source.dart';
 import 'package:s/features/islamic_section/arbaoon/data/repositories/arbaoon_repository_impl.dart';
 import 'package:s/features/islamic_section/arbaoon/domain/repository/arbaoon_repository.dart';
@@ -124,6 +128,13 @@ Future<void> setupGetIt() async {
       () => TabeenRepositoryImpl(getIt()),
     )
     ..registerLazySingleton<TabeenCubit>(() => TabeenCubit(getIt()))
+    ..registerLazySingleton<AnbyaaLocalDataSource>(
+      AnbyaaLocalDataSourceImpl.new,
+    )
+    ..registerLazySingleton<AnbyaaRepository>(
+      () => AnbyaaRepositoryImpl(getIt()),
+    )
+    ..registerLazySingleton<AnbyaaCubit>(() => AnbyaaCubit(getIt()))
     ..registerLazySingleton<NotesDataSource>(NotesDataSource.new)
     ..registerLazySingleton<NotesCubit>(() => NotesCubit(getIt()))
     ///

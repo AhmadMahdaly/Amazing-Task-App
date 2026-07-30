@@ -14,6 +14,10 @@ import 'package:s/features/challenges/presentation/screens/add_challenge_screen.
 import 'package:s/features/challenges/presentation/screens/analysis_screen.dart';
 import 'package:s/features/challenges/presentation/screens/challenges_screen.dart';
 import 'package:s/features/day_schedule/presentation/views/day_schedule_screen.dart';
+import 'package:s/features/islamic_section/anbyaa/domain/entities/anbyaa.dart';
+import 'package:s/features/islamic_section/anbyaa/presentation/cubit/anbyaa_cubit.dart';
+import 'package:s/features/islamic_section/anbyaa/presentation/views/anbyaa_index_view.dart';
+import 'package:s/features/islamic_section/anbyaa/presentation/views/anbyaa_reading_view.dart';
 import 'package:s/features/islamic_section/arbaoon/domain/entities/hadith.dart';
 import 'package:s/features/islamic_section/arbaoon/presentation/cubit/arbaoon_cubit.dart';
 import 'package:s/features/islamic_section/arbaoon/presentation/views/arbaoon_index_view.dart';
@@ -382,6 +386,29 @@ void initRouter() {
             value: getIt<TabeenCubit>(),
             child: TabeenReadingView(
               tabeen: tabeen,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.anbyaaIndexView,
+        name: AppRoutes.anbyaaIndexView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<AnbyaaCubit>()..loadTabeen(),
+            child: const AnbyaaIndexView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.anbyaaReadingView,
+        name: AppRoutes.anbyaaReadingView,
+        builder: (context, state) {
+          final anbyaa = state.extra! as Anbyaa;
+          return BlocProvider.value(
+            value: getIt<AnbyaaCubit>(),
+            child: AnbyaaReadingView(
+              anbyaa: anbyaa,
             ),
           );
         },

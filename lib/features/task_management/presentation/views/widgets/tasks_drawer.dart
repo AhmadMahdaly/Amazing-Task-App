@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -373,7 +374,7 @@ class TasksDrawer extends StatelessWidget {
                       },
                     ),
 
-                    if (!isTablet)
+                    if (!isTablet && (Platform.isAndroid || Platform.isIOS))
                       SpeedDialChild(
                         child: const Icon(Icons.edit_attributes_outlined),
                         label: 'Customize NavBar Sheet',

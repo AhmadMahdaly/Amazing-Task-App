@@ -26,6 +26,7 @@ import 'package:s/features/islamic_section/quran/domain/entities/saved_ayah_note
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
 import 'package:s/features/islamic_section/quran/presentation/controllers/audio_cubit/audio_cubit.dart';
 import 'package:s/features/islamic_section/quran/presentation/controllers/quran_cubit/quran_cubit.dart';
+import 'package:s/features/islamic_section/quran/presentation/views/widgets/reciter_tile_widget.dart';
 
 class SurahReadingView extends StatefulWidget {
   const SurahReadingView({required this.surah, this.startAyah, super.key});
@@ -350,117 +351,124 @@ class _SurahReadingViewState extends State<SurahReadingView> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
-      builder: (context) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.9,
-          padding: EdgeInsets.symmetric(vertical: 20.h),
-          child: Column(
-            children: [
-              Text(
-                'اختر القارئ',
-                style: AppTextStyle.style18W900.copyWith(
-                  fontFamily: AppFonts.amiri,
-                  color: AppColors.primaryColor,
-                ),
-              ),
-              10.verticalSpace,
-              const Divider(),
-              Expanded(
-                child: FutureBuilder<List<List<ReciterModel>>>(
-                  future: _sortRecitersByDownloadStatus(
-                    reciters,
-                    widget.surah.number,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) {
+          return Directionality(
+            textDirection: TextDirection.rtl,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.9,
+              padding: EdgeInsets.symmetric(vertical: 20.h),
+              child: Column(
+                children: [
+                  Text(
+                    'اختر القارئ',
+                    style: AppTextStyle.style18W900.copyWith(
+                      fontFamily: AppFonts.amiri,
+                      color: AppColors.primaryColor,
+                    ),
                   ),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.primaryColor,
-                        ),
-                      );
-                    }
+                  10.verticalSpace,
+                  const Divider(),
+                  Expanded(
+                    child: FutureBuilder<List<List<ReciterModel>>>(
+                      future: _sortRecitersByDownloadStatus(
+                        reciters,
+                        widget.surah.number,
+                      ),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.primaryColor,
+                            ),
+                          );
+                        }
 
-                    final downloaded = snapshot.data![0];
-                    final notDownloaded = snapshot.data![1];
+                        final downloaded = snapshot.data![0];
+                        final notDownloaded = snapshot.data![1];
 
-                    return CustomScrollView(
-                      slivers: [
-                        if (downloaded.isNotEmpty) ...[
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                right: 20.w,
-                                bottom: 8.h,
-                                top: 8.h,
-                              ),
-                              child: Text(
-                                'السور المحملة مسبقاً',
-                                style: AppTextStyle.style14W800.copyWith(
-                                  color: AppColors.successColor,
-                                  fontFamily: AppFonts.amiri,
+                        return CustomScrollView(
+                          slivers: [
+                            if (downloaded.isNotEmpty) ...[
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                    right: 20.w,
+                                    bottom: 8.h,
+                                    top: 8.h,
+                                  ),
+                                  child: Text(
+                                    'السور المحملة مسبقاً',
+                                    style: AppTextStyle.style14W800.copyWith(
+                                      color: AppColors.successColor,
+                                      fontFamily: AppFonts.amiri,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) => _buildReciterTile(
-                                context,
-                                cubit,
-                                downloaded[index],
-                                isDownloaded: true,
-                              ),
-                              childCount: downloaded.length,
-                            ),
-                          ),
-
-                          SliverToBoxAdapter(
-                            child: Divider(
-                              color: AppColors.primaryColor.withAlpha(30),
-                              thickness: 1,
-                              indent: 20.w,
-                              endIndent: 20.w,
-                              height: 30.h,
-                            ),
-                          ),
-
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                right: 20.w,
-                                bottom: 8.h,
-                              ),
-                              child: Text(
-                                'جميع القراء',
-                                style: AppTextStyle.style14W800.copyWith(
-                                  color: AppColors.secondaryColor,
-                                  fontFamily: AppFonts.amiri,
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) => ReciterTileWidget(
+                                    context: context,
+                                    widget: widget,
+                                    onDeleted: () => setModalState(() {}),
+                                    cubit: cubit,
+                                    reciter: downloaded[index],
+                                    isDownloaded: true,
+                                  ),
+                                  childCount: downloaded.length,
                                 ),
                               ),
-                            ),
-                          ),
-                        ],
 
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) => _buildReciterTile(
-                              context,
-                              cubit,
-                              notDownloaded[index],
-                              isDownloaded: false,
+                              SliverToBoxAdapter(
+                                child: Divider(
+                                  color: AppColors.primaryColor.withAlpha(30),
+                                  thickness: 1,
+                                  indent: 20.w,
+                                  endIndent: 20.w,
+                                  height: 30.h,
+                                ),
+                              ),
+
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                    right: 20.w,
+                                    bottom: 8.h,
+                                  ),
+                                  child: Text(
+                                    'جميع القراء',
+                                    style: AppTextStyle.style14W800.copyWith(
+                                      color: AppColors.secondaryColor,
+                                      fontFamily: AppFonts.amiri,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => ReciterTileWidget(
+                                  context: context,
+                                  cubit: cubit,
+                                  widget: widget,
+                                  reciter: notDownloaded[index],
+                                  isDownloaded: false,
+                                ),
+                                childCount: notDownloaded.length,
+                              ),
                             ),
-                            childCount: notDownloaded.length,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -488,47 +496,6 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     }
 
     return [downloaded, notDownloaded];
-  }
-
-  Widget _buildReciterTile(
-    BuildContext context,
-    AudioCubit cubit,
-    ReciterModel reciter, {
-    required bool isDownloaded,
-  }) {
-    return ListTile(
-      leading: Container(
-        width: 40.r,
-        height: 40.r,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.primaryColor.withAlpha(20),
-        ),
-        child: Center(
-          child: Text(
-            reciter.name.characters.first,
-            style: AppTextStyle.style14W500.copyWith(
-              color: AppColors.primaryColor,
-              fontFamily: AppFonts.amiri,
-            ),
-          ),
-        ),
-      ),
-      title: Text(
-        reciter.name,
-        style: AppTextStyle.style16W800.copyWith(
-          fontFamily: AppFonts.amiri,
-        ),
-      ),
-      trailing: Icon(
-        isDownloaded ? Icons.play_circle_filled : Icons.cloud_download_outlined,
-        color: AppColors.primaryColor,
-      ),
-      onTap: () {
-        Navigator.pop(context);
-        cubit.playSurah(reciter, widget.surah.number, widget.surah.name);
-      },
-    );
   }
 
   @override
@@ -1309,11 +1276,20 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                 final cubit = context.read<AudioCubit>();
 
                 return Container(
-                  height: 100.h,
-                  color: AppColors.primaryColor,
+                  margin: EdgeInsets.symmetric(
+                    vertical: 16.h,
+                    horizontal: 32.w,
+                  ),
+                  height: 110.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(32.r),
+                    color: AppColors.forthColor.withAlpha(240),
+                  ),
+
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      24.verticalSpace,
                       if (audioState is AudioPlaying ||
                           audioState is AudioPaused)
                         StreamBuilder<Duration>(
@@ -1365,7 +1341,6 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                         data: SliderThemeData(
                                           padding: EdgeInsets.symmetric(
                                             horizontal: 24.w,
-                                            vertical: 16.h,
                                           ),
 
                                           trackHeight: 3.h,
@@ -1412,7 +1387,6 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 24.w,
-                            vertical: 16.h,
                           ),
 
                           child: LinearProgressIndicator(
@@ -1426,7 +1400,6 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 24.w,
-                            vertical: 16.h,
                           ),
                           child: LinearProgressIndicator(
                             backgroundColor: Colors.white.withAlpha(50),
@@ -1508,7 +1481,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                           ],
                         ),
                       ),
-                      24.verticalSpace,
+                      16.verticalSpace,
                     ],
                   ),
                 );

@@ -118,7 +118,6 @@ class ReciterTileWidget extends StatelessWidget {
                 if (file.existsSync()) {
                   await file.delete();
 
-                  // إيقاف المشغل إذا كان الملف المحذوف هو الذي يعمل حالياً
                   if (cubit.currentReciter?.id == reciter.id &&
                       cubit.currentSurah == widget.surah.number) {
                     cubit.stop();
@@ -132,7 +131,6 @@ class ReciterTileWidget extends StatelessWidget {
                       ),
                     );
 
-                    // استدعاء دالة التحديث ليتم نقل القارئ للقائمة السفلية
                     if (onDeleted != null) onDeleted?.call();
                   }
                 }

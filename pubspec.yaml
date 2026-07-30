@@ -1,7 +1,7 @@
 name: s
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.55+55
+version: 1.0.56+56
 
 environment:
   sdk: ^3.9.0
@@ -59,7 +59,7 @@ flutter:
     - assets/text/asmaa.txt
     - assets/text/arbaoon.txt
     - assets/text/tabeen.txt
-
+    - assets/text/anbyaa.txt
   fonts:
     - family: Almarai
       fonts:

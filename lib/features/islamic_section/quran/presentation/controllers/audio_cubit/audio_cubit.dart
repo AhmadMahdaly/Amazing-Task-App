@@ -127,7 +127,7 @@ class AudioCubit extends Cubit<AudioState> {
         final mediaItem = MediaItem(
           id: currentSurah.toString(),
           album: currentReciter?.name ?? 'القرآن الكريم',
-          title: 'سورة رقم $currentSurah',
+          title: 'سورة $currentSurahName',
         );
 
         audioSource = AudioSource.uri(
