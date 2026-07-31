@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class SavedAyahNote {
   SavedAyahNote({
+    required this.isStarred,
     required this.endAyahNumber,
     required this.id,
     required this.surahNumber,
@@ -13,6 +14,7 @@ class SavedAyahNote {
 
   factory SavedAyahNote.fromMap(Map<String, dynamic> map) {
     return SavedAyahNote(
+      isStarred: map['isStarred'] as bool? ?? false,
       id: map['id'] as String,
       surahNumber: map['surahNumber'] as int,
       surahName: map['surahName'] as String,
@@ -29,9 +31,11 @@ class SavedAyahNote {
   final String ayahText;
   final String note;
   final int? endAyahNumber;
+  final bool isStarred;
 
   Map<String, dynamic> toMap() {
     return {
+      'isStarred': isStarred,
       'id': id,
       'surahNumber': surahNumber,
       'surahName': surahName,
@@ -40,6 +44,28 @@ class SavedAyahNote {
       'note': note,
       'endAyahNumber': endAyahNumber ?? ayahNumber,
     };
+  }
+
+  SavedAyahNote copyWith({
+    String? id,
+    int? surahNumber,
+    int? endAyahNumber,
+    String? surahName,
+    int? ayahNumber,
+    String? ayahText,
+    String? note,
+    bool? isStarred,
+  }) {
+    return SavedAyahNote(
+      id: id ?? this.id,
+      surahNumber: surahNumber ?? this.surahNumber,
+      endAyahNumber: endAyahNumber ?? this.endAyahNumber,
+      surahName: surahName ?? this.surahName,
+      ayahNumber: ayahNumber ?? this.ayahNumber,
+      ayahText: ayahText ?? this.ayahText,
+      note: note ?? this.note,
+      isStarred: isStarred ?? this.isStarred,
+    );
   }
 
   static String encode(List<SavedAyahNote> notes) => json.encode(

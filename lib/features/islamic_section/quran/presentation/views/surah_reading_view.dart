@@ -1,5 +1,6 @@
 // ignore_for_file: unawaited_futures, discarded_futures, omit_local_variable_types, prefer_int_literals
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/gestures.dart';
@@ -51,14 +52,15 @@ class _SurahReadingViewState extends State<SurahReadingView> {
   ];
   late List<String> surahAyahs;
   late QuranCubit _quranCubit;
-  double _readingProgress = 0;
+  final ValueNotifier<double> _readingProgressNotifier = ValueNotifier(0.0);
+  Timer? _saveScrollTimer;
   final Map<int, GlobalKey> _ayahKeys = {};
   @override
   void initState() {
     super.initState();
     _quranCubit = context.read<QuranCubit>();
     surahAyahs = _quranCubit.getAyahsForSurah(widget.surah.number);
-    context.read<NotesCubit>().loadNotes(NotesSectionType.quran);
+    context.read<HighlightNotesCubit>().loadNotes(NotesSectionType.quran);
 
     for (var i = 1; i <= surahAyahs.length; i++) {
       _ayahKeys[i] = GlobalKey();
@@ -114,6 +116,8 @@ class _SurahReadingViewState extends State<SurahReadingView> {
 
   @override
   void dispose() {
+    _saveScrollTimer?.cancel();
+    _readingProgressNotifier.dispose();
     _scrollController
       ..removeListener(_onScroll)
       ..dispose();
@@ -172,11 +176,58 @@ class _SurahReadingViewState extends State<SurahReadingView> {
       );
   }
 
+  void _confirmDelete(BuildContext context, void Function()? onPressed) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          title: Text(
+            'تنبيه',
+            style: AppTextStyle.style20W900.copyWith(
+              fontFamily: AppFonts.amiri,
+              color: AppColors.primaryColor,
+            ),
+          ),
+          content: Text(
+            'برجاء العلم أن إزالة هذه الآية من ملاحظاتك سيحذف معه أي ملاحظة قمت بتسجيلها؟',
+            style: AppTextStyle.style16W600.copyWith(
+              fontFamily: AppFonts.amiri,
+              color: AppColors.primaryColor,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: onPressed,
+              child: Text(
+                'حذف',
+                style: AppTextStyle.style16W900.copyWith(
+                  fontFamily: AppFonts.amiri,
+                  color: AppColors.errorColor,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(
+                'إلغاء',
+                style: AppTextStyle.style16W900.copyWith(
+                  fontFamily: AppFonts.amiri,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showAyahOptions(
     int ayah,
     String ayahText,
     bool isSaved,
     SavedAyahNote? savedNote,
+    bool hasNote,
   ) {
     showModalBottomSheet<void>(
       context: context,
@@ -239,10 +290,20 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                   onTap: () {
                     Navigator.pop(context);
                     if (isSaved && savedNote != null) {
-                      context.read<NotesCubit>().deleteNote(
-                        savedNote,
-                        NotesSectionType.quran,
-                      );
+                      if (hasNote) {
+                        _confirmDelete(
+                          context,
+                          () => context.read<HighlightNotesCubit>().deleteNote(
+                            savedNote,
+                            NotesSectionType.quran,
+                          ),
+                        );
+                      } else {
+                        context.read<HighlightNotesCubit>().deleteNote(
+                          savedNote,
+                          NotesSectionType.quran,
+                        );
+                      }
                     } else {
                       _saveAyahWithNote(ayah, ayahText, '', null);
                     }
@@ -301,14 +362,17 @@ class _SurahReadingViewState extends State<SurahReadingView> {
 
   void _onScroll() {
     final max = _scrollController.position.maxScrollExtent;
-
     if (max == 0) return;
 
-    setState(() {
-      _readingProgress = (_scrollController.offset / max).clamp(0.0, 1.0);
-    });
+    _readingProgressNotifier.value = (_scrollController.offset / max).clamp(
+      0.0,
+      1.0,
+    );
 
-    _saveOffset();
+    if (_saveScrollTimer?.isActive ?? false) {
+      _saveScrollTimer!.cancel();
+    }
+    _saveScrollTimer = Timer(const Duration(milliseconds: 500), _saveOffset);
   }
 
   void _updateFontSize(
@@ -783,22 +847,29 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                   child: SizedBox(
                     width: 24.w,
                     height: 24.h,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        CircularProgressIndicator(
-                          value: _readingProgress,
-                          strokeWidth: 1,
-                          backgroundColor: AppColors.buttonColor.withAlpha(20),
-                          color: AppColors.buttonColor.withAlpha(150),
-                        ),
-                        Text(
-                          '${(_readingProgress * 100).round()}',
-                          style: AppTextStyle.style9W700.copyWith(
-                            color: AppColors.buttonColor.withAlpha(150),
-                          ),
-                        ),
-                      ],
+                    child: ValueListenableBuilder<double>(
+                      valueListenable: _readingProgressNotifier,
+                      builder: (context, progress, child) {
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            CircularProgressIndicator(
+                              value: progress,
+                              strokeWidth: 1,
+                              backgroundColor: AppColors.buttonColor.withAlpha(
+                                20,
+                              ),
+                              color: AppColors.buttonColor.withAlpha(150),
+                            ),
+                            Text(
+                              '${(progress * 100).round()}',
+                              style: AppTextStyle.style9W700.copyWith(
+                                color: AppColors.buttonColor.withAlpha(150),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                   onTap: () async {
@@ -815,10 +886,10 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                   const Text('مستوى التقدم'),
                                   Slider(
                                     activeColor: AppColors.primaryColor,
-                                    value: _readingProgress,
+                                    value: _readingProgressNotifier.value,
                                     onChanged: (value) {
                                       setModalState(() {
-                                        _readingProgress = value;
+                                        _readingProgressNotifier.value = value;
                                       });
 
                                       final max = _scrollController
@@ -965,15 +1036,15 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                 color: AppColors.primaryColor.withAlpha(_screenOpacity),
                 child: surahAyahs.isEmpty
                     ? const Center(child: LoadingWidget())
-                    : BlocBuilder<NotesCubit, NotesState>(
+                    : BlocBuilder<HighlightNotesCubit, NotesState>(
                         builder: (context, notesState) {
-                          final List<SavedAyahNote> savedAyahs = [];
+                          final Map<int, SavedAyahNote> savedAyahsMap = {};
                           if (notesState is NotesLoaded) {
                             for (final note in notesState.notes) {
                               if (note is SavedAyahNote &&
                                   note.surahNumber.toString() ==
                                       widget.surah.number.toString()) {
-                                savedAyahs.add(note);
+                                savedAyahsMap[note.ayahNumber] = note;
                               }
                             }
                           }
@@ -1017,23 +1088,12 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                         );
                                       }
 
-                                      SavedAyahNote? savedNote;
-                                      for (final n in savedAyahs) {
-                                        if (n.ayahNumber.toString() ==
-                                            ayahNumberInt.toString()) {
-                                          if (savedNote == null ||
-                                              (n.note != null &&
-                                                  n.note.trim().isNotEmpty)) {
-                                            savedNote = n;
-                                          }
-                                        }
-                                      }
-
+                                      final SavedAyahNote? savedNote =
+                                          savedAyahsMap[ayahNumberInt];
                                       final bool isSaved = savedNote != null;
                                       final bool hasNote =
                                           isSaved &&
-                                          (savedNote.note != null &&
-                                              savedNote.note.trim().isNotEmpty);
+                                          (savedNote.note.trim().isNotEmpty);
 
                                       final Color currentAyahColor = isSaved
                                           ? AppColors.successColor
@@ -1133,6 +1193,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                                                 ayahText,
                                                 isSaved,
                                                 savedNote,
+                                                hasNote,
                                               ),
                                             style: AppTextStyle.style20W900
                                                 .copyWith(
@@ -1549,7 +1610,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     String note, [
     SavedAyahNote? existingNote,
   ]) async {
-    final dataSource = getIt<NotesDataSource>();
+    final dataSource = getIt<HighlightNotesDataSource>();
 
     try {
       if (existingNote != null) {
@@ -1559,6 +1620,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
       }
 
       final newNote = SavedAyahNote(
+        isStarred: false,
         id:
             existingNote?.id ??
             DateTime.now().microsecondsSinceEpoch.toString(),
@@ -1573,7 +1635,9 @@ class _SurahReadingViewState extends State<SurahReadingView> {
       await dataSource.saveAyahNote(newNote);
 
       if (mounted) {
-        await context.read<NotesCubit>().loadNotes(NotesSectionType.quran);
+        await context.read<HighlightNotesCubit>().loadNotes(
+          NotesSectionType.quran,
+        );
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(

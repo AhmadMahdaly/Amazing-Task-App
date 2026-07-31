@@ -56,6 +56,11 @@ import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubi
 import 'package:s/features/islamic_section/tafsir/presentation/views/tafsir_index_view.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/views/tafsir_reading_view.dart';
 import 'package:s/features/my_app/backup_screen.dart';
+import 'package:s/features/notes/domain/entities/note_entity.dart';
+import 'package:s/features/notes/presentation/cubit/notes_cubit.dart';
+import 'package:s/features/notes/presentation/views/add_edit_note_view.dart';
+import 'package:s/features/notes/presentation/views/journal_view.dart';
+import 'package:s/features/notes/presentation/views/notes_view.dart';
 import 'package:s/features/planner/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
@@ -190,7 +195,7 @@ void initRouter() {
                 value: getIt<AudioCubit>(),
               ),
               BlocProvider.value(
-                value: getIt<NotesCubit>(),
+                value: getIt<HighlightNotesCubit>(),
               ),
             ],
             child: SurahReadingView(surah: surah, startAyah: startAyah),
@@ -292,7 +297,7 @@ void initRouter() {
         builder: (context, state) {
           final sectionType = state.extra! as NotesSectionType;
           return BlocProvider.value(
-            value: getIt<NotesCubit>()..loadNotes(sectionType),
+            value: getIt<HighlightNotesCubit>()..loadNotes(sectionType),
             child: UnifiedNotesView(sectionType: sectionType),
           );
         },
@@ -409,6 +414,41 @@ void initRouter() {
             value: getIt<AnbyaaCubit>(),
             child: AnbyaaReadingView(
               anbyaa: anbyaa,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.noteView,
+        name: AppRoutes.noteView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<NotesCubit>()..getAllNotes(),
+            child: const NotesView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.journalView,
+        name: AppRoutes.journalView,
+        builder: (context, state) {
+          return BlocProvider.value(
+            value: getIt<NotesCubit>(),
+            child: JournalView(
+              note: state.extra! as NoteEntity,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.addEditNoteView,
+        name: AppRoutes.addEditNoteView,
+        builder: (context, state) {
+          final note = state.extra as NoteEntity?;
+          return BlocProvider.value(
+            value: getIt<NotesCubit>(),
+            child: AddEditNoteView(
+              note: note,
             ),
           );
         },

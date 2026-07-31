@@ -411,6 +411,13 @@ class TasksDrawer extends StatelessWidget {
                         await context.pushNamed(AppRoutes.aiTrackerMainView);
                       },
                     ),
+                    SpeedDialChild(
+                      child: const Icon(Icons.book),
+                      label: 'My Notes',
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.noteView);
+                      },
+                    ),
                   ],
                 ),
                 // if (isTablet)

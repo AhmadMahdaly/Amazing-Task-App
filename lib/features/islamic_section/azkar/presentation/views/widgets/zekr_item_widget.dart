@@ -57,7 +57,7 @@ class ZekrItemWidget extends StatelessWidget {
               style: AppTextStyle.style18W800.copyWith(
                 color: AppColors.primaryColor,
                 fontFamily: AppFonts.amiri,
-                height: 2,
+                height: 2.1,
                 fontSize: fontSize,
               ),
               textAlign: TextAlign.justify,

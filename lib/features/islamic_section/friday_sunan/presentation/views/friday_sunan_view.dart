@@ -250,55 +250,56 @@ class _FridaySunanViewState extends State<FridaySunanView> {
             20.horizontalSpace,
           ],
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(16.r),
-              child: Text(
-                'مجموعة من السنن والآداب المستحبة يوم الجمعة، مستندة إلى السنة النبوية الصحيحة',
-                style: AppTextStyle.style14W500.copyWith(
-                  fontFamily: AppFonts.amiri,
-                  fontSize: (_fontSize - 4).sp,
-                  color: Colors.white.withAlpha(200),
-                  height: 1.5,
-                ),
-              ),
+        body:
+            //  Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            // children: [
+            // Padding(
+            //   padding: EdgeInsets.all(16.r),
+            //   child: Text(
+            //     'مجموعة من السنن والآداب المستحبة يوم الجمعة، مستندة إلى السنة النبوية الصحيحة',
+            //     style: AppTextStyle.style14W500.copyWith(
+            //       fontFamily: AppFonts.amiri,
+            //       fontSize: (_fontSize - 4).sp,
+            //       color: Colors.white.withAlpha(200),
+            //       height: 1.5,
+            //     ),
+            //   ),
+            // ),
+            // Expanded(
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //       color: AppColors.white,
+            //       borderRadius: BorderRadius.vertical(
+            //         top: Radius.circular(30.r),
+            //       ),
+            //     ),
+            // child:
+            BlocBuilder<FridaySunnahCubit, FridaySunnahState>(
+              builder: (context, state) {
+                if (state is FridaySunnahLoading) {
+                  return const Center(child: LoadingWidget());
+                } else if (state is FridaySunnahLoaded) {
+                  return ListView.separated(
+                    controller: _scrollController,
+                    padding: EdgeInsets.all(20.r),
+                    itemCount: state.sunanList.length,
+                    separatorBuilder: (context, index) => 16.verticalSpace,
+                    itemBuilder: (context, index) {
+                      final item = state.sunanList[index];
+                      return SunnahCard(sunnah: item, fontSize: _fontSize);
+                    },
+                  );
+                } else if (state is FridaySunnahError) {
+                  return Center(child: Text(state.message));
+                }
+                return const SizedBox.shrink();
+              },
             ),
-
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(30.r),
-                  ),
-                ),
-                child: BlocBuilder<FridaySunnahCubit, FridaySunnahState>(
-                  builder: (context, state) {
-                    if (state is FridaySunnahLoading) {
-                      return const Center(child: LoadingWidget());
-                    } else if (state is FridaySunnahLoaded) {
-                      return ListView.separated(
-                        controller: _scrollController,
-                        padding: EdgeInsets.all(20.r),
-                        itemCount: state.sunanList.length,
-                        separatorBuilder: (context, index) => 16.verticalSpace,
-                        itemBuilder: (context, index) {
-                          final item = state.sunanList[index];
-                          return SunnahCard(sunnah: item, fontSize: _fontSize);
-                        },
-                      );
-                    } else if (state is FridaySunnahError) {
-                      return Center(child: Text(state.message));
-                    }
-                    return const SizedBox();
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
+        // ),
+        // ),
+        // ],
+        // ),
       ),
     );
   }

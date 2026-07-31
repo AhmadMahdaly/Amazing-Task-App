@@ -15,12 +15,21 @@ import 'package:s/features/islamic_section/notes/presentation/utils/notes_sectio
 import 'package:s/features/islamic_section/quran/domain/entities/saved_ayah_note_entity.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/surah_entity.dart';
 
-class UnifiedNotesView extends StatelessWidget {
+enum QuranFilter { all, notesOnly, starred }
+
+class UnifiedNotesView extends StatefulWidget {
   const UnifiedNotesView({required this.sectionType, super.key});
   final NotesSectionType sectionType;
 
+  @override
+  State<UnifiedNotesView> createState() => _UnifiedNotesViewState();
+}
+
+class _UnifiedNotesViewState extends State<UnifiedNotesView> {
+  QuranFilter _selectedFilter = QuranFilter.all;
+
   String _getAppBarTitle() {
-    switch (sectionType) {
+    switch (widget.sectionType) {
       case NotesSectionType.quran:
         return 'ملاحظاتي والآيات المحفوظة';
       case NotesSectionType.asmaa:
@@ -51,9 +60,8 @@ class UnifiedNotesView extends StatelessWidget {
             onPressed: () => context.pop(),
           ),
         ),
-        body: BlocConsumer<NotesCubit, NotesState>(
+        body: BlocConsumer<HighlightNotesCubit, NotesState>(
           listener: (context, state) {
-            // إخفاء الـ SnackBar الحالي لتجنب التكرار المزعج عند حذف عدة آيات متتالية
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
             if (state is NotesActionSuccess) {
@@ -92,19 +100,16 @@ class UnifiedNotesView extends StatelessWidget {
                 );
               }
 
-              // منطق عرض القرآن (مدمج في كروت للآيات المتتالية)
-              if (sectionType == NotesSectionType.quran) {
+              if (widget.sectionType == NotesSectionType.quran) {
                 final quranNotes = notes.cast<SavedAyahNote>();
                 final groupedNotes = <List<SavedAyahNote>>[];
                 var currentGroup = <SavedAyahNote>[];
 
-                // خوارزمية تجميع الآيات المتتالية
                 for (final note in quranNotes) {
                   if (currentGroup.isEmpty) {
                     currentGroup.add(note);
                   } else {
                     final last = currentGroup.last;
-                    // إذا كانت نفس السورة والآية التالية مباشرة
                     if (note.surahNumber == last.surahNumber &&
                         note.ayahNumber == last.ayahNumber + 1) {
                       currentGroup.add(note);
@@ -118,18 +123,56 @@ class UnifiedNotesView extends StatelessWidget {
                   groupedNotes.add(currentGroup);
                 }
 
-                return ListView.builder(
-                  padding: EdgeInsets.all(16.r),
-                  itemCount: groupedNotes.length,
-                  itemBuilder: (context, index) {
-                    return _QuranNoteGroupCard(
-                      notesGroup: groupedNotes[index],
-                      sectionType: sectionType,
-                    );
-                  },
+                final filteredGroups = groupedNotes.where((group) {
+                  switch (_selectedFilter) {
+                    case QuranFilter.all:
+                      return true;
+                    case QuranFilter.notesOnly:
+                      return group.any((n) => n.note.trim().isNotEmpty);
+                    case QuranFilter.starred:
+                      return group.any((n) => n.isStarred);
+                  }
+                }).toList();
+
+                return Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      color: AppColors.primaryColor.withAlpha(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildFilterChip('الكل', QuranFilter.all),
+                          _buildFilterChip('بملاحظات', QuranFilter.notesOnly),
+                          _buildFilterChip('المميزة', QuranFilter.starred),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: filteredGroups.isEmpty
+                          ? Center(
+                              child: Text(
+                                'لا توجد نتائج مطابقة للفلتر',
+                                style: AppTextStyle.style16W800.copyWith(
+                                  color: AppColors.secondaryColor,
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: EdgeInsets.all(16.r),
+                              itemCount: filteredGroups.length,
+                              itemBuilder: (context, index) {
+                                return _QuranNoteGroupCard(
+                                  notesGroup: filteredGroups[index],
+                                  sectionType: widget.sectionType,
+                                );
+                              },
+                            ),
+                    ),
+                  ],
                 );
               }
-              // منطق عرض باقي الأقسام (بدون دمج)
+              // منطق عرض باقي الأقسام
               else {
                 return ListView.builder(
                   padding: EdgeInsets.all(16.r),
@@ -137,8 +180,8 @@ class UnifiedNotesView extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return _HighlightNoteCard(
                       highlight: notes[index] as Highlight,
-                      isArbaoon: sectionType == NotesSectionType.arbaoon,
-                      sectionType: sectionType,
+                      isArbaoon: widget.sectionType == NotesSectionType.arbaoon,
+                      sectionType: widget.sectionType,
                     );
                   },
                 );
@@ -148,6 +191,33 @@ class UnifiedNotesView extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, QuranFilter filter) {
+    final isSelected = _selectedFilter == filter;
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      selectedColor: AppColors.primaryColor.withAlpha(40),
+      backgroundColor: Colors.transparent,
+      labelStyle: AppTextStyle.style14W800.copyWith(
+        fontFamily: AppFonts.amiri,
+        color: isSelected ? AppColors.primaryColor : AppColors.secondaryColor,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.r),
+        side: BorderSide(
+          color: isSelected
+              ? AppColors.primaryColor
+              : Colors.grey.withAlpha(50),
+        ),
+      ),
+      onSelected: (_) {
+        setState(() {
+          _selectedFilter = filter;
+        });
+      },
     );
   }
 }
@@ -175,6 +245,7 @@ class _QuranNoteGroupCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final firstNote = notesGroup.first;
     final lastNote = notesGroup.last;
+    final isGroupStarred = notesGroup.any((n) => n.isStarred);
 
     final ayahRangeText = notesGroup.length == 1
         ? 'آية ${firstNote.ayahNumber}'
@@ -183,7 +254,7 @@ class _QuranNoteGroupCard extends StatelessWidget {
     final combinedAyahText = notesGroup
         .map((n) {
           final arabicNum = _convertToArabicNumber(n.ayahNumber);
-          return '${n.ayahText} $arabicNum'; //۝
+          return '${n.ayahText} $arabicNum';
         })
         .join(' ');
 
@@ -236,10 +307,30 @@ class _QuranNoteGroupCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red),
-                    onPressed: () =>
-                        _confirmDelete(context, notesGroup, sectionType),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          isGroupStarred ? Icons.star : Icons.star_border,
+                          color: isGroupStarred ? Colors.amber : Colors.grey,
+                        ),
+                        onPressed: () {
+                          context.read<HighlightNotesCubit>().toggleStarStatus(
+                            notesGroup,
+                            !isGroupStarred,
+                            sectionType,
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          color: Colors.red,
+                        ),
+                        onPressed: () =>
+                            _confirmDelete(context, notesGroup, sectionType),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -335,7 +426,7 @@ class _QuranNoteGroupCard extends StatelessWidget {
               onPressed: () async {
                 Navigator.pop(dialogContext);
                 for (final note in groupToDelete) {
-                  await context.read<NotesCubit>().deleteNote(
+                  await context.read<HighlightNotesCubit>().deleteNote(
                     note,
                     sectionType,
                   );
@@ -499,7 +590,10 @@ class _HighlightNoteCard extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
-                context.read<NotesCubit>().deleteNote(highlight, sectionType);
+                context.read<HighlightNotesCubit>().deleteNote(
+                  highlight,
+                  sectionType,
+                );
               },
               child: Text(
                 'حذف',
@@ -615,7 +709,7 @@ class _HighlightNoteCard extends StatelessWidget {
                         note: noteController.text,
                       );
 
-                      parentContext.read<NotesCubit>().updateHighlight(
+                      parentContext.read<HighlightNotesCubit>().updateHighlight(
                         updatedHighlight,
                         sectionType,
                       );

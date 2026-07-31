@@ -40,6 +40,11 @@ import 'package:s/features/islamic_section/tabeen/data/repositories/tabeen_repos
 import 'package:s/features/islamic_section/tabeen/domain/repository/tabeen_repository.dart';
 import 'package:s/features/islamic_section/tabeen/presentation/cubit/tabeen_cubit.dart';
 import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
+import 'package:s/features/notes/data/datasources/base_note_local_data_source.dart';
+import 'package:s/features/notes/data/datasources/note_local_data_source_impl.dart';
+import 'package:s/features/notes/data/repositories/notes_repository_impl.dart';
+import 'package:s/features/notes/domain/repositories/base_notes_repository.dart';
+import 'package:s/features/notes/presentation/cubit/notes_cubit.dart';
 import 'package:s/features/task_list/data/datasource/lists_local_data_source.dart';
 import 'package:s/features/task_list/data/repo/lists_repository_impl.dart';
 import 'package:s/features/task_list/domain/repo/lists_repository.dart';
@@ -135,8 +140,21 @@ Future<void> setupGetIt() async {
       () => AnbyaaRepositoryImpl(getIt()),
     )
     ..registerLazySingleton<AnbyaaCubit>(() => AnbyaaCubit(getIt()))
-    ..registerLazySingleton<NotesDataSource>(NotesDataSource.new)
-    ..registerLazySingleton<NotesCubit>(() => NotesCubit(getIt()))
+    ..registerLazySingleton<BaseNoteLocalDataSource>(
+      NoteLocalDataSourceImpl.new,
+    )
+    ..registerLazySingleton<BaseNotesRepository>(
+      () => NotesRepositoryImpl(getIt()),
+    )
+    ..registerLazySingleton<NotesCubit>(
+      () => NotesCubit(getIt()),
+    )
+    ..registerLazySingleton<HighlightNotesDataSource>(
+      HighlightNotesDataSource.new,
+    )
+    ..registerLazySingleton<HighlightNotesCubit>(
+      () => HighlightNotesCubit(getIt()),
+    )
     ///
     ..registerLazySingleton<AiTrackerCubit>(AiTrackerCubit.new)
     ..registerLazySingleton<FridaySunnahCubit>(FridaySunnahCubit.new)

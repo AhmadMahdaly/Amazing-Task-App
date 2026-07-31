@@ -8,7 +8,7 @@ import 'package:s/features/islamic_section/asmaa/domain/entities/asmaa_highlight
 import 'package:s/features/islamic_section/notes/presentation/utils/notes_section_type.dart';
 import 'package:s/features/islamic_section/quran/domain/entities/saved_ayah_note_entity.dart';
 
-class NotesDataSource {
+class HighlightNotesDataSource {
   Future<List<dynamic>> getNotes(NotesSectionType type) async {
     switch (type) {
       case NotesSectionType.quran:

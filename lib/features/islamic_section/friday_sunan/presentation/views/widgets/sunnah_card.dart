@@ -18,9 +18,19 @@ class SunnahCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: AppColors.buttonColor.withAlpha(20),
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.primaryColor.withAlpha(30)),
+        color: AppColors.buttonColor.withAlpha(200),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: AppColors.thirdColor,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(15),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

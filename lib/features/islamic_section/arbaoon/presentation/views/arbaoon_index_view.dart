@@ -37,7 +37,7 @@ class ArbaoonIndexView extends StatelessWidget {
           actions: [
             IconButton(
               icon: Icon(
-                Icons.highlight_alt_rounded,
+                Icons.collections_bookmark_outlined,
                 color: AppColors.buttonColor.withAlpha(150),
                 size: 24.r,
               ),
