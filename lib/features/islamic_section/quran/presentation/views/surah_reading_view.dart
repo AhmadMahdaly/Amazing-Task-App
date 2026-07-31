@@ -162,13 +162,14 @@ class _SurahReadingViewState extends State<SurahReadingView> {
       key: CacheKeys.bookmarkedOffset,
       value: _scrollController.offset,
     );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('تم حفظ الموضع عند الآية $ayah بنجاح'),
-        backgroundColor: AppColors.primaryColor,
-      ),
-    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text('تم حفظ الموضع عند الآية $ayah بنجاح'),
+          backgroundColor: AppColors.primaryColor,
+        ),
+      );
   }
 
   void _showAyahOptions(
@@ -333,12 +334,14 @@ class _SurahReadingViewState extends State<SurahReadingView> {
     final reciters = cubit.allReciters;
 
     if (reciters.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('جاري تجهيز قائمة القراء، يرجى المحاولة بعد قليل'),
-          backgroundColor: AppColors.primaryColor,
-        ),
-      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('جاري تجهيز قائمة القراء، يرجى المحاولة بعد قليل'),
+            backgroundColor: AppColors.primaryColor,
+          ),
+        );
 
       cubit.loadReciters();
       return;
@@ -976,6 +979,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                           }
 
                           return SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             controller: _scrollController,
                             padding: EdgeInsets.all(16.r),
                             child: Column(
@@ -1255,17 +1259,19 @@ class _SurahReadingViewState extends State<SurahReadingView> {
             bottomNavigationBar: BlocConsumer<AudioCubit, AudioState>(
               listener: (context, audioState) {
                 if (audioState is AudioError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        audioState.message,
-                        style: AppTextStyle.style14W500.copyWith(
-                          fontFamily: AppFonts.amiri,
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          audioState.message,
+                          style: AppTextStyle.style14W500.copyWith(
+                            fontFamily: AppFonts.amiri,
+                          ),
                         ),
+                        backgroundColor: AppColors.errorColor,
                       ),
-                      backgroundColor: AppColors.errorColor,
-                    ),
-                  );
+                    );
                 }
               },
               builder: (context, audioState) {
@@ -1320,65 +1326,61 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                               return '$hours$minutes:$seconds';
                             }
 
-                            return Directionality(
-                              textDirection: TextDirection.ltr,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 24.w,
-                                ),
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 24.w,
+                              ),
 
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      formatDuration(position),
-                                      style: AppTextStyle.style12W500.copyWith(
-                                        color: Colors.white,
-                                      ),
-                                      textDirection: TextDirection.ltr,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    formatDuration(position),
+                                    style: AppTextStyle.style12W500.copyWith(
+                                      color: Colors.white,
                                     ),
-                                    Expanded(
-                                      child: SliderTheme(
-                                        data: SliderThemeData(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 24.w,
-                                          ),
+                                    textDirection: TextDirection.ltr,
+                                  ),
+                                  Expanded(
+                                    child: SliderTheme(
+                                      data: SliderThemeData(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 24.w,
+                                        ),
 
-                                          trackHeight: 3.h,
-                                          thumbShape: RoundSliderThumbShape(
-                                            enabledThumbRadius: 6.r,
-                                          ),
-                                          overlayShape: RoundSliderOverlayShape(
-                                            overlayRadius: 12.r,
-                                          ),
-                                          activeTrackColor:
-                                              AppColors.buttonColor,
-                                          inactiveTrackColor: Colors.white
-                                              .withAlpha(50),
-                                          thumbColor: AppColors.buttonColor,
+                                        trackHeight: 3.h,
+                                        thumbShape: RoundSliderThumbShape(
+                                          enabledThumbRadius: 6.r,
                                         ),
-                                        child: Slider(
-                                          value: progressValue.clamp(0.0, 1.0),
-                                          onChanged: (value) {
-                                            final newPosition = Duration(
-                                              milliseconds:
-                                                  (duration.inMilliseconds *
-                                                          value)
-                                                      .round(),
-                                            );
-                                            cubit.seek(newPosition);
-                                          },
+                                        overlayShape: RoundSliderOverlayShape(
+                                          overlayRadius: 12.r,
                                         ),
+                                        activeTrackColor: AppColors.buttonColor,
+                                        inactiveTrackColor: Colors.white
+                                            .withAlpha(50),
+                                        thumbColor: AppColors.buttonColor,
+                                      ),
+                                      child: Slider(
+                                        value: progressValue.clamp(0.0, 1.0),
+                                        onChanged: (value) {
+                                          final newPosition = Duration(
+                                            milliseconds:
+                                                (duration.inMilliseconds *
+                                                        value)
+                                                    .round(),
+                                          );
+                                          cubit.seek(newPosition);
+                                        },
                                       ),
                                     ),
-                                    Text(
-                                      formatDuration(duration),
-                                      style: AppTextStyle.style12W500.copyWith(
-                                        color: Colors.white.withAlpha(150),
-                                      ),
-                                      textDirection: TextDirection.ltr,
+                                  ),
+                                  Text(
+                                    formatDuration(duration),
+                                    style: AppTextStyle.style12W500.copyWith(
+                                      color: Colors.white.withAlpha(150),
                                     ),
-                                  ],
-                                ),
+                                    textDirection: TextDirection.ltr,
+                                  ),
+                                ],
                               ),
                             );
                           },
@@ -1412,17 +1414,19 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            Positioned(
-                              left: 8.w,
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.close_rounded,
-                                  color: Colors.white.withAlpha(200),
-                                  size: 24.r,
+                            if (audioState is AudioPlaying ||
+                                audioState is AudioPaused)
+                              Positioned(
+                                left: 8.w,
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.close_rounded,
+                                    color: Colors.white.withAlpha(200),
+                                    size: 24.r,
+                                  ),
+                                  onPressed: cubit.stop,
                                 ),
-                                onPressed: cubit.stop,
                               ),
-                            ),
 
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1570,25 +1574,29 @@ class _SurahReadingViewState extends State<SurahReadingView> {
 
       if (mounted) {
         await context.read<NotesCubit>().loadNotes(NotesSectionType.quran);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              note.isEmpty
-                  ? 'تم حفظ الآية بنجاح'
-                  : 'تم حفظ الآية والملاحظة بنجاح',
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(
+                note.isEmpty
+                    ? 'تم حفظ الآية بنجاح'
+                    : 'تم حفظ الآية والملاحظة بنجاح',
+              ),
+              backgroundColor: AppColors.primaryColor,
             ),
-            backgroundColor: AppColors.primaryColor,
-          ),
-        );
+          );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('حدث خطأ أثناء الحفظ، يرجى المحاولة مرة أخرى'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(
+              content: Text('حدث خطأ أثناء الحفظ، يرجى المحاولة مرة أخرى'),
+              backgroundColor: Colors.red,
+            ),
+          );
       }
     }
   }

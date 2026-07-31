@@ -404,13 +404,13 @@ class TasksDrawer extends StatelessWidget {
                       },
                     ),
 
-                    // SpeedDialChild(
-                    //   child: const Icon(Icons.auto_awesome_rounded),
-                    //   label: 'AI Tracker',
-                    //   onTap: () async {
-                    //     await context.pushNamed(AppRoutes.aiTrackerMainView);
-                    //   },
-                    // ),
+                    SpeedDialChild(
+                      child: const Icon(Icons.auto_awesome_rounded),
+                      label: 'My AI tracker',
+                      onTap: () async {
+                        await context.pushNamed(AppRoutes.aiTrackerMainView);
+                      },
+                    ),
                   ],
                 ),
                 // if (isTablet)

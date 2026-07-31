@@ -504,9 +504,13 @@ class QuranIndexView extends StatelessWidget {
 
                     Navigator.pop(context);
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('تم حذف العلامة المرجعية')),
-                    );
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        const SnackBar(
+                          content: Text('تم حذف العلامة المرجعية'),
+                        ),
+                      );
                   },
                   child: Text(
                     'حذف',
