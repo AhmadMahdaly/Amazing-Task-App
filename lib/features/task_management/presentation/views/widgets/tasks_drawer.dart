@@ -412,7 +412,7 @@ class TasksDrawer extends StatelessWidget {
                       },
                     ),
                     SpeedDialChild(
-                      child: const Icon(Icons.book),
+                      child: const Icon(Icons.book_outlined),
                       label: 'My Notes',
                       onTap: () async {
                         await context.pushNamed(AppRoutes.noteView);

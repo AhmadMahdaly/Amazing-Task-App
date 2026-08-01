@@ -479,7 +479,7 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                   fontSize: _fontSize.sp,
                                 ),
                               ),
-                              textAlign: TextAlign.justify,
+                              // textAlign: TextAlign.justify,
                               textDirection: TextDirection.rtl,
                               contextMenuBuilder: (context, editableTextState) {
                                 final buttonItems =

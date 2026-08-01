@@ -30,6 +30,7 @@ class NotesRepositoryImpl implements BaseNotesRepository {
         fontSize: note.fontSize,
         createdAt: note.createdAt,
         updatedAt: note.updatedAt,
+        journalEntries: note.journalEntries,
       );
       await baseLocalDataSource.addNote(noteModel);
       return const Right(null);
@@ -49,6 +50,7 @@ class NotesRepositoryImpl implements BaseNotesRepository {
         fontSize: note.fontSize,
         createdAt: note.createdAt,
         updatedAt: note.updatedAt,
+        journalEntries: note.journalEntries,
       );
       await baseLocalDataSource.updateNote(noteModel);
       return const Right(null);

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import '../../domain/entities/journal_entry.dart';
 import '../../domain/entities/note_entity.dart';
 import '../../domain/entities/note_type.dart';
 
@@ -12,6 +13,7 @@ class NoteModel extends NoteEntity {
     required super.fontSize,
     required super.createdAt,
     required super.updatedAt,
+    super.journalEntries,
   });
 
   factory NoteModel.fromMap(Map<String, dynamic> map) {
@@ -23,6 +25,11 @@ class NoteModel extends NoteEntity {
       fontSize: (map['fontSize'] as num).toDouble(),
       createdAt: DateTime.parse(map['createdAt'] as String),
       updatedAt: DateTime.parse(map['updatedAt'] as String),
+      journalEntries: map['journalEntries'] != null
+          ? (map['journalEntries'] as List<dynamic>)
+                .map((e) => JournalEntry.fromMap(e as Map<String, dynamic>))
+                .toList()
+          : [],
     );
   }
 
@@ -35,6 +42,7 @@ class NoteModel extends NoteEntity {
       'fontSize': fontSize,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'journalEntries': journalEntries.map((e) => e.toMap()).toList(),
     };
   }
 

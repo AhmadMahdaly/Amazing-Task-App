@@ -9,6 +9,7 @@ import '../responsive/responsive_config.dart';
 
 class CustomPrimaryTextfield extends StatelessWidget {
   const CustomPrimaryTextfield({
+    this.minLines,
     this.hintStyle,
     this.onEditingComplete,
     this.onFieldSubmitted,
@@ -54,6 +55,8 @@ class CustomPrimaryTextfield extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final bool? enabled;
   final int? maxLines;
+  final int? minLines;
+
   final void Function(String)? onFieldSubmitted;
   final void Function()? onEditingComplete;
   @override
@@ -75,6 +78,7 @@ class CustomPrimaryTextfield extends StatelessWidget {
               : controller?.text ?? '',
         ),
         maxLines: maxLines,
+        minLines: minLines,
         enabled: enabled,
         keyboardType: keyboardType,
         inputFormatters: inputFormatters,

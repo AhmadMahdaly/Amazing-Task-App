@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+import 'package:s/features/notes/domain/entities/journal_entry.dart';
 
 import '../../domain/entities/note_entity.dart';
 import '../../domain/entities/note_type.dart';
@@ -28,7 +28,55 @@ class NotesCubit extends Cubit<NotesState> {
     );
   }
 
-  Future<void> addNote({
+  Future<void> saveJournalEntry(
+    NoteEntity oldNote,
+    JournalEntry entry, {
+    required bool isNew,
+  }) async {
+    final entries = List<JournalEntry>.from(oldNote.journalEntries);
+
+    if (isNew) {
+      entries.add(entry);
+    } else {
+      final index = entries.indexWhere((e) => e.id == entry.id);
+      if (index != -1) {
+        entries[index] = entry;
+      }
+    }
+
+    final updatedNote = NoteEntity(
+      id: oldNote.id,
+      title: oldNote.title,
+      content: oldNote.content,
+      type: oldNote.type,
+      fontSize: oldNote.fontSize,
+      createdAt: oldNote.createdAt,
+      updatedAt: DateTime.now(),
+      journalEntries: entries,
+    );
+
+    await _executeNoteUpdate(updatedNote);
+  }
+
+  Future<void> deleteJournalEntry(NoteEntity oldNote, String entryId) async {
+    final entries = List<JournalEntry>.from(oldNote.journalEntries);
+    entries.removeWhere((e) => e.id == entryId);
+
+    final updatedNote = NoteEntity(
+      id: oldNote.id,
+      title: oldNote.title,
+      content: oldNote.content,
+      type: oldNote.type,
+      fontSize: oldNote.fontSize,
+      createdAt: oldNote.createdAt,
+      updatedAt: DateTime.now(),
+      journalEntries: entries,
+    );
+
+    await _executeNoteUpdate(updatedNote);
+  }
+
+  Future<NoteEntity?> addNote({
     required String title,
     required String content,
     required NoteType type,
@@ -42,15 +90,19 @@ class NotesCubit extends Cubit<NotesState> {
       fontSize: fontSize,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      journalEntries: const [],
     );
 
     final result = await notesRepository.addNote(newNote);
 
-    result.fold(
-      (failureMessage) => emit(NotesError(failureMessage)),
+    return result.fold(
+      (failureMessage) {
+        emit(NotesError(failureMessage));
+        return null;
+      },
       (_) {
-        _notes.insert(0, newNote);
-        emit(NotesLoaded(List.from(_notes)));
+        getAllNotes();
+        return newNote;
       },
     );
   }
@@ -69,30 +121,7 @@ class NotesCubit extends Cubit<NotesState> {
       fontSize: newFontSize,
       createdAt: oldNote.createdAt,
       updatedAt: DateTime.now(),
-    );
-
-    await _executeNoteUpdate(updatedNote);
-  }
-
-  Future<void> addJournalEntry(NoteEntity oldNote, String newEntryText) async {
-    if (newEntryText.trim().isEmpty) return;
-
-    final dateHeader = DateFormat(
-      'EEEE, dd MMMM yyyy - hh:mm a',
-    ).format(DateTime.now());
-
-    final updatedContent = oldNote.content.isEmpty
-        ? '[$dateHeader]\n$newEntryText'
-        : '${oldNote.content}\n\n──────────────\n[$dateHeader]\n$newEntryText';
-
-    final updatedNote = NoteEntity(
-      id: oldNote.id,
-      title: oldNote.title,
-      content: updatedContent,
-      type: NoteType.journal,
-      fontSize: oldNote.fontSize,
-      createdAt: oldNote.createdAt,
-      updatedAt: DateTime.now(),
+      journalEntries: oldNote.journalEntries,
     );
 
     await _executeNoteUpdate(updatedNote);

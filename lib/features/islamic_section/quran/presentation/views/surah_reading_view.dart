@@ -176,7 +176,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
       );
   }
 
-  void _confirmDelete(BuildContext context, void Function()? onPressed) {
+  void _confirmDelete(BuildContext context, Future<void> onPressed) {
     showDialog<void>(
       context: context,
       builder: (dialogContext) => Directionality(
@@ -198,7 +198,10 @@ class _SurahReadingViewState extends State<SurahReadingView> {
           ),
           actions: [
             TextButton(
-              onPressed: onPressed,
+              onPressed: () async {
+                await onPressed;
+                Navigator.pop(dialogContext);
+              },
               child: Text(
                 'حذف',
                 style: AppTextStyle.style16W900.copyWith(
@@ -293,7 +296,7 @@ class _SurahReadingViewState extends State<SurahReadingView> {
                       if (hasNote) {
                         _confirmDelete(
                           context,
-                          () => context.read<HighlightNotesCubit>().deleteNote(
+                          context.read<HighlightNotesCubit>().deleteNote(
                             savedNote,
                             NotesSectionType.quran,
                           ),

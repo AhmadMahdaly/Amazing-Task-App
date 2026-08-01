@@ -1,7 +1,6 @@
 class AppTexts {
   static String appTitle = 'My Task';
   static String loading = 'Loading...';
-  static String thereIsAnError = 'There is an error';
   static String noTasksInThisList = 'There are no tasks in this list';
   static String completed = 'Completed';
   static String completedTasks = 'Completed Tasks';
@@ -287,4 +286,10 @@ class AppTexts {
   static String selectBottomBarItems =
       'Select 2 to 4 items for the bottom navigation bar';
   static String islamicSection = 'Islamic section';
+
+  ///
+  static String myNote = 'My Notes';
+  static String thereIsAnError = 'There is an error!';
+  static String lastEdit = 'Last edit';
+  static String noNotesAdded = 'There are no notes added yet';
 }
