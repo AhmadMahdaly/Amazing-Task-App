@@ -479,7 +479,14 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                   fontSize: _fontSize.sp,
                                 ),
                               ),
-                              // textAlign: TextAlign.justify,
+
+                              // strutStyle: StrutStyle(
+                              //   fontFamily: AppFonts.amiri,
+                              //   fontSize: _fontSize.sp,
+                              //   height: 1.8,
+                              //   forceStrutHeight: true,
+                              // ),
+                              textAlign: TextAlign.right,
                               textDirection: TextDirection.rtl,
                               contextMenuBuilder: (context, editableTextState) {
                                 final buttonItems =
@@ -489,7 +496,6 @@ class _AsmaaReadingViewState extends State<AsmaaReadingView> {
                                   0,
                                   ContextMenuButtonItem(
                                     label: 'تحديد / ملاحظة',
-                                    type: ContextMenuButtonType.liveTextInput,
                                     onPressed: () {
                                       final selection = editableTextState
                                           .textEditingValue

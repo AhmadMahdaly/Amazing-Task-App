@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/resources/app_colors.dart';
-import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
@@ -11,6 +10,10 @@ import 'package:s/core/shared_widgets/custom_primary_button.dart';
 import '../../domain/entities/note_entity.dart';
 import '../../domain/entities/note_type.dart';
 import '../cubit/notes_cubit.dart';
+
+bool _isArabic(String text) {
+  return RegExp(r'[\u0600-\u06FF]').hasMatch(text);
+}
 
 class AddEditNoteView extends StatefulWidget {
   const AddEditNoteView({this.note, super.key});
@@ -26,6 +29,8 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
   NoteType _selectedType = NoteType.regular;
   double _fontSize = 16;
 
+  bool _isBold = false;
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +41,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
     if (widget.note != null) {
       _selectedType = widget.note!.type;
       _fontSize = widget.note!.fontSize;
+      _isBold = widget.note!.isBold;
     }
   }
 
@@ -44,6 +50,24 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
     _titleController.dispose();
     _contentController.dispose();
     super.dispose();
+  }
+
+  void _insertBullet() {
+    final text = _contentController.text;
+    final selection = _contentController.selection;
+
+    final start = selection.isValid ? selection.start : text.length;
+    final end = selection.isValid ? selection.end : text.length;
+
+    final prefix = start > 0 && text[start - 1] != '\n' ? '\n' : '';
+    final insertText = '$prefix• ';
+
+    final newText = text.replaceRange(start, end, insertText);
+
+    _contentController.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: start + insertText.length),
+    );
   }
 
   Future<void> _saveNote({bool goToJournal = false}) async {
@@ -55,7 +79,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('الرجاء كتابة العنوان أولاً'),
+          content: Text('Please write the title first.'),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -68,6 +92,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
         content: content,
         type: _selectedType,
         fontSize: _fontSize,
+        isBold: _isBold,
       );
 
       if (!mounted) return;
@@ -87,6 +112,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
         title,
         content,
         _fontSize,
+        _isBold,
       );
       if (!mounted) return;
       context.pop();
@@ -97,159 +123,244 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
   Widget build(BuildContext context) {
     final isNew = widget.note == null;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            isNew ? 'نوت جديدة' : 'تعديل النوت',
-            style: AppTextStyle.style20W900.copyWith(
-              fontFamily: AppFonts.amiri,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          isNew ? 'New note' : 'Edit note',
+          style: AppTextStyle.style20W900.copyWith(),
+        ),
+        backgroundColor: AppColors.primaryColor,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () => context.pop(),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () => _saveNote(goToJournal: false),
           ),
-          backgroundColor: AppColors.primaryColor,
-          elevation: 0,
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new),
-            onPressed: () => context.pop(),
-          ),
-          actions: [
-            if (!isNew)
-              IconButton(
-                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                onPressed: () {
+          if (!isNew)
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                if (value == 'delete') {
                   context.read<NotesCubit>().deleteNote(widget.note!.id);
                   context.pop();
-                },
-              ),
-            if (_selectedType == NoteType.regular) ...[
-              IconButton(
-                icon: const Icon(Icons.text_decrease),
-                onPressed: () => setState(
-                  () => _fontSize = (_fontSize - 2).clamp(12.0, 30.0),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.text_increase),
-                onPressed: () => setState(
-                  () => _fontSize = (_fontSize + 2).clamp(12.0, 30.0),
-                ),
-              ),
-            ],
-            IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: () => _saveNote(goToJournal: false),
-            ),
-          ],
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(16.r),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (isNew) ...[
-                Row(
-                  children: [
-                    Text(
-                      'النوع:',
-                      style: AppTextStyle.style16W600.copyWith(
-                        fontFamily: AppFonts.ar,
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.delete_outline,
+                        color: Colors.redAccent,
+                        size: 20,
                       ),
-                    ),
-                    8.horizontalSpace,
-                    ChoiceChip(
-                      label: const Text('نوت عادية'),
-                      selected: _selectedType == NoteType.regular,
-                      onSelected: (val) =>
-                          setState(() => _selectedType = NoteType.regular),
-                      selectedColor: AppColors.primaryColor.withValues(
-                        alpha: 0.3,
+                      SizedBox(width: 8),
+                      Text(
+                        'Delete note',
+                        style: TextStyle(color: Colors.redAccent),
                       ),
-                    ),
-                    8.horizontalSpace,
-                    ChoiceChip(
-                      label: const Text('دفتر مذكرات'),
-                      selected: _selectedType == NoteType.journal,
-                      onSelected: (val) =>
-                          setState(() => _selectedType = NoteType.journal),
-                      selectedColor: AppColors.secondaryColor.withValues(
-                        alpha: 0.3,
-                      ),
-                    ),
-                  ],
-                ),
-                16.verticalSpace,
-              ],
-              TextField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  hintText: _selectedType == NoteType.regular
-                      ? 'عنوان النوت...'
-                      : 'اسم الدفتر (مثال: مذكرات 2026)...',
-                  border: InputBorder.none,
-                ),
-                style: AppTextStyle.style20W900.copyWith(
-                  fontFamily: AppFonts.ar,
-                ),
-              ),
-              const Divider(),
-              if (_selectedType == NoteType.regular)
-                Expanded(
-                  child: TextField(
-                    controller: _contentController,
-                    maxLines: null,
-                    expands: true,
-                    decoration: const InputDecoration(
-                      hintText: 'اكتب ما تفكر فيه...',
-                      border: InputBorder.none,
-                    ),
-                    style: TextStyle(
-                      fontFamily: AppFonts.ar,
-                      fontSize: _fontSize,
-                      height: 1.5,
-                    ),
+                    ],
                   ),
-                )
-              else
-                Expanded(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                ),
+              ],
+            ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(16.r),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (isNew) ...[
+                    Row(
                       children: [
-                        Icon(
-                          Icons.menu_book,
-                          size: 70.r,
-                          color: AppColors.secondaryColor.withValues(
+                        Text(
+                          'Type:',
+                          style: AppTextStyle.style16W600.copyWith(),
+                        ),
+                        8.horizontalSpace,
+                        ChoiceChip(
+                          label: const Text('Notes'),
+                          selected: _selectedType == NoteType.regular,
+                          onSelected: (val) =>
+                              setState(() => _selectedType = NoteType.regular),
+                          selectedColor: AppColors.primaryColor.withValues(
                             alpha: 0.3,
                           ),
                         ),
-                        16.verticalSpace,
-                        Text(
-                          'هذا الدفتر مخصص لكتابة وتنسيق\nاليوميات والمواضيع المنفصلة.',
-                          textAlign: TextAlign.center,
-                          style: AppTextStyle.style16W600.copyWith(
-                            fontFamily: AppFonts.ar,
-                            color: Colors.grey.shade600,
-                            height: 1.6,
-                          ),
-                        ),
-                        24.verticalSpace,
-
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24.w),
-                          child: CustomPrimaryButton(
-                            text: 'حفظ والبدء بإضافة المواضيع',
-                            onPressed: () => _saveNote(goToJournal: true),
+                        8.horizontalSpace,
+                        ChoiceChip(
+                          label: const Text('Journals'),
+                          selected: _selectedType == NoteType.journal,
+                          onSelected: (val) =>
+                              setState(() => _selectedType = NoteType.journal),
+                          selectedColor: AppColors.secondaryColor.withValues(
+                            alpha: 0.3,
                           ),
                         ),
                       ],
                     ),
+                    16.verticalSpace,
+                  ],
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _titleController,
+                    builder: (context, value, child) {
+                      final isRtl = _isArabic(value.text);
+                      return TextField(
+                        controller: _titleController,
+                        textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                        textDirection: isRtl
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                        decoration: InputDecoration(
+                          hintText: _selectedType == NoteType.regular
+                              ? 'Note title...'
+                              : 'Journal title...',
+                          border: InputBorder.none,
+                          hintStyle: AppTextStyle.style20W600.copyWith(
+                            color: AppColors.secondaryColor.withAlpha(100),
+                          ),
+                        ),
+                        style: AppTextStyle.style20W600.copyWith(
+                          color: AppColors.thirdColor,
+                        ),
+                      );
+                    },
                   ),
-                ),
-            ],
+                  const Divider(),
+                  if (_selectedType == NoteType.regular)
+                    Expanded(
+                      child: ValueListenableBuilder<TextEditingValue>(
+                        valueListenable: _contentController,
+                        builder: (context, value, child) {
+                          final isRtl = _isArabic(value.text);
+                          return TextField(
+                            controller: _contentController,
+                            textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                            textDirection: isRtl
+                                ? TextDirection.rtl
+                                : TextDirection.ltr,
+                            maxLines: null,
+                            expands: true,
+                            decoration: InputDecoration(
+                              hintText: "Write what you're thinking...",
+                              hintStyle: AppTextStyle.style12W500.copyWith(
+                                color: AppColors.secondaryColor.withAlpha(100),
+                              ),
+                              border: InputBorder.none,
+                            ),
+                            style: TextStyle(
+                              color: AppColors.thirdColor,
+                              fontSize: _fontSize,
+                              fontWeight: _isBold
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              height: 1.5,
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.menu_book,
+                              size: 70.r,
+                              color: AppColors.secondaryColor.withValues(
+                                alpha: 0.3,
+                              ),
+                            ),
+                            16.verticalSpace,
+                            Text(
+                              'This notebook is for writing and organizing diaries and separate topics.',
+                              textAlign: TextAlign.center,
+                              style: AppTextStyle.style16W600.copyWith(
+                                color: AppColors.secondaryColor,
+                                height: 1.6,
+                              ),
+                            ),
+                            24.verticalSpace,
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 24.w),
+                              child: CustomPrimaryButton(
+                                text: 'Save and start adding topics',
+                                onPressed: () => _saveNote(goToJournal: true),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
+
+          if (_selectedType == NoteType.regular)
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.format_list_bulleted,
+                        color: AppColors.primaryColor,
+                      ),
+                      tooltip: 'Add Bullet Point',
+                      onPressed: _insertBullet,
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.format_bold,
+                        color: _isBold ? AppColors.primaryColor : Colors.grey,
+                      ),
+                      tooltip: 'Bold Text',
+                      onPressed: () => setState(() => _isBold = !_isBold),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.text_decrease, color: Colors.grey),
+                      tooltip: 'Decrease Font Size',
+                      onPressed: () => setState(
+                        () => _fontSize = (_fontSize - 2).clamp(12.0, 30.0),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.text_increase, color: Colors.grey),
+                      tooltip: 'Increase Font Size',
+                      onPressed: () => setState(
+                        () => _fontSize = (_fontSize + 2).clamp(12.0, 30.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

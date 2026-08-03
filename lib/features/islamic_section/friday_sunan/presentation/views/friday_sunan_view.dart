@@ -80,7 +80,6 @@ class _FridaySunanViewState extends State<FridaySunanView> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: AppColors.primaryColor,
         appBar: AppBar(
           title: Text(
             'سنن يوم الجمعة',

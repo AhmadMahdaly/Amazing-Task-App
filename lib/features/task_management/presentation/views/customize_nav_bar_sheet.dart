@@ -26,6 +26,7 @@ class _CustomizeNavBarSheetState extends State<CustomizeNavBarSheet> {
     'aiTracker': 'AI Tracker',
     'challenges': 'Challenges',
     'islamic': AppTexts.islamicSection,
+    'notes': AppTexts.myNote,
   };
 
   @override

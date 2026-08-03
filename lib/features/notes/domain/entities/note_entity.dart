@@ -4,6 +4,7 @@ import 'note_type.dart';
 
 class NoteEntity {
   NoteEntity({
+    required this.isBold,
     required this.id,
     required this.title,
     required this.content,
@@ -18,6 +19,7 @@ class NoteEntity {
   final String content;
   final NoteType type;
   final double fontSize;
+  final bool isBold;
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<JournalEntry> journalEntries;

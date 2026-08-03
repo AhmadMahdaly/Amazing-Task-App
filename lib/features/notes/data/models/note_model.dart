@@ -13,11 +13,13 @@ class NoteModel extends NoteEntity {
     required super.fontSize,
     required super.createdAt,
     required super.updatedAt,
+    required super.isBold,
     super.journalEntries,
   });
 
   factory NoteModel.fromMap(Map<String, dynamic> map) {
     return NoteModel(
+      isBold: map['isBold'] as bool? ?? false,
       id: map['id'] as String,
       title: map['title'] as String,
       content: map['content'] as String,
@@ -43,6 +45,7 @@ class NoteModel extends NoteEntity {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'journalEntries': journalEntries.map((e) => e.toMap()).toList(),
+      'isBold': isBold,
     };
   }
 

@@ -483,7 +483,7 @@ class _ArbaoonReadingViewState extends State<ArbaoonReadingView> {
                                   fontSize: _fontSize.sp,
                                 ),
                               ),
-                              // textAlign: TextAlign.justify,
+                              textAlign: TextAlign.right,
                               textDirection: TextDirection.rtl,
                               contextMenuBuilder: (context, editableTextState) {
                                 final buttonItems =

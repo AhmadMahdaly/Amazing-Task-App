@@ -71,6 +71,11 @@ class MainTasksScreen extends StatelessWidget {
         label: AppTexts.islamicSection,
         onTap: () => context.pushNamed(AppRoutes.islamicHomeView),
       ),
+      'notes': BottomNavItemData(
+        icon: Icons.book_outlined,
+        label: AppTexts.myNote,
+        onTap: () => context.pushNamed(AppRoutes.noteView),
+      ),
     };
   }
 

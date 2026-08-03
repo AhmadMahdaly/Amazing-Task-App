@@ -455,7 +455,7 @@ class _TabeenReadingViewState extends State<TabeenReadingView> {
                                   fontSize: _fontSize.sp,
                                 ),
                               ),
-                              // textAlign: TextAlign.justify,
+                              textAlign: TextAlign.start,
                               textDirection: TextDirection.rtl,
                             ),
                             if (widget.tabeen.id <

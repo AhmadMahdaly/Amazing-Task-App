@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart' hide TextDirection;
+import 'package:intl/intl.dart';
 import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
@@ -39,6 +39,7 @@ class _NotesViewState extends State<NotesView> {
         ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.r, vertical: 8.h),
@@ -47,30 +48,24 @@ class _NotesViewState extends State<NotesView> {
               child: Row(
                 children: [
                   ChoiceChip(
-                    label: const Text('الكل'),
+                    label: Text('All', style: AppTextStyle.style12W500),
+                    selectedColor: AppColors.primaryColor.withAlpha(15),
                     selected: _selectedFilter == 0,
                     onSelected: (val) => setState(() => _selectedFilter = 0),
-                    selectedColor: AppColors.primaryColor.withValues(
-                      alpha: 0.3,
-                    ),
                   ),
                   8.horizontalSpace,
                   ChoiceChip(
-                    label: const Text('نوت عادية'),
+                    label: const Text('Notes'),
                     selected: _selectedFilter == 1,
                     onSelected: (val) => setState(() => _selectedFilter = 1),
-                    selectedColor: AppColors.primaryColor.withValues(
-                      alpha: 0.3,
-                    ),
+                    selectedColor: AppColors.primaryColor.withAlpha(15),
                   ),
                   8.horizontalSpace,
                   ChoiceChip(
-                    label: const Text('الدفاتر (Journal)'),
+                    label: const Text('Journals'),
                     selected: _selectedFilter == 2,
                     onSelected: (val) => setState(() => _selectedFilter = 2),
-                    selectedColor: AppColors.secondaryColor.withValues(
-                      alpha: 0.3,
-                    ),
+                    selectedColor: AppColors.primaryColor.withAlpha(15),
                   ),
                 ],
               ),
@@ -84,10 +79,12 @@ class _NotesViewState extends State<NotesView> {
                   return const Center(child: LoadingWidget());
                 } else if (state is NotesLoaded) {
                   final filteredNotes = state.notes.where((note) {
-                    if (_selectedFilter == 1)
+                    if (_selectedFilter == 1) {
                       return note.type == NoteType.regular;
-                    if (_selectedFilter == 2)
+                    }
+                    if (_selectedFilter == 2) {
                       return note.type == NoteType.journal;
+                    }
                     return true;
                   }).toList();
 
@@ -96,15 +93,15 @@ class _NotesViewState extends State<NotesView> {
                       child: Text(
                         AppTexts.noNotesAdded,
                         style: AppTextStyle.style16W600.copyWith(
-                          color: AppColors.thirdColor,
+                          color: AppColors.secondaryColor,
                         ),
                       ),
                     );
                   }
 
                   return ListView.separated(
-                    separatorBuilder: (context, index) => 12.verticalSpace,
-                    padding: EdgeInsets.all(16.r),
+                    separatorBuilder: (context, index) => 8.verticalSpace,
+                    // padding: EdgeInsets.all(16.r),
                     itemCount: filteredNotes.length,
                     itemBuilder: (context, index) {
                       final note = filteredNotes[index];
@@ -131,23 +128,15 @@ class _NotesViewState extends State<NotesView> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(
-                              color: AppColors.primaryColor.withValues(
-                                alpha: 0.2,
-                              ),
-                            ),
+                            borderRadius: BorderRadius.circular(4.r),
+                            color: AppColors.primaryColor.withAlpha(15),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          padding: EdgeInsets.symmetric(vertical: 8.h),
                           child: ListTile(
                             leading: CircleAvatar(
                               backgroundColor: isJournal
-                                  ? AppColors.secondaryColor.withValues(
-                                      alpha: 0.2,
-                                    )
-                                  : AppColors.primaryColor.withValues(
-                                      alpha: 0.2,
-                                    ),
+                                  ? AppColors.secondaryColor.withAlpha(15)
+                                  : AppColors.primaryColor.withAlpha(15),
                               child: Icon(
                                 isJournal ? Icons.menu_book : Icons.note_alt,
                                 color: isJournal
@@ -168,9 +157,13 @@ class _NotesViewState extends State<NotesView> {
                                       fontSize: 10.sp,
                                     ),
                                   ),
-                            trailing: const Icon(
-                              Icons.arrow_forward_ios_rounded,
-                            ),
+                            trailing: isJournal
+                                ? const Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                  )
+                                : const Icon(
+                                    Icons.edit_note_rounded,
+                                  ),
                           ),
                         ),
                       );

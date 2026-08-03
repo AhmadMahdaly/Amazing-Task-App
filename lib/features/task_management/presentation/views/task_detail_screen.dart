@@ -1024,14 +1024,14 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                     ..hideCurrentSnackBar()
                                     ..showSnackBar(
                                       SnackBar(
-                                        content: Text(
+                                       
+                                        backgroundColor: AppColors.primaryColor,
+                                        behavior: SnackBarBehavior.floating,
+                                        duration: const Duration(seconds: 4), content: Text(
                                           AppTexts.stepConvertedToTask,
                                           style: AppTextStyle.style12W300
                                               .copyWith(color: Colors.white),
                                         ),
-                                        backgroundColor: AppColors.primaryColor,
-                                        behavior: SnackBarBehavior.floating,
-                                        duration: const Duration(seconds: 4),
                                         action: SnackBarAction(
                                           label: AppTexts.undo,
                                           textColor: Colors.white,

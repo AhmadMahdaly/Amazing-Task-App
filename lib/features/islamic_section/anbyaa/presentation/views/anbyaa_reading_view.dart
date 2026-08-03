@@ -455,7 +455,7 @@ class _AnbyaaReadingViewState extends State<AnbyaaReadingView> {
                                   fontSize: _fontSize.sp,
                                 ),
                               ),
-                              // textAlign: TextAlign.justify,
+                              textAlign: TextAlign.right,
                               textDirection: TextDirection.rtl,
                             ),
                             if (widget.anbyaa.id <

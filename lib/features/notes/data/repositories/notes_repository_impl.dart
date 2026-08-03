@@ -31,6 +31,7 @@ class NotesRepositoryImpl implements BaseNotesRepository {
         createdAt: note.createdAt,
         updatedAt: note.updatedAt,
         journalEntries: note.journalEntries,
+        isBold: note.isBold,
       );
       await baseLocalDataSource.addNote(noteModel);
       return const Right(null);
@@ -43,6 +44,7 @@ class NotesRepositoryImpl implements BaseNotesRepository {
   Future<Either<String, void>> updateNote(NoteEntity note) async {
     try {
       final noteModel = NoteModel(
+        isBold: note.isBold,
         id: note.id,
         title: note.title,
         content: note.content,

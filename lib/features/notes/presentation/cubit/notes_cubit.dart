@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_positional_boolean_parameters
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/features/notes/domain/entities/journal_entry.dart';
 
@@ -45,6 +47,7 @@ class NotesCubit extends Cubit<NotesState> {
     }
 
     final updatedNote = NoteEntity(
+      isBold: oldNote.isBold,
       id: oldNote.id,
       title: oldNote.title,
       content: oldNote.content,
@@ -63,6 +66,7 @@ class NotesCubit extends Cubit<NotesState> {
     entries.removeWhere((e) => e.id == entryId);
 
     final updatedNote = NoteEntity(
+      isBold: oldNote.isBold,
       id: oldNote.id,
       title: oldNote.title,
       content: oldNote.content,
@@ -81,8 +85,10 @@ class NotesCubit extends Cubit<NotesState> {
     required String content,
     required NoteType type,
     double fontSize = 16.0,
+    bool isBold = false,
   }) async {
     final newNote = NoteEntity(
+      isBold: isBold,
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       title: title,
       content: content,
@@ -112,8 +118,10 @@ class NotesCubit extends Cubit<NotesState> {
     String newTitle,
     String newContent,
     double newFontSize,
+    bool isBold,
   ) async {
     final updatedNote = NoteEntity(
+      isBold: isBold,
       id: oldNote.id,
       title: newTitle,
       content: newContent,

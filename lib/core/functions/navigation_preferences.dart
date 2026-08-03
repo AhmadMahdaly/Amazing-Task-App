@@ -9,6 +9,7 @@ enum NavItemKey {
   aiTracker,
   challenges,
   islamic,
+  notes,
 }
 
 class NavigationPreferences {
