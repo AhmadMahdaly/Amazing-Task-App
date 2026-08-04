@@ -10,6 +10,8 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/shared_widgets/app_wallpaper.dart';
+import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 
 import '../../domain/entities/journal_entry.dart';
 import '../../domain/entities/note_entity.dart';
@@ -172,9 +174,10 @@ class _JournalViewState extends State<JournalView> {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      backgroundColor: Colors.white,
+      // showDragHandle: true,
+      // backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(4.r)),
       ),
       builder: (_) {
         return _JournalEntryEditor(
@@ -203,7 +206,7 @@ class _JournalViewState extends State<JournalView> {
           style: AppTextStyle.style12W500.copyWith(
             // fontSize: fontSize,
             height: 1.6,
-            color: AppColors.primaryColor,
+            color: AppColors.white,
             // fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -222,224 +225,261 @@ class _JournalViewState extends State<JournalView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: BlocBuilder<NotesCubit, NotesState>(
-          builder: (context, state) {
-            if (state is NotesLoaded) {
-              final updatedNote = state.notes.firstWhere(
-                (n) => n.id == _currentNote.id,
-                orElse: () => _currentNote,
-              );
-              return SizedBox(
-                width: double.infinity,
-                child: Text(
-                  updatedNote.title,
-                  textAlign: _isArabic(updatedNote.title)
-                      ? TextAlign.right
-                      : TextAlign.left,
-                  textDirection: _isArabic(updatedNote.title)
-                      ? TextDirection.rtl
-                      : TextDirection.ltr,
-                  style: AppTextStyle.style20W900.copyWith(),
-                ),
-              );
-            }
-            return SizedBox(
-              width: double.infinity,
-              child: Text(
-                _currentNote.title,
-                textAlign: _isArabic(_currentNote.title)
-                    ? TextAlign.right
-                    : TextAlign.left,
-                textDirection: _isArabic(_currentNote.title)
-                    ? TextDirection.rtl
-                    : TextDirection.ltr,
-                style: AppTextStyle.style20W900.copyWith(),
-              ),
-            );
-          },
-        ),
-        backgroundColor: AppColors.primaryColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              _isAscending ? Icons.arrow_downward : Icons.arrow_upward,
-            ),
-            tooltip: _isAscending ? 'Oldest first' : 'Newest first',
-            onPressed: _toggleSort,
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'edit') {
-                _editJournalTitle(context);
-              } else if (value == 'delete') {
-                _deleteJournal(context);
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'edit',
-                child: Row(
-                  children: [
-                    Icon(Icons.edit, color: Colors.blue, size: 20),
-                    SizedBox(width: 8),
-                    Text('Edit journal name'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'Delete journal',
-                      style: TextStyle(color: Colors.red),
+    return BlocBuilder<WallpaperCubit, WallpaperState>(
+      builder: (context, wallpaperState) {
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: wallpaperState.settings.hasWallpaper
+              ? Colors.transparent
+              : AppColors.primaryColor,
+
+          appBar: AppBar(
+            title: BlocBuilder<NotesCubit, NotesState>(
+              builder: (context, state) {
+                if (state is NotesLoaded) {
+                  final updatedNote = state.notes.firstWhere(
+                    (n) => n.id == _currentNote.id,
+                    orElse: () => _currentNote,
+                  );
+                  return SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      updatedNote.title,
+                      textAlign: _isArabic(updatedNote.title)
+                          ? TextAlign.right
+                          : TextAlign.left,
+                      textDirection: _isArabic(updatedNote.title)
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
+                      style: AppTextStyle.style20W900.copyWith(),
                     ),
-                  ],
-                ),
+                  );
+                }
+                return SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    _currentNote.title,
+                    textAlign: _isArabic(_currentNote.title)
+                        ? TextAlign.right
+                        : TextAlign.left,
+                    textDirection: _isArabic(_currentNote.title)
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
+                    style: AppTextStyle.style16W600.copyWith(),
+                  ),
+                );
+              },
+            ),
+            backgroundColor: AppColors.primaryColor,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new),
+              onPressed: () => context.pop(),
+            ),
+            actions: [
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    _editJournalTitle(context);
+                  } else if (value == 'delete') {
+                    _deleteJournal(context);
+                  } else if (value == 'sort') {
+                    _toggleSort();
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'sort',
+                    child: Row(
+                      children: [
+                        Icon(
+                          _isAscending
+                              ? Icons.arrow_upward
+                              : Icons.arrow_downward,
+                          color: AppColors.thirdColor,
+                          size: 20.r,
+                        ),
+                        8.horizontalSpace,
+                        Text(
+                          _isAscending ? 'Newest first' : 'Oldest first',
+                          style: const TextStyle(color: AppColors.thirdColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.edit,
+                          color: AppColors.activeColor,
+                          size: 20.r,
+                        ),
+                        8.horizontalSpace,
+
+                        const Text(
+                          'Edit journal name',
+                          style: TextStyle(color: AppColors.activeColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.delete_outline,
+                          color: AppColors.errorColor,
+                          size: 20.r,
+                        ),
+                        8.horizontalSpace,
+
+                        const Text(
+                          'Delete journal',
+                          style: TextStyle(color: AppColors.errorColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-      body: BlocBuilder<NotesCubit, NotesState>(
-        builder: (context, state) {
-          if (state is NotesLoaded) {
-            _currentNote = state.notes.firstWhere(
-              (n) => n.id == _currentNote.id,
-              orElse: () => _currentNote,
-            );
-          }
+          body: AppWallpaper(
+            settings: wallpaperState.settings,
+            child: BlocBuilder<NotesCubit, NotesState>(
+              builder: (context, state) {
+                if (state is NotesLoaded) {
+                  _currentNote = state.notes.firstWhere(
+                    (n) => n.id == _currentNote.id,
+                    orElse: () => _currentNote,
+                  );
+                }
 
-          final entries =
-              List<JournalEntry>.from(
-                _currentNote.journalEntries,
-              )..sort((a, b) {
-                return _isAscending
-                    ? a.date.compareTo(b.date)
-                    : b.date.compareTo(a.date);
-              });
+                final entries =
+                    List<JournalEntry>.from(
+                      _currentNote.journalEntries,
+                    )..sort((a, b) {
+                      return _isAscending
+                          ? a.date.compareTo(b.date)
+                          : b.date.compareTo(a.date);
+                    });
 
-          if (entries.isEmpty) {
-            return Center(
-              child: Text(
-                'No journals yet...',
-                style: AppTextStyle.style16W500.copyWith(
-                  color: AppColors.secondaryColor,
-                ),
-              ),
-            );
-          }
-
-          return ListView.builder(
-            // padding: EdgeInsets.all(16.r),
-            itemCount: entries.length,
-            itemBuilder: (context, index) {
-              final entry = entries[index];
-              final dateStr = DateFormat(
-                'EEEE, dd MMMM yyyy',
-              ).format(entry.date);
-
-              return GestureDetector(
-                onTap: () => _showEntryBottomSheet(
-                  context,
-                  existingEntry: entry,
-                  notesCubit: context.read<NotesCubit>(),
-                ),
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 10.h),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4.r),
-                    border: Border.all(
-                      color: AppColors.secondaryColor.withAlpha(15),
+                if (entries.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No journals yet...',
+                      style: AppTextStyle.style16W500.copyWith(
+                        color: AppColors.secondaryColor,
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      16.verticalSpace,
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.r),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                  );
+                }
+
+                return ListView.builder(
+                  // padding: EdgeInsets.all(16.r),
+                  itemCount: entries.length,
+                  itemBuilder: (context, index) {
+                    final entry = entries[index];
+                    final dateStr = DateFormat(
+                      'EEEE, dd MMMM yyyy',
+                    ).format(entry.date);
+
+                    return GestureDetector(
+                      onTap: () => _showEntryBottomSheet(
+                        context,
+                        existingEntry: entry,
+                        notesCubit: context.read<NotesCubit>(),
+                      ),
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 10.h),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4.r),
+                          color: AppColors.white.withAlpha(10),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              dateStr,
-                              style: AppTextStyle.style12W400.copyWith(
-                                color: AppColors.secondaryColor,
-                                fontSize: 10.sp,
+                            16.verticalSpace,
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.r),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    dateStr,
+                                    style: AppTextStyle.style12W400.copyWith(
+                                      color: AppColors.buttonColor,
+                                      fontSize: 10.sp,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+                            if (entry.title.isNotEmpty) ...[
+                              8.verticalSpace,
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.r),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: Text(
+                                    entry.title,
+                                    textAlign: _isArabic(entry.title)
+                                        ? TextAlign.right
+                                        : TextAlign.left,
+                                    textDirection: _isArabic(entry.title)
+                                        ? TextDirection.rtl
+                                        : TextDirection.ltr,
+                                    style: AppTextStyle.style16W900.copyWith(
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                            // Divider(
+                            //   height: 16.h,
+                            //   color: AppColors.secondaryColor.withAlpha(15),
+                            // ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.r),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: _buildRichText(
+                                  entry.text,
+                                  _currentNote.fontSize,
+                                  _isArabic(entry.text),
+                                ),
+                              ),
+                            ),
+                            16.verticalSpace,
                           ],
                         ),
                       ),
-                      if (entry.title.isNotEmpty) ...[
-                        8.verticalSpace,
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.r),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: Text(
-                              entry.title,
-                              textAlign: _isArabic(entry.title)
-                                  ? TextAlign.right
-                                  : TextAlign.left,
-                              textDirection: _isArabic(entry.title)
-                                  ? TextDirection.rtl
-                                  : TextDirection.ltr,
-                              style: AppTextStyle.style16W900.copyWith(
-                                color: AppColors.primaryColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                      // Divider(
-                      //   height: 16.h,
-                      //   color: AppColors.secondaryColor.withAlpha(15),
-                      // ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.r),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: _buildRichText(
-                            entry.text,
-                            _currentNote.fontSize,
-                            _isArabic(entry.text),
-                          ),
-                        ),
-                      ),
-                      16.verticalSpace,
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: BlocProvider.value(
-        value: getIt<NotesCubit>(),
-        child: FloatingActionButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(320.r),
+                    );
+                  },
+                );
+              },
+            ),
           ),
-          backgroundColor: AppColors.primaryColor,
-          onPressed: () => _showEntryBottomSheet(
-            context,
-            notesCubit: context.read<NotesCubit>(),
+          floatingActionButton: BlocProvider.value(
+            value: getIt<NotesCubit>(),
+            child: FloatingActionButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(320.r),
+              ),
+              backgroundColor: AppColors.primaryColor,
+              onPressed: () => _showEntryBottomSheet(
+                context,
+                notesCubit: context.read<NotesCubit>(),
+              ),
+              child: const Icon(Icons.add, color: AppColors.white),
+            ),
           ),
-          child: const Icon(Icons.add, color: AppColors.white),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -618,127 +658,160 @@ class _JournalEntryEditorState extends State<_JournalEntryEditor> {
     final isTitleRtl = _isArabic(_titleController.text);
     final isTextRtl = _isArabic(_textController.text);
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 16.w,
-        right: 16.w,
-        top: 24.h,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(onPressed: _save, icon: const Icon(Icons.save)),
-              Text(
-                widget.existingEntry == null ? 'Add new day' : 'Edit day',
-                style: AppTextStyle.style18W900.copyWith(),
-              ),
-              Row(
-                children: [
-                  TextButton.icon(
-                    onPressed: _pickDate,
-                    icon: const Icon(Icons.calendar_today, size: 18),
-                    label: Text(
-                      DateFormat('dd / MM / yyyy').format(_selectedDate),
-                      style: AppTextStyle.style14W900.copyWith(),
-                    ),
-                  ),
-                  if (widget.existingEntry?.id != null)
+    return BlocBuilder<WallpaperCubit, WallpaperState>(
+      builder: (context, wallpaperState) {
+        return AppWallpaper(
+          settings: wallpaperState.settings,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 16.w,
+              right: 16.w,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                16.verticalSpace,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     IconButton(
-                      constraints: const BoxConstraints(),
-                      padding: EdgeInsets.zero,
+                      onPressed: _save,
                       icon: const Icon(
-                        Icons.delete_outline,
-                        color: Colors.red,
-                        size: 20,
+                        Icons.save,
+                        color: AppColors.white,
                       ),
-                      onPressed: () async {
-                        await widget.notesCubit.deleteJournalEntry(
-                          widget.note,
-                          widget.existingEntry!.id,
-                        );
-                        Navigator.pop(context);
-                      },
                     ),
-                ],
-              ),
-            ],
-          ),
-          16.verticalSpace,
-
-          Directionality(
-            textDirection: isTitleRtl ? TextDirection.rtl : TextDirection.ltr,
-            child: TextField(
-              controller: _titleController,
-
-              onChanged: (p0) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: 'Day title (Optional)...',
-                hintStyle: AppTextStyle.style14W600.copyWith(
-                  color: AppColors.secondaryColor,
+                    Text(
+                      widget.existingEntry == null ? 'Add new day' : 'Edit day',
+                      style: AppTextStyle.style18W600.copyWith(
+                        color: AppColors.white,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        TextButton.icon(
+                          onPressed: _pickDate,
+                          icon: Icon(
+                            Icons.calendar_today,
+                            color: AppColors.buttonColor,
+                            size: 18.r,
+                          ),
+                          label: Text(
+                            DateFormat('dd / MM / yyyy').format(_selectedDate),
+                            style: AppTextStyle.style14W500.copyWith(
+                              color: AppColors.buttonColor,
+                            ),
+                          ),
+                        ),
+                        if (widget.existingEntry?.id != null)
+                          IconButton(
+                            constraints: const BoxConstraints(),
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              Icons.delete,
+                              color: AppColors.errorColor,
+                              size: 20.r,
+                            ),
+                            onPressed: () async {
+                              await widget.notesCubit.deleteJournalEntry(
+                                widget.note,
+                                widget.existingEntry!.id,
+                              );
+                              Navigator.pop(context);
+                            },
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-              ),
-            ),
-          ),
-          const Divider(),
-          Expanded(
-            child: Directionality(
-              textDirection: isTextRtl ? TextDirection.rtl : TextDirection.ltr,
-              child: TextField(
-                controller: _textController,
-                maxLines: 8,
-                minLines: 4,
-                onChanged: (p0) => setState(() {}),
-                textAlign: isTextRtl ? TextAlign.right : TextAlign.left,
-                decoration: InputDecoration(
-                  hintText: 'Write your journal here...',
-                  hintStyle: AppTextStyle.style16W500.copyWith(
-                    color: AppColors.secondaryColor,
+                12.verticalSpace,
+
+                Directionality(
+                  textDirection: isTitleRtl
+                      ? TextDirection.rtl
+                      : TextDirection.ltr,
+                  child: TextField(
+                    controller: _titleController,
+                    style: AppTextStyle.style12W600.copyWith(
+                      color: AppColors.white,
+                    ),
+                    onChanged: (p0) => setState(() {}),
+                    decoration: InputDecoration(
+                      hintText: 'Day title (Optional)...',
+                      hintStyle: AppTextStyle.style14W600.copyWith(
+                        color: AppColors.white,
+                      ),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                    ),
                   ),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
                 ),
-                style: const TextStyle(
-                  height: 1.5,
+                const Divider(
+                  color: AppColors.white,
+                  thickness: 0.5,
                 ),
-              ),
+                Expanded(
+                  child: Directionality(
+                    textDirection: isTextRtl
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
+                    child: TextField(
+                      controller: _textController,
+                      maxLines: 8,
+                      minLines: 4,
+                      style: AppTextStyle.style12W500.copyWith(
+                        color: AppColors.white,
+                        height: 1.5,
+                      ),
+                      onChanged: (p0) => setState(() {}),
+                      textAlign: isTextRtl ? TextAlign.right : TextAlign.left,
+                      decoration: InputDecoration(
+                        hintText: 'Write your journal here...',
+                        hintStyle: AppTextStyle.style16W500.copyWith(
+                          color: AppColors.white,
+                        ),
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+
+                12.verticalSpace,
+
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.format_list_bulleted,
+                        color: AppColors.buttonColor,
+                      ),
+                      tooltip: 'Add Bullet',
+                      onPressed: _insertBullet,
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.format_bold,
+                        color: _isBold
+                            ? AppColors.successColor
+                            : AppColors.buttonColor,
+                      ),
+                      tooltip: 'Bold Line',
+                      onPressed: _toggleBoldForCurrentLine,
+                    ),
+                  ],
+                ),
+
+                // 24.verticalSpace,
+              ],
             ),
           ),
-
-          12.verticalSpace,
-
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.format_list_bulleted,
-                  color: AppColors.primaryColor,
-                ),
-                tooltip: 'Add Bullet',
-                onPressed: _insertBullet,
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.format_bold,
-                  color: _isBold ? AppColors.primaryColor : Colors.grey,
-                ),
-                tooltip: 'Bold Line',
-                onPressed: _toggleBoldForCurrentLine,
-              ),
-            ],
-          ),
-
-          // 24.verticalSpace,
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -255,6 +255,22 @@ class MainTasksScreen extends StatelessWidget {
                       return Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          FloatingActionButton(
+                            heroTag: 'my_notes_fab',
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(320.r),
+                            ),
+                            onPressed: () async {
+                              await context.pushNamed(AppRoutes.noteView);
+                            },
+                            backgroundColor: AppColors.white,
+                            child: Icon(
+                              Icons.book_outlined,
+                              size: 24.r,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                          24.horizontalSpace,
                           if (isMyDay) ...[
                             FloatingActionButton.extended(
                               heroTag: 'suggestions_fab',
