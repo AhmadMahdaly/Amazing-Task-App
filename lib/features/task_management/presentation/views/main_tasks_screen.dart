@@ -66,11 +66,7 @@ class MainTasksScreen extends StatelessWidget {
         label: 'Challenges',
         onTap: () => context.pushNamed(AppRoutes.challengesScreen),
       ),
-      'islamic': BottomNavItemData(
-        icon: Icons.mosque_outlined,
-        label: AppTexts.islamicSection,
-        onTap: () => context.pushNamed(AppRoutes.islamicHomeView),
-      ),
+
       'notes': BottomNavItemData(
         icon: Icons.book_outlined,
         label: AppTexts.myNote,
@@ -159,24 +155,24 @@ class MainTasksScreen extends StatelessWidget {
                                 shadowColor: Colors.transparent,
                                 floating: true,
                                 pinned: true,
-                                actions: [
-                                  if (state is TasksLoaded &&
-                                      state.currentFilter == TaskFilter.myDay)
-                                    IconButton(
-                                      tooltip: AppTexts.daySchedule,
-                                      icon: Icon(
-                                        Icons.mosque,
-                                        color: AppColors.white,
-                                        size: 24.r,
-                                      ),
-                                      onPressed: () async {
-                                        await context.pushNamed(
-                                          AppRoutes.islamicHomeView,
-                                        );
-                                      },
-                                    ),
-                                  12.horizontalSpace,
-                                ],
+                                // actions: [
+                                //   if (state is TasksLoaded &&
+                                //       state.currentFilter == TaskFilter.myDay)
+                                //     IconButton(
+                                //       tooltip: AppTexts.daySchedule,
+                                //       icon: Icon(
+                                //         Icons.mosque,
+                                //         color: AppColors.white,
+                                //         size: 24.r,
+                                //       ),
+                                //       onPressed: () async {
+                                //         await context.pushNamed(
+                                //           AppRoutes.islamicHomeView,
+                                //         );
+                                //       },
+                                //     ),
+                                //   12.horizontalSpace,
+                                // ],
                                 flexibleSpace: FlexibleSpaceBar(
                                   title:
                                       state is TasksLoaded &&

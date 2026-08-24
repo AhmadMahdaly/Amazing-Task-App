@@ -8,27 +8,6 @@ class AppRoutes {
   static const String challengeAnalysisScreen = '/challengeAnalysisScreen';
   static const String plannerView = '/plannerView';
   static const String dayScheduleScreen = '/dayScheduleScreen';
-  static const String settingsCalculationView = '/settingsCalculationView';
-  static const String azkarView = '/azkarView';
-  static const String islamicHomeView = '/islamicHomeView';
-  static const String missedPrayersScreen = '/missedPrayersScreen';
-  static const String surahReadingView = '/surahReadingView';
-  static const String quranIndexView = '/quranIndexView';
-  static const String hisnIndexView = '/hisnIndexView';
-  static const String hisnReadingView = '/hisnReadingView';
-  static const String asmaaIndexView = '/asmaaIndexView';
-  static const String asmaaReadingView = '/asmaaReadingView';
-  static const String tafsirIndexView = '/tafsirIndexView';
-  static const String tafsirReadingView = '/tafsirReadingView';
-  static const String arbaoonIndexView = '/arbaoonIndexView';
-  static const String arbaoonReadingView = '/arbaoonReadingView';
-  static const String tabeenReadingView = '/tabeenReadingView';
-  static const String tabeenIndexView = '/tabeenIndexView';
-  static const String unifiedNotesView = '/unifiedNotesView';
-  static const String sirahView = '/sirahView';
-  static const String fridaySunanView = '/fridaySunanView';
-  static const String anbyaaReadingView = '/anbyaaReadingView';
-  static const String anbyaaIndexView = '/anbyaaIndexView';
 
   ///
   static const String aiTrackerMainView = '/aiTrackerMainView';

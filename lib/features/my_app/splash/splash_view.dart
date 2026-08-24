@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -29,11 +27,8 @@ class _SplashViewState extends State<SplashView> {
     _hasRedirected = true;
     await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
-    if (Platform.isWindows) {
-      context.go(AppRoutes.islamicHomeView);
-    } else {
-      context.go(AppRoutes.mainTasksScreen);
-    }
+
+    context.go(AppRoutes.mainTasksScreen);
   }
 
   @override

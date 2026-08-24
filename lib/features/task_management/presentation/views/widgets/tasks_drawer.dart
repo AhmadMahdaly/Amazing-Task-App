@@ -442,13 +442,6 @@ class TasksDrawer extends StatelessWidget {
                     await context.pushNamed(AppRoutes.plannerView);
                   },
                 ),
-                IconButton(
-                  tooltip: AppTexts.islamicSection,
-                  icon: const Icon(Icons.mosque_outlined),
-                  onPressed: () async {
-                    await context.pushNamed(AppRoutes.islamicHomeView);
-                  },
-                ),
               ],
             ),
             const AppVersionWidget(), 12.verticalSpace,

@@ -9,37 +9,6 @@ import 'package:s/features/challenges/data/datasource/challenges_local_datasourc
 import 'package:s/features/challenges/data/repositories/challenge_repository_impl.dart';
 import 'package:s/features/challenges/domain/repositories/challenge_repository.dart';
 import 'package:s/features/challenges/presentation/cubit/challenge_cubit/challenge_cubit.dart';
-import 'package:s/features/islamic_section/anbyaa/data/data_source/anbyaa_local_data_source.dart';
-import 'package:s/features/islamic_section/anbyaa/data/repositories/anbyaa_repository_impl.dart';
-import 'package:s/features/islamic_section/anbyaa/domain/repository/anbyaa_repository.dart';
-import 'package:s/features/islamic_section/anbyaa/presentation/cubit/anbyaa_cubit.dart';
-import 'package:s/features/islamic_section/arbaoon/data/data_source/arbaoon_local_data_source.dart';
-import 'package:s/features/islamic_section/arbaoon/data/repositories/arbaoon_repository_impl.dart';
-import 'package:s/features/islamic_section/arbaoon/domain/repository/arbaoon_repository.dart';
-import 'package:s/features/islamic_section/arbaoon/presentation/cubit/arbaoon_cubit.dart';
-import 'package:s/features/islamic_section/asmaa/data/datasources/asmaa_local_data_source.dart';
-import 'package:s/features/islamic_section/asmaa/data/repositories/asmaa_repository_impl.dart';
-import 'package:s/features/islamic_section/asmaa/domain/repositories/asmaa_repository.dart';
-import 'package:s/features/islamic_section/asmaa/presentation/cubit/asmaa_cubit.dart';
-import 'package:s/features/islamic_section/azkar/data/data_sources/base_azkar_data_source.dart';
-import 'package:s/features/islamic_section/azkar/data/repository/azkar_repository_impl.dart';
-import 'package:s/features/islamic_section/azkar/domain/repositories/base_azkar_repository.dart';
-import 'package:s/features/islamic_section/azkar/presentation/controllers/cubit/azkar_cubit.dart';
-import 'package:s/features/islamic_section/friday_sunan/presentation/cubit/friday_sunan_cubit.dart';
-import 'package:s/features/islamic_section/hisn_azkar/presentation/cubit/hisn_cubit.dart';
-import 'package:s/features/islamic_section/missed_prayers/data/datasource/missed_prayers_local_data_source.dart';
-import 'package:s/features/islamic_section/missed_prayers/data/repo/missed_prayers_repository_impl.dart';
-import 'package:s/features/islamic_section/missed_prayers/domain/repo/missed_prayers_repository.dart';
-import 'package:s/features/islamic_section/missed_prayers/presentation/cubit/missed_prayers_cubit.dart';
-import 'package:s/features/islamic_section/notes/data/data_sources/notes_data_source.dart';
-import 'package:s/features/islamic_section/notes/presentation/cubit/notes_cubit.dart';
-import 'package:s/features/islamic_section/quran/presentation/controllers/audio_cubit/audio_cubit.dart';
-import 'package:s/features/islamic_section/quran/presentation/controllers/quran_cubit/quran_cubit.dart';
-import 'package:s/features/islamic_section/tabeen/data/data_source/tabeen_local_data_source.dart';
-import 'package:s/features/islamic_section/tabeen/data/repositories/tabeen_repository_impl.dart';
-import 'package:s/features/islamic_section/tabeen/domain/repository/tabeen_repository.dart';
-import 'package:s/features/islamic_section/tabeen/presentation/cubit/tabeen_cubit.dart';
-import 'package:s/features/islamic_section/tafsir/presentation/cubit/tafsir_cubit.dart';
 import 'package:s/features/notes/data/datasources/base_note_local_data_source.dart';
 import 'package:s/features/notes/data/datasources/note_local_data_source_impl.dart';
 import 'package:s/features/notes/data/repositories/notes_repository_impl.dart';
@@ -90,56 +59,6 @@ Future<void> setupGetIt() async {
       () => ChallengeRepositoryImpl(getIt()),
     )
     ..registerFactory<ChallengeCubit>(() => ChallengeCubit(getIt()))
-    ///
-    ..registerLazySingleton<MissedPrayersLocalDataSource>(
-      MissedPrayersLocalDataSource.new,
-    )
-    ..registerLazySingleton<MissedPrayersRepository>(
-      () => MissedPrayersRepositoryImpl(getIt()),
-    )
-    ..registerLazySingleton<MissedPrayersCubit>(
-      () => MissedPrayersCubit(getIt()),
-    )
-    ///
-    ..registerLazySingleton<BaseAzkarDataSource>(
-      AzkarLocalDataSourceImpl.new,
-    )
-    ..registerLazySingleton<BaseAzkarRepository>(
-      () => AzkarRepositoryImpl(getIt()),
-    )
-    ..registerLazySingleton<AzkarCubit>(() => AzkarCubit(getIt()))
-    ..registerLazySingleton<QuranCubit>(QuranCubit.new)
-    ..registerLazySingleton<HisnCubit>(HisnCubit.new)
-    ..registerLazySingleton<TafsirCubit>(TafsirCubit.new)
-    ..registerLazySingleton<AsmaaLocalDataSource>(
-      AsmaaLocalDataSource.new,
-    )
-    ..registerLazySingleton<AsmaaRepository>(
-      () => AsmaaRepositoryImpl(getIt()),
-    )
-    ..registerLazySingleton<AsmaaCubit>(() => AsmaaCubit(getIt()))
-    ///
-    ..registerLazySingleton<ArbaoonLocalDataSource>(
-      ArbaoonLocalDataSourceImpl.new,
-    )
-    ..registerLazySingleton<ArbaoonRepository>(
-      () => ArbaoonRepositoryImpl(getIt()),
-    )
-    ..registerLazySingleton<ArbaoonCubit>(() => ArbaoonCubit(getIt()))
-    ..registerLazySingleton<TabeenLocalDataSource>(
-      TabeenLocalDataSourceImpl.new,
-    )
-    ..registerLazySingleton<TabeenRepository>(
-      () => TabeenRepositoryImpl(getIt()),
-    )
-    ..registerLazySingleton<TabeenCubit>(() => TabeenCubit(getIt()))
-    ..registerLazySingleton<AnbyaaLocalDataSource>(
-      AnbyaaLocalDataSourceImpl.new,
-    )
-    ..registerLazySingleton<AnbyaaRepository>(
-      () => AnbyaaRepositoryImpl(getIt()),
-    )
-    ..registerLazySingleton<AnbyaaCubit>(() => AnbyaaCubit(getIt()))
     ..registerLazySingleton<BaseNoteLocalDataSource>(
       NoteLocalDataSourceImpl.new,
     )
@@ -149,14 +68,5 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<NotesCubit>(
       () => NotesCubit(getIt()),
     )
-    ..registerLazySingleton<HighlightNotesDataSource>(
-      HighlightNotesDataSource.new,
-    )
-    ..registerLazySingleton<HighlightNotesCubit>(
-      () => HighlightNotesCubit(getIt()),
-    )
-    ///
-    ..registerLazySingleton<AiTrackerCubit>(AiTrackerCubit.new)
-    ..registerLazySingleton<FridaySunnahCubit>(FridaySunnahCubit.new)
-    ..registerLazySingleton<AudioCubit>(AudioCubit.new);
+    ..registerLazySingleton<AiTrackerCubit>(AiTrackerCubit.new);
 }
