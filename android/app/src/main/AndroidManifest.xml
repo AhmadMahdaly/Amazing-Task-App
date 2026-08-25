@@ -15,7 +15,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name="com.ryanheise.audioservice.AudioServiceActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""
@@ -50,22 +50,22 @@ xmlns:tools="http://schemas.android.com/tools">
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
             </intent-filter>
         </receiver>
-        <service android:name="com.ryanheise.audioservice.AudioService"
+        <!-- <service android:name="com.ryanheise.audioservice.AudioService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true"
             tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
-        </service>
+        </service> -->
 
-        <receiver android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+        <!-- <receiver android:name="com.ryanheise.audioservice.MediaButtonReceiver"
             android:exported="true"
             tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
-        </receiver>
+            </intent-filter> 
+         </receiver> -->
     </application>
     <queries>
         <intent>

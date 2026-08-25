@@ -23,7 +23,6 @@ Future<void> initializeApp() async {
   }
   // if (Platform.isWindows) {
   //   await windowManager.ensureInitialized();
-
   //   const windowOptions = WindowOptions(
   //     size: Size(660, 980),
   //     minimumSize: Size(660, 980),
@@ -33,17 +32,16 @@ Future<void> initializeApp() async {
   //     title: 'TSX',
   //     windowButtonVisibility: true,
   //   );
-
   //   await windowManager.waitUntilReadyToShow(windowOptions, () async {
   //     await windowManager.setResizable(true);
-
   //     await windowManager.show();
   //     await windowManager.focus();
   //   });
   // }
   await CacheHelper.init();
-  initRouter();
+
   await setupGetIt();
+  initRouter();
   if (Platform.isAndroid || Platform.isIOS) {
     await NavigationPreferences.init();
     await getIt<TaskNotificationService>().initialize();
