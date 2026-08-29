@@ -159,8 +159,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 subtitle: category == 'custom' && _selectedRepeatMode != null
                     ? Text(
                         formatRepeatMode(_selectedRepeatMode),
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 11.sp,
+                        style: AppTextStyle.style11W300.copyWith(
                           color: AppColors.secondaryColor,
                         ),
                       )
@@ -217,8 +216,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
       subtitle: subtitleText != null
           ? Text(
               subtitleText,
-              style: AppTextStyle.style9W300.copyWith(
-                fontSize: 11.sp,
+              style: AppTextStyle.style11W300.copyWith(
                 color: AppColors.secondaryColor,
               ),
             )
@@ -338,8 +336,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 ),
                 subtitle: Text(
                   AppTexts.pinnedTasksChannelDesc,
-                  style: AppTextStyle.style9W300.copyWith(
-                    fontSize: 11.sp,
+                  style: AppTextStyle.style11W300.copyWith(
                     color: AppColors.secondaryColor,
                   ),
                 ),

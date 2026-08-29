@@ -448,8 +448,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 subtitle: category == 'custom' && task.repeatMode != null
                     ? Text(
                         formatRepeatMode(task.repeatMode),
-                        style: AppTextStyle.style9W300.copyWith(
-                          fontSize: 11.sp,
+                        style: AppTextStyle.style11W300.copyWith(
                           color: AppColors.secondaryColor,
                         ),
                       )
@@ -507,8 +506,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       subtitle: subtitleText != null
           ? Text(
               subtitleText,
-              style: AppTextStyle.style9W300.copyWith(
-                fontSize: 11.sp,
+              style: AppTextStyle.style11W300.copyWith(
                 color: AppColors.secondaryColor,
               ),
             )
@@ -608,8 +606,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 child: Text(
                   AppTexts.selectList,
-                  style: AppTextStyle.style9W300.copyWith(
-                    fontSize: 16.sp,
+                  style: AppTextStyle.style16W300.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -757,8 +754,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             body: Center(
               child: Text(
                 AppTexts.thereIsAnError,
-                style: AppTextStyle.style12W300.copyWith(
-                  fontSize: 10.sp,
+                style: AppTextStyle.style10W300.copyWith(
                   color: AppColors.white,
                 ),
               ),
@@ -1024,10 +1020,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                     ..hideCurrentSnackBar()
                                     ..showSnackBar(
                                       SnackBar(
-                                       
                                         backgroundColor: AppColors.primaryColor,
                                         behavior: SnackBarBehavior.floating,
-                                        duration: const Duration(seconds: 4), content: Text(
+                                        duration: const Duration(seconds: 4),
+                                        content: Text(
                                           AppTexts.stepConvertedToTask,
                                           style: AppTextStyle.style12W300
                                               .copyWith(color: Colors.white),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:s/core/resources/app_text.dart';
@@ -36,6 +38,10 @@ class NotificationPermissionHelper {
   }
 
   static Future<bool> isGranted() async {
+    if (Platform.isMacOS) {
+      return true;
+    }
+
     final status = await Permission.notification.status;
     return _isGranted(status);
   }
@@ -48,7 +54,8 @@ class NotificationPermissionHelper {
     BuildContext context,
     NotificationPermissionResult result,
   ) async {
-    final isPermanent = result == NotificationPermissionResult.permanentlyDenied;
+    final isPermanent =
+        result == NotificationPermissionResult.permanentlyDenied;
 
     await showDialog<void>(
       context: context,
@@ -56,7 +63,7 @@ class NotificationPermissionHelper {
         return AlertDialog(
           title: Text(
             AppTexts.notificationPermissionRequired,
-            style: AppTextStyle.style14W300.copyWith(fontWeight: FontWeight.bold),
+            style: AppTextStyle.style14Bold,
           ),
           content: Text(
             isPermanent

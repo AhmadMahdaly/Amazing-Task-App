@@ -5,8 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/bloc_observer.dart';
 import 'package:s/core/functions/navigation_preferences.dart';
-
-// import 'package:window_manager/window_manager.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '/core/di.dart';
 import '../cache_helper/cache_helper.dart';
@@ -21,23 +20,23 @@ Future<void> initializeApp() async {
       DeviceOrientation.portraitDown,
     ]);
   }
-  // if (Platform.isWindows) {
-  //   await windowManager.ensureInitialized();
-  //   const windowOptions = WindowOptions(
-  //     size: Size(660, 980),
-  //     minimumSize: Size(660, 980),
-  //     center: true,
-  //     backgroundColor: Colors.white,
-  //     titleBarStyle: TitleBarStyle.normal,
-  //     title: 'TSX',
-  //     windowButtonVisibility: true,
-  //   );
-  //   await windowManager.waitUntilReadyToShow(windowOptions, () async {
-  //     await windowManager.setResizable(true);
-  //     await windowManager.show();
-  //     await windowManager.focus();
-  //   });
-  // }
+  if (Platform.isWindows || Platform.isMacOS) {
+    await windowManager.ensureInitialized();
+    const windowOptions = WindowOptions(
+      size: Size(1000, 700),
+      minimumSize: Size(1000, 700),
+      center: true,
+      backgroundColor: Colors.white,
+      titleBarStyle: TitleBarStyle.normal,
+      title: 'My Tasks',
+      windowButtonVisibility: true,
+    );
+    await windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.setResizable(true);
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
   await CacheHelper.init();
 
   await setupGetIt();

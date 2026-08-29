@@ -282,9 +282,9 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                                         ),
                                     border: InputBorder.none,
                                   ),
-                                  style: TextStyle(
+                                  style: AppTextStyle.style10Bold.copyWith(
                                     color: AppColors.white,
-                                    fontSize: _fontSize,
+                                    fontSize: _fontSize.sp,
                                     fontWeight: _isBold
                                         ? FontWeight.bold
                                         : FontWeight.normal,

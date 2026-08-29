@@ -83,6 +83,8 @@ class MainTasksScreen extends StatelessWidget {
         return LayoutBuilder(
           builder: (context, constraints) {
             final isTablet = SizeConfig.isTablet;
+            final isDesktop = SizeConfig.isDesktop;
+            final isLargeScreen = isTablet || isDesktop;
             final navMap = _getNavData(context);
 
             final activeNavItems = userNavKeys
@@ -97,8 +99,9 @@ class MainTasksScreen extends StatelessWidget {
                   backgroundColor: wallpaperState.settings.hasWallpaper
                       ? Colors.transparent
                       : AppColors.primaryColor,
-                  drawer: isTablet ? null : const TasksDrawer(),
-                  bottomNavigationBar: !isTablet && activeNavItems.length > 1
+                  drawer: isLargeScreen ? null : const TasksDrawer(),
+                  bottomNavigationBar:
+                      !isLargeScreen && activeNavItems.length > 1
                       ? BlocBuilder<TasksCubit, TasksState>(
                           builder: (context, tasksState) {
                             return BottomNavigationBar(
@@ -219,12 +222,14 @@ class MainTasksScreen extends StatelessWidget {
                           ),
                         );
 
-                        if (isTablet) {
+                        if (isLargeScreen) {
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: constraints.maxWidth * 0.4,
+                                width: isDesktop
+                                    ? 300
+                                    : constraints.maxWidth * 0.4,
                                 child: const TasksDrawer(isPermanent: true),
                               ),
                               Expanded(child: mainContent),
@@ -285,8 +290,7 @@ class MainTasksScreen extends StatelessWidget {
                               backgroundColor: AppColors.white,
                               label: Text(
                                 AppTexts.suggestions,
-                                style: AppTextStyle.style12W400.copyWith(
-                                  fontSize: 10.sp,
+                                style: AppTextStyle.style10W400.copyWith(
                                   color: AppColors.primaryColor,
                                 ),
                               ),

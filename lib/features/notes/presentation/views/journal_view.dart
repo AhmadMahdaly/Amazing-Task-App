@@ -410,9 +410,8 @@ class _JournalViewState extends State<JournalView> {
                                 children: [
                                   Text(
                                     dateStr,
-                                    style: AppTextStyle.style12W400.copyWith(
+                                    style: AppTextStyle.style10W400.copyWith(
                                       color: AppColors.buttonColor,
-                                      fontSize: 10.sp,
                                     ),
                                   ),
                                 ],

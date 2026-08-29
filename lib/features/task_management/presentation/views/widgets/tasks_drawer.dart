@@ -27,7 +27,10 @@ class TasksDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isTablet = SizeConfig.isTablet;
+    final isDesktop = SizeConfig.isDesktop;
+    final isLargeScreen = isTablet || isDesktop;
     return Drawer(
+      width: isDesktop ? 300 : null,
       backgroundColor: AppColors.forthColor,
       elevation: 0,
       shape: const RoundedRectangleBorder(),
@@ -96,8 +99,7 @@ class TasksDrawer extends StatelessWidget {
                               // Center(
                               //   child: Text(
                               //     summary?.currentStreak.toString() ?? '0',
-                              //     style: AppTextStyle.style16Bold.copyWith(
-                              //       fontSize: 20.sp,
+                              //     style: AppTextStyle.style20Bold.copyWith(
                               //       color: AppColors.white,
                               //     ),
                               //   ),
@@ -374,7 +376,8 @@ class TasksDrawer extends StatelessWidget {
                       },
                     ),
 
-                    if (!isTablet && (Platform.isAndroid || Platform.isIOS))
+                    if (!isLargeScreen &&
+                        (Platform.isAndroid || Platform.isIOS))
                       SpeedDialChild(
                         child: const Icon(Icons.edit_attributes_outlined),
                         label: 'Customize NavBar Sheet',
@@ -470,7 +473,6 @@ class TasksDrawer extends StatelessWidget {
       title: Text(
         title,
         style: AppTextStyle.style12W300.copyWith(
-          fontSize: 10.sp,
           color: textColor ?? AppColors.white,
           fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
         ),
@@ -478,7 +480,7 @@ class TasksDrawer extends StatelessWidget {
       trailing: count != null
           ? Text(
               count,
-              style: AppTextStyle.style9W300.copyWith(
+              style: AppTextStyle.style11W300.copyWith(
                 color: AppColors.white,
               ),
             )
@@ -529,8 +531,7 @@ class TasksDrawer extends StatelessWidget {
                 overflow: TextOverflow.fade,
                 softWrap: true,
                 list.title,
-                style: AppTextStyle.style12W300.copyWith(
-                  fontSize: 10.sp,
+                style: AppTextStyle.style10W300.copyWith(
                   color: AppColors.white,
                 ),
               ),
@@ -563,7 +564,7 @@ class TasksDrawer extends StatelessWidget {
               onSelected: (value) async {
                 switch (value) {
                   case 'edit':
-                    if (!SizeConfig.isTablet) {
+                    if (!isPermanent) {
                       Navigator.pop(context);
                     }
                     await showModalBottomSheet<void>(

@@ -66,8 +66,7 @@ class CompletedTasksSection extends StatelessWidget {
           // subtitle: sorted.first.completedAt != null
           //     ? Text(
           //         formatCompletedDate(sorted.first.completedAt),
-          //         style: AppTextStyle.style9W300.copyWith(
-          //           fontSize: 11.sp,
+          //         style: AppTextStyle.style11W300.copyWith(
           //           color: AppColors.secondaryColor.withAlpha(160),
           //         ),
           //       )
@@ -132,8 +131,7 @@ class _DateHeader extends StatelessWidget {
           SizedBox(width: 8.w),
           Text(
             label,
-            style: AppTextStyle.style9W300.copyWith(
-              fontSize: 13.sp,
+            style: AppTextStyle.style12W300.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.white.withAlpha(200),
             ),

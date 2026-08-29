@@ -127,7 +127,7 @@ class ScheduleTaskCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
 
                           style: AppTextStyle.style12Bold.copyWith(
-                            fontSize: compact ? 12 : 14,
+                            fontSize: compact ? 12.sp : 14.sp,
 
                             decoration: task.isCompleted
                                 ? TextDecoration.lineThrough
@@ -156,13 +156,11 @@ class ScheduleTaskCard extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(50),
                                 ),
 
-                                child: const Text(
+                                child: Text(
                                   'Important',
 
-                                  style: TextStyle(
-                                    fontSize: 11,
+                                  style: AppTextStyle.style11W600.copyWith(
                                     color: Colors.orange,
-                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),

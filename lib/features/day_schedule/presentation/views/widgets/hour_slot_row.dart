@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/utils/task_format_utils.dart';
 import 'package:s/features/day_schedule/presentation/views/widgets/schedule_task_card.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
@@ -68,7 +69,7 @@ class HourSlotRow extends StatelessWidget {
                     TaskFormatUtils.formatHour(hour),
 
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 15.sp,
 
                       fontWeight: isCurrentHour
                           ? FontWeight.bold

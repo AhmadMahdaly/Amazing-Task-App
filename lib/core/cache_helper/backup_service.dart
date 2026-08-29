@@ -15,6 +15,7 @@ class BackupService {
     final jsonString = jsonEncode(data);
     final bytes = Uint8List.fromList(utf8.encode(jsonString));
     final tempDir = await getTemporaryDirectory();
+    await tempDir.create(recursive: true);
     final file = File('${tempDir.path}/backup.json');
     await file.writeAsBytes(bytes);
     await Share.shareXFiles([XFile(file.path)]);

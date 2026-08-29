@@ -120,13 +120,11 @@ class _DayScheduleScreenState extends State<DayScheduleScreen> {
     final context = key?.currentContext;
     if (context == null) return;
 
-    unawaited(
-      Scrollable.ensureVisible(
-        context,
-        duration: const Duration(milliseconds: 450),
-        curve: Curves.easeInOut,
-        alignment: 0.25,
-      ),
+    Scrollable.ensureVisible(
+      context,
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.easeInOut,
+      alignment: 0.25,
     );
   }
 
@@ -242,9 +240,8 @@ class _DayScheduleScreenState extends State<DayScheduleScreen> {
                                 children: [
                                   Text(
                                     AppTexts.daySchedule,
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
+                                    style: AppTextStyle.style10Bold.copyWith(
+                                      fontSize: 28.sp,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -401,18 +398,16 @@ class _StatItem extends StatelessWidget {
       children: [
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 24,
+          style: AppTextStyle.style20Bold.copyWith(
+            fontSize: 24.sp,
             color: Colors.white,
-            fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           title,
-          style: const TextStyle(
+          style: AppTextStyle.style12Bold.copyWith(
             color: Colors.white70,
-            fontSize: 13,
           ),
         ),
       ],

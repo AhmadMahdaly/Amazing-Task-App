@@ -81,7 +81,10 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
     }
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+      padding: EdgeInsets.symmetric(
+        horizontal: 8.w,
+        vertical: 2.h,
+      ),
       child: Dismissible(
         key: ValueKey('${widget.task.id}_dismissible'),
         direction: DismissDirection.horizontal,
@@ -291,8 +294,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                                 Expanded(
                                   child: DirectionalText(
                                     stepsText,
-                                    style: AppTextStyle.style9W300.copyWith(
-                                      fontSize: 11.sp,
+                                    style: AppTextStyle.style11W300.copyWith(
                                       color: AppColors.secondaryColor,
                                     ),
                                   ),
@@ -344,8 +346,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                 ),
                 title: DirectionalText(
                   widget.task.title,
-                  style: AppTextStyle.style12W300.copyWith(
-                    fontSize: 11.sp,
+                  style: AppTextStyle.style11W300.copyWith(
                     color: widget.task.isCompleted
                         ? AppColors.secondaryColor
                         : AppColors.forthColor,
@@ -355,6 +356,9 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                   ),
                 ),
                 trailing: IconButton(
+                  padding: SizeConfig.isDesktop
+                      ? EdgeInsets.symmetric(horizontal: 16.w)
+                      : EdgeInsets.zero,
                   tooltip: widget.task.isImportant
                       ? AppTexts.unmarkImportant
                       : AppTexts.markImportant,
@@ -363,7 +367,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                     color: widget.task.isImportant
                         ? AppColors.primaryColor
                         : AppColors.secondaryColor,
-                    size: 24.r,
+                    size: SizeConfig.isDesktop ? 20.r : 24.r,
                   ),
                   onPressed: () async {
                     await context.read<TasksCubit>().updateTask(

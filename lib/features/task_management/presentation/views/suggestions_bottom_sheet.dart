@@ -191,9 +191,8 @@ class SuggestionsBottomSheet extends StatelessWidget {
         ),
         subtitle: Text(
           listName,
-          style: AppTextStyle.style9W300.copyWith(
+          style: AppTextStyle.style11W300.copyWith(
             color: AppColors.secondaryColor,
-            fontSize: 11.sp,
           ),
         ),
         trailing: IconButton(

@@ -339,19 +339,16 @@ class _StatCard extends StatelessWidget {
               Icon(icon, color: color.withAlpha(180), size: 24.r),
               Text(
                 value,
-                style: AppTextStyle.style16Bold.copyWith(
+                style: AppTextStyle.style18Bold.copyWith(
                   color: AppColors.forthColor,
-                  fontSize: 18.sp,
                 ),
               ),
             ],
           ),
           Text(
             label,
-            style: AppTextStyle.style9W300.copyWith(
-              fontSize: 12.sp,
+            style: AppTextStyle.style12W500.copyWith(
               color: AppColors.secondaryColor,
-              fontWeight: FontWeight.w500,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -394,17 +391,15 @@ class _ProductivityCard extends StatelessWidget {
             children: [
               Text(
                 'Productivity Score',
-                style: AppTextStyle.style14Bold.copyWith(
+                style: AppTextStyle.style16Bold.copyWith(
                   color: Colors.white.withAlpha(210),
-                  fontSize: 16.sp,
                 ),
               ),
               8.verticalSpace,
               Text(
                 'Keep up the great work!',
-                style: AppTextStyle.style9W300.copyWith(
+                style: AppTextStyle.style12W300.copyWith(
                   color: Colors.white.withAlpha(170),
-                  fontSize: 12.sp,
                 ),
               ),
             ],
@@ -438,9 +433,8 @@ class _ProductivityCard extends StatelessWidget {
                 ),
                 Text(
                   '${summary.productivityScore.round()}%',
-                  style: AppTextStyle.style16Bold.copyWith(
+                  style: AppTextStyle.style20Bold.copyWith(
                     color: Colors.white,
-                    fontSize: 20.sp,
                   ),
                 ),
               ],
@@ -496,8 +490,7 @@ class _StreakCard extends StatelessWidget {
             children: [
               Text(
                 value,
-                style: AppTextStyle.style16Bold.copyWith(
-                  fontSize: 20.sp,
+                style: AppTextStyle.style20Bold.copyWith(
                   color: AppColors.forthColor,
                 ),
               ),
@@ -656,9 +649,7 @@ class _ListStatTile extends StatelessWidget {
 //         children: [
 //           Text(
 //             '$rate%',
-//             style: AppTextStyle.style9W300.copyWith(
-//               fontSize: 10.sp,
-//               fontWeight: FontWeight.bold,
+//             style: AppTextStyle.style10Bold.copyWith(
 //               color: rate >= 80
 //                   ? AppColors.successColor
 //                   : AppColors.secondaryColor,
@@ -685,10 +676,8 @@ class _ListStatTile extends StatelessWidget {
 //           12.verticalSpace,
 //           Text(
 //             label,
-//             style: AppTextStyle.style9W300.copyWith(
-//               fontSize: 11.sp,
+//             style: AppTextStyle.style11W600.copyWith(
 //               color: AppColors.secondaryColor,
-//               fontWeight: FontWeight.w600,
 //             ),
 //           ),
 //         ],
@@ -828,9 +817,8 @@ class _ListStatTile extends StatelessWidget {
 //                 ),
 //                 Text(
 //                   '$rate%',
-//                   style: AppTextStyle.style14Bold.copyWith(
+//                   style: AppTextStyle.style16Bold.copyWith(
 //                     color: AppColors.primaryColor,
-//                     fontSize: 16.sp,
 //                   ),
 //                 ),
 //               ],
@@ -892,18 +880,15 @@ class _ListStatTile extends StatelessWidget {
 //       children: [
 //         Text(
 //           value,
-//           style: AppTextStyle.style14Bold.copyWith(
+//           style: AppTextStyle.style16Bold.copyWith(
 //             color: color,
-//             fontSize: 16.sp,
 //           ),
 //         ),
 //         2.verticalSpace,
 //         Text(
 //           label,
-//           style: AppTextStyle.style9W300.copyWith(
-//             fontSize: 10.sp,
+//           style: AppTextStyle.style10W500.copyWith(
 //             color: AppColors.secondaryColor,
-//             fontWeight: FontWeight.w500,
 //           ),
 //         ),
 //       ],
@@ -938,8 +923,7 @@ class _ListStatTile extends StatelessWidget {
 //         6.horizontalSpace,
 //         Text(
 //           label,
-//           style: AppTextStyle.style9W300.copyWith(
-//             fontSize: 11.sp,
+//           style: AppTextStyle.style11W300.copyWith(
 //             color: AppColors.secondaryColor,
 //           ),
 //         ),

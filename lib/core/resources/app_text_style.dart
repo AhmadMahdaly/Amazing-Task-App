@@ -3,12 +3,14 @@ import 'package:s/core/resources/app_fonts.dart';
 
 import '../responsive/responsive_config.dart';
 
-const double size9 = 9;
-const double size12 = 12;
-const double size14 = 12;
-const double size16 = 14;
-const double size18 = 16;
-const double size20 = 18;
+final double size9 = SizeConfig.isDesktop ? 12 : 9;
+final double size10 = SizeConfig.isDesktop ? 12 : 10;
+final double size11 = SizeConfig.isDesktop ? 14 : 11;
+final double size12 = SizeConfig.isDesktop ? 16 : 12;
+final double size14 = SizeConfig.isDesktop ? 20 : 12;
+final double size16 = SizeConfig.isDesktop ? 22 : 14;
+final double size18 = SizeConfig.isDesktop ? 24 : 16;
+final double size20 = SizeConfig.isDesktop ? 26 : 18;
 
 abstract class AppTextStyle {
   // --- Font Size 9 ---
@@ -49,6 +51,90 @@ abstract class AppTextStyle {
   );
   static final TextStyle style9Bold = TextStyle(
     fontSize: size9.sp,
+    fontWeight: FontWeight.bold,
+    fontFamily: AppFonts.en,
+  );
+
+  // --- Font Size 10 ---
+  static final TextStyle style10W300 = TextStyle(
+    fontSize: size10.sp,
+    fontWeight: FontWeight.w300,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style10W400 = TextStyle(
+    fontSize: size10.sp,
+    fontWeight: FontWeight.w400,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style10W500 = TextStyle(
+    fontSize: size10.sp,
+    fontWeight: FontWeight.w500,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style10W600 = TextStyle(
+    fontSize: size10.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style10W700 = TextStyle(
+    fontSize: size10.sp,
+    fontWeight: FontWeight.w700,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style10W800 = TextStyle(
+    fontSize: size10.sp,
+    fontWeight: FontWeight.w800,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style10W900 = TextStyle(
+    fontSize: size10.sp,
+    fontWeight: FontWeight.w900,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style10Bold = TextStyle(
+    fontSize: size10.sp,
+    fontWeight: FontWeight.bold,
+    fontFamily: AppFonts.en,
+  );
+
+  // --- Font Size 11 ---
+  static final TextStyle style11W300 = TextStyle(
+    fontSize: size11.sp,
+    fontWeight: FontWeight.w300,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style11W400 = TextStyle(
+    fontSize: size11.sp,
+    fontWeight: FontWeight.w400,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style11W500 = TextStyle(
+    fontSize: size11.sp,
+    fontWeight: FontWeight.w500,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style11W600 = TextStyle(
+    fontSize: size11.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style11W700 = TextStyle(
+    fontSize: size11.sp,
+    fontWeight: FontWeight.w700,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style11W800 = TextStyle(
+    fontSize: size11.sp,
+    fontWeight: FontWeight.w800,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style11W900 = TextStyle(
+    fontSize: size11.sp,
+    fontWeight: FontWeight.w900,
+    fontFamily: AppFonts.en,
+  );
+  static final TextStyle style11Bold = TextStyle(
+    fontSize: size11.sp,
     fontWeight: FontWeight.bold,
     fontFamily: AppFonts.en,
   );
