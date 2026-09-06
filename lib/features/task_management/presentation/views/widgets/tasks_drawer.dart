@@ -27,7 +27,7 @@ class TasksDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isTablet = SizeConfig.isTablet;
-    final isDesktop = SizeConfig.isDesktop;
+    final isDesktop = SizeConfig.isTablet;
     final isLargeScreen = isTablet || isDesktop;
     return Drawer(
       width: isDesktop ? 300 : null,

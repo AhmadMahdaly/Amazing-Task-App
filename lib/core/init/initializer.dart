@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/bloc_observer.dart';
 import 'package:s/core/functions/navigation_preferences.dart';
+import 'package:s/core/resources/app_colors.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '/core/di.dart';
@@ -26,7 +27,7 @@ Future<void> initializeApp() async {
       size: Size(1000, 700),
       minimumSize: Size(1000, 700),
       center: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.primaryColor,
       titleBarStyle: TitleBarStyle.normal,
       title: 'My Tasks',
       windowButtonVisibility: true,

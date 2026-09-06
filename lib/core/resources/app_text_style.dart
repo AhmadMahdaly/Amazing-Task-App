@@ -3,14 +3,14 @@ import 'package:s/core/resources/app_fonts.dart';
 
 import '../responsive/responsive_config.dart';
 
-final double size9 = SizeConfig.isDesktop ? 12 : 9;
-final double size10 = SizeConfig.isDesktop ? 12 : 10;
-final double size11 = SizeConfig.isDesktop ? 14 : 11;
-final double size12 = SizeConfig.isDesktop ? 16 : 12;
-final double size14 = SizeConfig.isDesktop ? 20 : 12;
-final double size16 = SizeConfig.isDesktop ? 22 : 14;
-final double size18 = SizeConfig.isDesktop ? 24 : 16;
-final double size20 = SizeConfig.isDesktop ? 26 : 18;
+const double size9 = 9;
+const double size10 = 10;
+const double size11 = 11;
+const double size12 = 12;
+const double size14 = 12;
+const double size16 = 14;
+const double size18 = 16;
+const double size20 = 18;
 
 abstract class AppTextStyle {
   // --- Font Size 9 ---

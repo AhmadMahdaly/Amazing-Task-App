@@ -83,7 +83,7 @@ class MainTasksScreen extends StatelessWidget {
         return LayoutBuilder(
           builder: (context, constraints) {
             final isTablet = SizeConfig.isTablet;
-            final isDesktop = SizeConfig.isDesktop;
+            final isDesktop = SizeConfig.isTablet;
             final isLargeScreen = isTablet || isDesktop;
             final navMap = _getNavData(context);
 

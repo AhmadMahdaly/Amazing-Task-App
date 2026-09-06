@@ -356,9 +356,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                   ),
                 ),
                 trailing: IconButton(
-                  padding: SizeConfig.isDesktop
-                      ? EdgeInsets.symmetric(horizontal: 16.w)
-                      : EdgeInsets.zero,
+                  padding: EdgeInsets.zero,
                   tooltip: widget.task.isImportant
                       ? AppTexts.unmarkImportant
                       : AppTexts.markImportant,
@@ -367,7 +365,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                     color: widget.task.isImportant
                         ? AppColors.primaryColor
                         : AppColors.secondaryColor,
-                    size: SizeConfig.isDesktop ? 20.r : 24.r,
+                    size: 24.r,
                   ),
                   onPressed: () async {
                     await context.read<TasksCubit>().updateTask(
