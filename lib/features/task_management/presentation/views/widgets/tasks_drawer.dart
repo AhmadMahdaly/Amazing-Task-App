@@ -30,7 +30,7 @@ class TasksDrawer extends StatelessWidget {
     final isDesktop = SizeConfig.isTablet;
     final isLargeScreen = isTablet || isDesktop;
     return Drawer(
-      width: isDesktop ? 300 : null,
+      width: isDesktop ? SizeConfig.screenWidth * 0.35 : null,
       backgroundColor: AppColors.forthColor,
       elevation: 0,
       shape: const RoundedRectangleBorder(),
@@ -114,7 +114,7 @@ class TasksDrawer extends StatelessWidget {
                             children: [
                               Text(
                                 AppTexts.todayProgress,
-                                style: AppTextStyle.style12Bold.copyWith(
+                                style: AppTextStyle.style11Bold.copyWith(
                                   color: AppColors.white,
                                 ),
                               ),
@@ -472,7 +472,7 @@ class TasksDrawer extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: AppTextStyle.style12W300.copyWith(
+        style: AppTextStyle.style10W300.copyWith(
           color: textColor ?? AppColors.white,
           fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
         ),
@@ -480,7 +480,7 @@ class TasksDrawer extends StatelessWidget {
       trailing: count != null
           ? Text(
               count,
-              style: AppTextStyle.style11W300.copyWith(
+              style: AppTextStyle.style9W300.copyWith(
                 color: AppColors.white,
               ),
             )
