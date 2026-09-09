@@ -83,8 +83,8 @@ class MainTasksScreen extends StatelessWidget {
         return LayoutBuilder(
           builder: (context, constraints) {
             final isTablet = SizeConfig.isTablet;
-            final isDesktop = SizeConfig.isTablet;
-            final isLargeScreen = isTablet || isDesktop;
+            // final isDesktop = SizeConfig.isTablet;
+            final isLargeScreen = isTablet;
             final navMap = _getNavData(context);
 
             final activeNavItems = userNavKeys
@@ -227,8 +227,8 @@ class MainTasksScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: isDesktop
-                                    ? 300
+                                width: isLargeScreen
+                                    ? SizeConfig.screenWidth * 0.35
                                     : constraints.maxWidth * 0.4,
                                 child: const TasksDrawer(isPermanent: true),
                               ),
