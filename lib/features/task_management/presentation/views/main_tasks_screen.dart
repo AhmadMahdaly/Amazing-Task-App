@@ -227,9 +227,7 @@ class MainTasksScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(
-                                width: isLargeScreen
-                                    ? SizeConfig.screenWidth * 0.35
-                                    : constraints.maxWidth * 0.4,
+                                width: SizeConfig.screenWidth * 0.42,
                                 child: const TasksDrawer(isPermanent: true),
                               ),
                               Expanded(child: mainContent),

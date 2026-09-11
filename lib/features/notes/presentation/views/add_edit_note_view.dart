@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 import 'package:s/core/routing/app_routes.dart';
@@ -130,7 +131,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: wallpaperState.settings.hasWallpaper
-              ? Colors.transparent
+              ? AppColors.primaryColor.withAlpha(100)
               : AppColors.primaryColor,
 
           appBar: AppBar(
@@ -197,7 +198,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                               Text(
                                 'Type:',
                                 style: AppTextStyle.style16W600.copyWith(
-                                  color: AppColors.thirdColor,
+                                  color: AppColors.white,
                                 ),
                               ),
                               8.horizontalSpace,
@@ -251,6 +252,9 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                               ),
                               style: AppTextStyle.style16W600.copyWith(
                                 color: AppColors.white,
+                                fontFamily: _isArabic(_titleController.text)
+                                    ? AppFonts.ar
+                                    : AppFonts.en,
                               ),
                             );
                           },
@@ -288,6 +292,10 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                                     fontWeight: _isBold
                                         ? FontWeight.bold
                                         : FontWeight.normal,
+                                    fontFamily:
+                                        _isArabic(_contentController.text)
+                                        ? AppFonts.ar
+                                        : AppFonts.en,
                                     height: 1.5,
                                   ),
                                 );

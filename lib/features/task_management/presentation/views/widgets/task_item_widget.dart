@@ -245,7 +245,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                                               : (isOverdue
                                                     ? Colors.red
                                                     : AppColors.secondaryColor
-                                                          .withAlpha(200)),
+                                                          .withAlpha(170)),
                                         ),
                                       ),
                                     ),
@@ -272,7 +272,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                                                 .copyWith(
                                                   color: AppColors
                                                       .secondaryColor
-                                                      .withAlpha(200),
+                                                      .withAlpha(170),
                                                 ),
                                           ),
                                         ),

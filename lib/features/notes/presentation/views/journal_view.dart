@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import 'package:s/core/cache_helper/cache_helper.dart';
 import 'package:s/core/di.dart';
 import 'package:s/core/resources/app_colors.dart';
+import 'package:s/core/resources/app_fonts.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
@@ -207,7 +208,7 @@ class _JournalViewState extends State<JournalView> {
             // fontSize: fontSize,
             height: 1.6,
             color: AppColors.white,
-            // fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            fontFamily: _isArabic(displayText) ? AppFonts.ar : AppFonts.en,
           ),
         ),
       );
@@ -230,7 +231,7 @@ class _JournalViewState extends State<JournalView> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: wallpaperState.settings.hasWallpaper
-              ? Colors.transparent
+              ? AppColors.primaryColor.withAlpha(90)
               : AppColors.primaryColor,
 
           appBar: AppBar(
@@ -251,7 +252,11 @@ class _JournalViewState extends State<JournalView> {
                       textDirection: _isArabic(updatedNote.title)
                           ? TextDirection.rtl
                           : TextDirection.ltr,
-                      style: AppTextStyle.style20W900.copyWith(),
+                      style: AppTextStyle.style20W900.copyWith(
+                        fontFamily: _isArabic(updatedNote.title)
+                            ? AppFonts.ar
+                            : AppFonts.en,
+                      ),
                     ),
                   );
                 }
@@ -265,7 +270,11 @@ class _JournalViewState extends State<JournalView> {
                     textDirection: _isArabic(_currentNote.title)
                         ? TextDirection.rtl
                         : TextDirection.ltr,
-                    style: AppTextStyle.style16W600.copyWith(),
+                    style: AppTextStyle.style16W600.copyWith(
+                      fontFamily: _isArabic(_currentNote.title)
+                          ? AppFonts.ar
+                          : AppFonts.en,
+                    ),
                   ),
                 );
               },
@@ -433,6 +442,9 @@ class _JournalViewState extends State<JournalView> {
                                         : TextDirection.ltr,
                                     style: AppTextStyle.style16W900.copyWith(
                                       color: AppColors.white,
+                                      fontFamily: _isArabic(entry.title)
+                                          ? AppFonts.ar
+                                          : AppFonts.en,
                                     ),
                                   ),
                                 ),

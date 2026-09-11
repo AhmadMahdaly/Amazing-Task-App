@@ -30,7 +30,7 @@ class TasksDrawer extends StatelessWidget {
     final isDesktop = SizeConfig.isTablet;
     final isLargeScreen = isTablet || isDesktop;
     return Drawer(
-      width: isDesktop ? SizeConfig.screenWidth * 0.35 : null,
+      width: isDesktop ? SizeConfig.screenWidth * 0.4 : null,
       backgroundColor: AppColors.forthColor,
       elevation: 0,
       shape: const RoundedRectangleBorder(),
@@ -518,7 +518,7 @@ class TasksDrawer extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            20.horizontalSpace,
+            16.horizontalSpace,
 
             Icon(
               AppIconsHelper.getIconFromCode(list.iconCode),
@@ -550,7 +550,6 @@ class TasksDrawer extends StatelessWidget {
                   '$activeTasksCount',
                   style: AppTextStyle.style9W300.copyWith(
                     color: AppColors.white,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
