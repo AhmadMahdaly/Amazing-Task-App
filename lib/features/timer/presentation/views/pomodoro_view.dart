@@ -10,6 +10,7 @@ import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/timer/domian/entities/pomodoro_session_entity.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../controllers/pomodoro_cubit/pomodoro_cubit.dart';
 
@@ -33,10 +34,12 @@ class _PomodoroViewState extends State<PomodoroView> {
   void initState() {
     super.initState();
     context.read<PomodoroCubit>().loadTaskTotalTime(widget.taskId);
+    WakelockPlus.enable();
   }
 
   @override
   void dispose() {
+    WakelockPlus.disable();
     _descController.dispose();
     super.dispose();
   }
