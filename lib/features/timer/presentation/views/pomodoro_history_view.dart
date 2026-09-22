@@ -147,7 +147,7 @@ class _PomodoroHistoryViewState extends State<PomodoroHistoryView> {
                                   Text(
                                     dateFormatted,
                                     style: AppTextStyle.style9W300.copyWith(
-                                      color: AppColors.secondaryColor,
+                                      color: AppColors.buttonColor,
                                     ),
                                   ),
                                 ],
@@ -160,13 +160,13 @@ class _PomodoroHistoryViewState extends State<PomodoroHistoryView> {
                                 vertical: 4.h,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.primaryColor,
+                                color: AppColors.white,
                                 borderRadius: BorderRadius.circular(8.r),
                               ),
                               child: Text(
                                 session.mode.name.replaceAll('min', ''),
                                 style: AppTextStyle.style9W400.copyWith(
-                                  color: AppColors.white,
+                                  color: AppColors.primaryColor,
                                 ),
                               ),
                             ),
