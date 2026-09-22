@@ -22,6 +22,9 @@ import 'package:s/features/task_management/data/datasource/tasks_local_data_sour
 import 'package:s/features/task_management/data/repo/tasks_repository_impl.dart';
 import 'package:s/features/task_management/domain/repo/tasks_repository.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
+import 'package:s/features/timer/data/data_source/pomodoro_local_data_source.dart';
+import 'package:s/features/timer/data/repository/pomodoro_repository_impl.dart';
+import 'package:s/features/timer/domian/repository/pomodoro_repository.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -30,6 +33,7 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<TaskNotificationService>(
       () => TaskNotificationService.instance,
     )
+    ///
     ..registerLazySingleton<WallpaperRepository>(WallpaperRepository.new)
     ..registerLazySingleton<WallpaperCubit>(
       () => WallpaperCubit(getIt<WallpaperRepository>())..load(),
@@ -59,6 +63,7 @@ Future<void> setupGetIt() async {
       () => ChallengeRepositoryImpl(getIt()),
     )
     ..registerFactory<ChallengeCubit>(() => ChallengeCubit(getIt()))
+    ///
     ..registerLazySingleton<BaseNoteLocalDataSource>(
       NoteLocalDataSourceImpl.new,
     )
@@ -68,5 +73,13 @@ Future<void> setupGetIt() async {
     ..registerLazySingleton<NotesCubit>(
       () => NotesCubit(getIt()),
     )
+    /// ------------------ < Pomodoro Feature > ------------------
+    ..registerLazySingleton<PomodoroLocalDataSource>(
+      PomodoroLocalDataSourceImpl.new,
+    )
+    ..registerLazySingleton<PomodoroRepository>(
+      () => PomodoroRepositoryImpl(getIt<PomodoroLocalDataSource>()),
+    )
+    ///
     ..registerLazySingleton<AiTrackerCubit>(AiTrackerCubit.new);
 }

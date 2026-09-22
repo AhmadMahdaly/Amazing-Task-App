@@ -23,6 +23,10 @@ import 'package:s/features/notes/presentation/views/notes_view.dart';
 import 'package:s/features/planner/planner_screen.dart';
 import 'package:s/features/task_management/presentation/views/main_tasks_screen.dart';
 import 'package:s/features/task_management/presentation/views/task_detail_screen.dart';
+import 'package:s/features/timer/presentation/controllers/pomodoro_cubit/pomodoro_cubit.dart';
+import 'package:s/features/timer/presentation/controllers/pomodoro_history_cubit/pomodoro_history_cubit.dart';
+import 'package:s/features/timer/presentation/views/pomodoro_history_view.dart';
+import 'package:s/features/timer/presentation/views/pomodoro_view.dart';
 
 import '../../features/my_app/splash/splash_view.dart';
 import '../constants.dart';
@@ -92,6 +96,33 @@ void initRouter() {
           return BlocProvider.value(
             value: getIt<AiTrackerCubit>()..loadTrackerData(),
             child: const AiTrackerMainView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.pomodoroView,
+        name: AppRoutes.pomodoroView,
+        builder: (context, state) {
+          final args = state.extra! as Map;
+          return BlocProvider.value(
+            value: PomodoroCubit(getIt()),
+            child: PomodoroView(
+              taskId: args['taskId'] as String,
+              taskName: args['taskName'] as String,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.pomodoroHistoryView,
+        name: AppRoutes.pomodoroHistoryView,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>?;
+          final taskId = args?['taskId'] as String?;
+
+          return BlocProvider(
+            create: (_) => PomodoroHistoryCubit(getIt()),
+            child: PomodoroHistoryView(taskId: taskId),
           );
         },
       ),

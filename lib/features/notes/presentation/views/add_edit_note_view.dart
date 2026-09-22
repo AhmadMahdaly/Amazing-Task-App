@@ -102,7 +102,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
 
       if (goToJournal && newNote != null) {
         context.pop();
-        context.pushNamed(
+        await context.pushNamed(
           AppRoutes.journalView,
           extra: newNote,
         );
@@ -154,9 +154,11 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
               if (!isNew)
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert),
-                  onSelected: (value) {
+                  onSelected: (value) async {
                     if (value == 'delete') {
-                      context.read<NotesCubit>().deleteNote(widget.note!.id);
+                      await context.read<NotesCubit>().deleteNote(
+                        widget.note!.id,
+                      );
                       context.pop();
                     }
                   },

@@ -9,6 +9,7 @@ import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
+import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/services/notification_permission_helper.dart';
 import 'package:s/core/shared_widgets/custom_primary_textfield.dart';
 import 'package:s/core/shared_widgets/directional_text.dart';
@@ -1179,6 +1180,22 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         title: AppTexts.selectList,
                         subtitle: listName,
                         onTap: () => _showListPicker(task),
+                      ),
+                      const Divider(height: 1),
+                      SettingsTile(
+                        icon: Icons.timer_outlined,
+                        title: 'Pomodoro Timer',
+                        subtitle:
+                            'Start a focus session', 
+                        onTap: () {
+                          context.pushNamed(
+                            AppRoutes.pomodoroView,
+                            extra: {
+                              'taskId': task.id,
+                              'taskName': task.title,
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),

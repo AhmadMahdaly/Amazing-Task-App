@@ -10,6 +10,8 @@ class AppRoutes {
   static const String dayScheduleScreen = '/dayScheduleScreen';
 
   ///
+  static const String pomodoroView = '/pomodoroView';
+  static const String pomodoroHistoryView = '/pomodoroHistoryView';
   static const String aiTrackerMainView = '/aiTrackerMainView';
   static const String platformDetailsView = '/platformDetailsView';
   static const String addEmailView = '/addEmailView';

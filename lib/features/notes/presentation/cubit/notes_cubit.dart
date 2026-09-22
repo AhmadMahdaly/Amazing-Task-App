@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_positional_boolean_parameters
+// ignore_for_file: discarded_futures, cascade_invocations, avoid_positional_boolean_parameters
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/features/notes/domain/entities/journal_entry.dart';

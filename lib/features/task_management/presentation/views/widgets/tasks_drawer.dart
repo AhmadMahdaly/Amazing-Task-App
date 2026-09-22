@@ -415,6 +415,15 @@ class TasksDrawer extends StatelessWidget {
                       },
                     ),
                     SpeedDialChild(
+                      child: const Icon(Icons.timer_outlined),
+                      label: 'My focus session',
+                      onTap: () async {
+                        await context.pushNamed(
+                          AppRoutes.pomodoroHistoryView,
+                        );
+                      },
+                    ),
+                    SpeedDialChild(
                       child: const Icon(Icons.book_outlined),
                       label: 'My Notes',
                       onTap: () async {
