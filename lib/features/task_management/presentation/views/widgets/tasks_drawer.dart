@@ -122,11 +122,18 @@ class TasksDrawer extends StatelessWidget {
                               Text(
                                 totalToday == 0
                                     ? AppTexts.noTasksToday
-                                    : '${AppTexts.completedTasks} $completedToday ${AppTexts.of} $totalToday',
+                                    : AppTexts.completedTasks,
                                 style: AppTextStyle.style9W300.copyWith(
                                   color: AppColors.white,
                                 ),
                               ),
+                              if (totalToday != 0)
+                                Text(
+                                  '$completedToday ${AppTexts.of} $totalToday',
+                                  style: AppTextStyle.style9W900.copyWith(
+                                    color: AppColors.successColor,
+                                  ),
+                                ),
                             ],
                           ),
                         ),

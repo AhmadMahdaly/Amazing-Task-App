@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:s/core/resources/app_colors.dart';
 import 'package:s/core/resources/app_text_style.dart';
 import 'package:s/core/responsive/responsive_config.dart';
 
@@ -13,14 +14,16 @@ class MiniStreakWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeColor = isActiveToday ? Colors.orange : Colors.grey.shade400;
+    final activeColor = isActiveToday
+        ? AppColors.orangeColor
+        : AppColors.buttonColor;
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: activeColor.withAlpha(20),
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: activeColor.withAlpha(50)),
+        border: Border.all(color: activeColor.withAlpha(80)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -236,8 +236,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                             final isRtl = _isArabic(value.text);
                             return TextField(
                               controller: _titleController,
-                              textAlign: TextAlign
-                                  .start, // الأفضل دائماً استخدام start
+                              textAlign: TextAlign.start,
                               textDirection: isRtl
                                   ? TextDirection.rtl
                                   : TextDirection.ltr,
@@ -252,8 +251,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                               ),
                               style: AppTextStyle.style16W600.copyWith(
                                 color: AppColors.white,
-                                // نصيحة: إذا استمرت مشكلة بسيطة في المؤشر، حاول توحيد الخط
-                                // لخط يدعم اللغتين مثل Cairo بدلاً من التبديل بين خطين
+
                                 fontFamily: isRtl ? AppFonts.ar : AppFonts.en,
                               ),
                             );
@@ -357,52 +355,48 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                         ),
                       ],
                     ),
-                    child: SafeArea(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.format_list_bulleted,
-                              color: AppColors.primaryColor,
-                            ),
-                            tooltip: 'Add Bullet Point',
-                            onPressed: _insertBullet,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.format_list_bulleted,
+                            color: AppColors.primaryColor,
                           ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.format_bold,
-                              color: _isBold
-                                  ? AppColors.primaryColor
-                                  : Colors.grey,
-                            ),
-                            tooltip: 'Bold Text',
-                            onPressed: () => setState(() => _isBold = !_isBold),
+                          tooltip: 'Add Bullet Point',
+                          onPressed: _insertBullet,
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.format_bold,
+                            color: _isBold
+                                ? AppColors.primaryColor
+                                : Colors.grey,
                           ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.text_decrease,
-                              color: Colors.grey,
-                            ),
-                            tooltip: 'Decrease Font Size',
-                            onPressed: () => setState(
-                              () =>
-                                  _fontSize = (_fontSize - 2).clamp(12.0, 30.0),
-                            ),
+                          tooltip: 'Bold Text',
+                          onPressed: () => setState(() => _isBold = !_isBold),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.text_decrease,
+                            color: Colors.grey,
                           ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.text_increase,
-                              color: Colors.grey,
-                            ),
-                            tooltip: 'Increase Font Size',
-                            onPressed: () => setState(
-                              () =>
-                                  _fontSize = (_fontSize + 2).clamp(12.0, 30.0),
-                            ),
+                          tooltip: 'Decrease Font Size',
+                          onPressed: () => setState(
+                            () => _fontSize = (_fontSize - 2).clamp(12.0, 30.0),
                           ),
-                        ],
-                      ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.text_increase,
+                            color: Colors.grey,
+                          ),
+                          tooltip: 'Increase Font Size',
+                          onPressed: () => setState(
+                            () => _fontSize = (_fontSize + 2).clamp(12.0, 30.0),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
               ],

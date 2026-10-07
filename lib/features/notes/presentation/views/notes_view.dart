@@ -146,7 +146,7 @@ class _NotesViewState extends State<NotesView> {
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(4.r),
-                                  color: AppColors.primaryColor.withAlpha(100),
+                                  color: AppColors.primaryColor.withAlpha(210),
                                 ),
                                 padding: EdgeInsets.symmetric(vertical: 8.h),
                                 child: ListTile(

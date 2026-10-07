@@ -1055,41 +1055,44 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                   await _deleteStep(task, index);
                                 }
                               },
-                              child: Material(
-                                color: AppColors.primaryColor.withAlpha(200),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                child: ListTile(
-                                  // contentPadding: EdgeInsets.zero,
-                                  leading: InkWell(
-                                    onTap: () => _toggleStep(task, index),
-                                    child: Icon(
-                                      step.isCompleted
-                                          ? Icons.check_box
-                                          : Icons.check_box_outline_blank,
-                                      color: AppColors.buttonColor,
-                                    ),
+                              child: Padding(
+                                padding: EdgeInsets.only(bottom: 2.h),
+                                child: Material(
+                                  color: AppColors.primaryColor.withAlpha(200),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.r),
                                   ),
-                                  title: DirectionalText(
-                                    step.title,
-                                    style: AppTextStyle.style9W300.copyWith(
-                                      decoration: step.isCompleted
-                                          ? TextDecoration.lineThrough
-                                          : null,
-                                      decorationColor: AppColors.buttonColor,
-                                      color: step.isCompleted
-                                          ? AppColors.buttonColor
-                                          : AppColors.white,
+                                  child: ListTile(
+                                    // contentPadding: EdgeInsets.zero,
+                                    leading: InkWell(
+                                      onTap: () => _toggleStep(task, index),
+                                      child: Icon(
+                                        step.isCompleted
+                                            ? Icons.check_box
+                                            : Icons.check_box_outline_blank,
+                                        color: AppColors.buttonColor,
+                                      ),
                                     ),
-                                  ),
-                                  onTap: () => _editStep(task, index),
-                                  trailing: ReorderableDragStartListener(
-                                    index: index,
-                                    child: Icon(
-                                      Icons.drag_handle,
-                                      color: AppColors.buttonColor.withAlpha(
-                                        160,
+                                    title: DirectionalText(
+                                      step.title,
+                                      style: AppTextStyle.style9W300.copyWith(
+                                        decoration: step.isCompleted
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                        decorationColor: AppColors.buttonColor,
+                                        color: step.isCompleted
+                                            ? AppColors.buttonColor
+                                            : AppColors.white,
+                                      ),
+                                    ),
+                                    onTap: () => _editStep(task, index),
+                                    trailing: ReorderableDragStartListener(
+                                      index: index,
+                                      child: Icon(
+                                        Icons.drag_handle,
+                                        color: AppColors.buttonColor.withAlpha(
+                                          160,
+                                        ),
                                       ),
                                     ),
                                   ),

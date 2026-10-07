@@ -168,20 +168,37 @@ class MainTasksScreen extends StatelessWidget {
 
                                         // لو مفيش مهام خالص، ممكن نخفي الويدجت أو نظهرها بصفر
                                         if (tasks.isEmpty) {
-                                          return const MiniStreakWidget(
-                                            currentStreak: 0,
-                                            isActiveToday: false,
+                                          return InkWell(
+                                            borderRadius: BorderRadius.circular(
+                                              20.r,
+                                            ),
+                                            onTap: () => context.push(
+                                              AppRoutes.analyticsScreen,
+                                            ),
+                                            child: const MiniStreakWidget(
+                                              currentStreak: 0,
+                                              isActiveToday: false,
+                                            ),
                                           );
                                         }
 
                                         // بنستخدم نفس دالة الحساب اللي استخدمناها في صفحة الإحصائيات
                                         final summary = computeSummary(tasks);
 
-                                        return MiniStreakWidget(
-                                          currentStreak: summary.currentStreak,
-                                          isActiveToday:
-                                              summary.todayCompleted >
-                                              0, // هيكون مضيء بالبرتقالي لو أنجز أي مهمة النهاردة
+                                        return InkWell(
+                                          borderRadius: BorderRadius.circular(
+                                            20.r,
+                                          ),
+                                          onTap: () => context.push(
+                                            AppRoutes.analyticsScreen,
+                                          ),
+                                          child: MiniStreakWidget(
+                                            currentStreak:
+                                                summary.currentStreak,
+                                            isActiveToday:
+                                                summary.todayCompleted >
+                                                0, // هيكون مضيء بالبرتقالي لو أنجز أي مهمة النهاردة
+                                          ),
                                         );
                                       }
 
