@@ -7,6 +7,7 @@ class PomodoroSessionModel extends PomodoroSessionEntity {
     required super.description,
     required super.startTime,
     required super.mode,
+    required super.consumedSeconds,
     super.endTime,
     super.targetDurationInSeconds,
     super.taskName,
@@ -28,6 +29,7 @@ class PomodoroSessionModel extends PomodoroSessionEntity {
         orElse: () => TimerMode.openEnded,
       ),
       targetDurationInSeconds: json['targetDurationInSeconds'] as int?,
+      consumedSeconds: json['consumedSeconds'] as int? ?? 0,
     );
   }
 
@@ -40,6 +42,7 @@ class PomodoroSessionModel extends PomodoroSessionEntity {
       'startTime': startTime.toIso8601String(),
       'endTime': endTime?.toIso8601String(),
       'mode': mode.name,
+      'consumedSeconds': consumedSeconds,
       'targetDurationInSeconds': targetDurationInSeconds,
     };
   }

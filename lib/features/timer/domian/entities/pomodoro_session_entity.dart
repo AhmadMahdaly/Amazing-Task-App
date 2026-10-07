@@ -13,6 +13,7 @@ class PomodoroSessionEntity {
     required this.description,
     required this.startTime,
     required this.mode,
+    required this.consumedSeconds,
     this.endTime,
     this.targetDurationInSeconds,
     this.taskName = '',
@@ -25,9 +26,12 @@ class PomodoroSessionEntity {
   final DateTime? endTime;
   final TimerMode mode;
   final int? targetDurationInSeconds;
+  final int consumedSeconds;
 
-  int get actualDurationInSeconds {
-    if (endTime == null) return 0;
-    return endTime!.difference(startTime).inSeconds;
-  }
+  // int get actualDurationInSeconds {
+  //   if (endTime == null) return 0;
+  //   return endTime!.difference(startTime).inSeconds;
+  // }
+
+  int get actualDurationInSeconds => consumedSeconds;
 }

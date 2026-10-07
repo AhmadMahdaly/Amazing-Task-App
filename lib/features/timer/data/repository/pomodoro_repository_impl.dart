@@ -27,6 +27,7 @@ class PomodoroRepositoryImpl implements PomodoroRepository {
       startTime: session.startTime,
       endTime: session.endTime,
       mode: session.mode,
+      consumedSeconds: session.consumedSeconds,
       targetDurationInSeconds: session.targetDurationInSeconds,
     );
 
