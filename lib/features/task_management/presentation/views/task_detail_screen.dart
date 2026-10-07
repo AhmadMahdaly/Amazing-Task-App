@@ -153,45 +153,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   Future<void> _editStep(TaskEntity task, int index) async {
     final step = task.steps[index];
-    final controller = TextEditingController(text: step.title);
 
-    final saved = await showDialog<bool>(
+    // سيتم إرجاع النص الجديد إذا تم الحفظ، أو null إذا ضغط Cancel
+    final newTitle = await showDialog<String>(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(AppTexts.editStep, style: AppTextStyle.style9W300),
-          content: CustomPrimaryTextfield(
-            controller: controller,
-            autofocus: true,
-            text: AppTexts.stepHint,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(AppTexts.cancel),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text(AppTexts.save),
-            ),
-          ],
-        );
+        return _EditStepDialog(initialTitle: step.title);
       },
     );
 
-    if (saved != true) {
-      controller.dispose();
-      return;
-    }
-
-    final title = controller.text.trim();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.dispose();
-    });
-    if (title.isEmpty) return;
+    // إذا ضغط Cancel أو ترك النص فارغاً لا نفعل شيئاً
+    if (newTitle == null || newTitle.trim().isEmpty) return;
 
     final steps = List<TaskStep>.from(task.steps);
-    steps[index] = steps[index].copyWith(title: title);
+    steps[index] = steps[index].copyWith(title: newTitle.trim());
     await _persist(syncTaskStepCounts(task, steps));
   }
 
@@ -933,173 +908,182 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           ),
                         )
                       else
-                        ReorderableListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          buildDefaultDragHandles: false,
-                          itemCount: task.steps.length,
-                          onReorder: (oldIndex, newIndex) =>
-                              _reorderSteps(task, oldIndex, newIndex),
-                          itemBuilder: (context, index) {
-                            final step = task.steps[index];
-                            return Dismissible(
-                              key: ValueKey('${step.id}_dismissible'),
-                              direction: DismissDirection.horizontal,
-                              background: Container(
-                                alignment: Alignment.centerLeft,
-                                padding: EdgeInsets.only(left: 16.w),
-                                decoration: BoxDecoration(
-                                  color: Colors.redAccent,
-                                  borderRadius: BorderRadius.circular(12.r),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: 300.h,
+                          ),
+                          child: ReorderableListView.builder(
+                            buildDefaultDragHandles: false,
+                            itemCount: task.steps.length,
+                            onReorder: (oldIndex, newIndex) =>
+                                _reorderSteps(task, oldIndex, newIndex),
+                            itemBuilder: (context, index) {
+                              final step = task.steps[index];
+                              return Dismissible(
+                                key: ValueKey('${step.id}_dismissible'),
+                                direction: DismissDirection.horizontal,
+                                background: Container(
+                                  alignment: Alignment.centerLeft,
+                                  padding: EdgeInsets.only(left: 16.w),
+                                  margin: EdgeInsets.only(bottom: 2.h),
+                                  decoration: BoxDecoration(
+                                    color: Colors.redAccent,
+                                    borderRadius: BorderRadius.circular(12.r),
+                                  ),
+                                  child: const Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
+                                secondaryBackground: Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: EdgeInsets.only(right: 16.w),
+                                  margin: EdgeInsets.only(bottom: 2.h),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryColor,
+                                    borderRadius: BorderRadius.circular(12.r),
+                                  ),
+                                  child: const Icon(
+                                    Icons.call_split,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                              secondaryBackground: Container(
-                                alignment: Alignment.centerRight,
-                                padding: EdgeInsets.only(right: 16.w),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryColor,
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                                child: const Icon(
-                                  Icons.call_split,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              confirmDismiss: (direction) async {
-                                if (direction == DismissDirection.endToStart) {
-                                  return await showDialog<bool>(
-                                        context: context,
-                                        builder: (ctx) => AlertDialog(
-                                          title: Text(
-                                            AppTexts.separateStep,
-                                            style: AppTextStyle.style14Bold
-                                                .copyWith(
-                                                  color:
-                                                      AppColors.secondaryColor,
-                                                ),
-                                          ),
-                                          content: Text(
-                                            AppTexts.convertStepToTaskQuestion,
-                                            style: AppTextStyle.style9W300
-                                                .copyWith(
-                                                  color:
-                                                      AppColors.secondaryColor,
-                                                ),
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () =>
-                                                  Navigator.pop(ctx, false),
-                                              child: Text(AppTexts.cancel),
+                                confirmDismiss: (direction) async {
+                                  if (direction ==
+                                      DismissDirection.endToStart) {
+                                    return await showDialog<bool>(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            title: Text(
+                                              AppTexts.separateStep,
+                                              style: AppTextStyle.style14Bold
+                                                  .copyWith(
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                  ),
                                             ),
-                                            TextButton(
-                                              onPressed: () =>
-                                                  Navigator.pop(ctx, true),
-                                              child: Text(
-                                                AppTexts.confirm,
-                                                style: AppTextStyle.style12Bold
-                                                    .copyWith(
-                                                      color: AppColors
-                                                          .primaryColor,
-                                                    ),
+                                            content: Text(
+                                              AppTexts
+                                                  .convertStepToTaskQuestion,
+                                              style: AppTextStyle.style9W300
+                                                  .copyWith(
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                  ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(ctx, false),
+                                                child: Text(AppTexts.cancel),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ) ??
-                                      false;
-                                }
-                                return true;
-                              },
-                              onDismissed: (direction) async {
-                                if (direction == DismissDirection.endToStart) {
-                                  final cubit = context.read<TasksCubit>();
-                                  final originalTaskSnapshot = task;
-                                  final newTaskId = await cubit
-                                      .detachStepToTask(task, step);
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(ctx, true),
+                                                child: Text(
+                                                  AppTexts.confirm,
+                                                  style: AppTextStyle
+                                                      .style12Bold
+                                                      .copyWith(
+                                                        color: AppColors
+                                                            .primaryColor,
+                                                      ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ) ??
+                                        false;
+                                  }
+                                  return true;
+                                },
+                                onDismissed: (direction) async {
+                                  if (direction ==
+                                      DismissDirection.endToStart) {
+                                    final cubit = context.read<TasksCubit>();
+                                    final originalTaskSnapshot = task;
+                                    final newTaskId = await cubit
+                                        .detachStepToTask(task, step);
 
-                                  if (!mounted) return;
-                                  ScaffoldMessenger.of(context)
-                                    ..hideCurrentSnackBar()
-                                    ..showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: AppColors.primaryColor,
-                                        behavior: SnackBarBehavior.floating,
-                                        duration: const Duration(seconds: 4),
-                                        dismissDirection:
-                                            DismissDirection.horizontal,
-                                        content: Text(
-                                          AppTexts.stepConvertedToTask,
-                                          style: AppTextStyle.style12W300
-                                              .copyWith(color: Colors.white),
+                                    if (!mounted) return;
+                                    ScaffoldMessenger.of(context)
+                                      ..hideCurrentSnackBar()
+                                      ..showSnackBar(
+                                        SnackBar(
+                                          backgroundColor:
+                                              AppColors.primaryColor,
+                                          behavior: SnackBarBehavior.floating,
+                                          duration: const Duration(seconds: 4),
+                                          dismissDirection:
+                                              DismissDirection.horizontal,
+                                          content: Text(
+                                            AppTexts.stepConvertedToTask,
+                                            style: AppTextStyle.style12W300
+                                                .copyWith(color: Colors.white),
+                                          ),
+                                          action: SnackBarAction(
+                                            label: AppTexts.undo,
+                                            textColor: Colors.white,
+                                            onPressed: () {
+                                              unawaited(
+                                                cubit.undoDetachStep(
+                                                  originalTaskSnapshot,
+                                                  newTaskId,
+                                                ),
+                                              );
+                                            },
+                                          ),
                                         ),
-                                        action: SnackBarAction(
-                                          label: AppTexts.undo,
-                                          textColor: Colors.white,
-                                          onPressed: () {
-                                            unawaited(
-                                              cubit.undoDetachStep(
-                                                originalTaskSnapshot,
-                                                newTaskId,
-                                              ),
-                                            );
-                                          },
+                                      );
+                                  } else {
+                                    await _deleteStep(task, index);
+                                  }
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.only(bottom: 2.h),
+                                  child: Material(
+                                    color: AppColors.primaryColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(2.r),
+                                    ),
+                                    child: ListTile(
+                                      leading: InkWell(
+                                        onTap: () => _toggleStep(task, index),
+                                        child: Icon(
+                                          step.isCompleted
+                                              ? Icons.check_box
+                                              : Icons.check_box_outline_blank,
+                                          color: AppColors.buttonColor,
                                         ),
                                       ),
-                                    );
-                                } else {
-                                  await _deleteStep(task, index);
-                                }
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.only(bottom: 2.h),
-                                child: Material(
-                                  color: AppColors.primaryColor.withAlpha(200),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                  child: ListTile(
-                                    // contentPadding: EdgeInsets.zero,
-                                    leading: InkWell(
-                                      onTap: () => _toggleStep(task, index),
-                                      child: Icon(
-                                        step.isCompleted
-                                            ? Icons.check_box
-                                            : Icons.check_box_outline_blank,
-                                        color: AppColors.buttonColor,
+                                      title: DirectionalText(
+                                        step.title,
+                                        style: AppTextStyle.style9W300.copyWith(
+                                          decoration: step.isCompleted
+                                              ? TextDecoration.lineThrough
+                                              : null,
+                                          decorationColor:
+                                              AppColors.buttonColor,
+                                          color: step.isCompleted
+                                              ? AppColors.buttonColor
+                                              : AppColors.white,
+                                        ),
                                       ),
-                                    ),
-                                    title: DirectionalText(
-                                      step.title,
-                                      style: AppTextStyle.style9W300.copyWith(
-                                        decoration: step.isCompleted
-                                            ? TextDecoration.lineThrough
-                                            : null,
-                                        decorationColor: AppColors.buttonColor,
-                                        color: step.isCompleted
-                                            ? AppColors.buttonColor
-                                            : AppColors.white,
-                                      ),
-                                    ),
-                                    onTap: () => _editStep(task, index),
-                                    trailing: ReorderableDragStartListener(
-                                      index: index,
-                                      child: Icon(
-                                        Icons.drag_handle,
-                                        color: AppColors.buttonColor.withAlpha(
-                                          160,
+                                      onTap: () => _editStep(task, index),
+                                      trailing: ReorderableDragStartListener(
+                                        index: index,
+                                        child: Icon(
+                                          Icons.drag_handle,
+                                          color: AppColors.buttonColor
+                                              .withAlpha(160),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                     ],
                   ),
@@ -1239,6 +1223,55 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _EditStepDialog extends StatefulWidget {
+  const _EditStepDialog({required this.initialTitle});
+  final String initialTitle;
+
+  @override
+  State<_EditStepDialog> createState() => _EditStepDialogState();
+}
+
+class _EditStepDialogState extends State<_EditStepDialog> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialTitle);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      constraints: const BoxConstraints(minWidth: double.infinity),
+      title: Text(AppTexts.editStep, style: AppTextStyle.style9W300),
+      content: CustomPrimaryTextfield(
+        controller: _controller,
+        autofocus: true,
+        text: AppTexts.stepHint,
+      ),
+      actions: [
+        TextButton(
+          // نرجع null في حالة الإلغاء
+          onPressed: () => Navigator.pop(context, null),
+          child: Text(AppTexts.cancel),
+        ),
+        TextButton(
+          // نرجع النص في حالة الحفظ
+          onPressed: () => Navigator.pop(context, _controller.text),
+          child: Text(AppTexts.save),
+        ),
+      ],
     );
   }
 }

@@ -87,7 +87,7 @@ class TasksDrawer extends StatelessWidget {
                                 backgroundColor: AppColors.white.withAlpha(
                                   33,
                                 ),
-                                color: AppColors.white,
+                                color: AppColors.successColor,
                               ),
                               Center(
                                 child: Icon(

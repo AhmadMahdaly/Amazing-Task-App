@@ -66,8 +66,8 @@ class _PomodoroHistoryViewState extends State<PomodoroHistoryView> {
                     return Center(
                       child: Text(
                         'No sessions recorded yet.',
-                        style: AppTextStyle.style14W600.copyWith(
-                          color: AppColors.secondaryColor,
+                        style: AppTextStyle.style14W900.copyWith(
+                          color: AppColors.buttonColor.withAlpha(140),
                         ),
                       ),
                     );

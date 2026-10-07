@@ -163,10 +163,11 @@ class MainTasksScreen extends StatelessWidget {
                                 actions: [
                                   BlocBuilder<TasksCubit, TasksState>(
                                     builder: (context, state) {
-                                      if (state is TasksLoaded) {
+                                      if (state is TasksLoaded &&
+                                          state.currentFilter ==
+                                              TaskFilter.myDay) {
                                         final tasks = state.allTasks;
 
-                                        // لو مفيش مهام خالص، ممكن نخفي الويدجت أو نظهرها بصفر
                                         if (tasks.isEmpty) {
                                           return InkWell(
                                             borderRadius: BorderRadius.circular(
@@ -182,7 +183,6 @@ class MainTasksScreen extends StatelessWidget {
                                           );
                                         }
 
-                                        // بنستخدم نفس دالة الحساب اللي استخدمناها في صفحة الإحصائيات
                                         final summary = computeSummary(tasks);
 
                                         return InkWell(
@@ -196,13 +196,11 @@ class MainTasksScreen extends StatelessWidget {
                                             currentStreak:
                                                 summary.currentStreak,
                                             isActiveToday:
-                                                summary.todayCompleted >
-                                                0, // هيكون مضيء بالبرتقالي لو أنجز أي مهمة النهاردة
+                                                summary.todayCompleted > 0,
                                           ),
                                         );
                                       }
 
-                                      // أثناء التحميل (Loading) أو لو في خطأ بنعرض مساحة فارغة أو رقم 0 مبدئي
                                       return const SizedBox.shrink();
                                     },
                                   ),
@@ -258,12 +256,10 @@ class MainTasksScreen extends StatelessWidget {
                                         ),
                                 ),
                               ),
-                              SliverToBoxAdapter(
-                                child: BodyContent(
-                                  state: state,
-                                  currentTasks: currentTasks,
-                                  context: context,
-                                ),
+                              BodyContent(
+                                state: state,
+                                currentTasks: currentTasks,
+                                context: context,
                               ),
                             ],
                           ),

@@ -19,7 +19,7 @@ class MiniStreakWidget extends StatelessWidget {
         : AppColors.buttonColor;
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: activeColor.withAlpha(20),
         borderRadius: BorderRadius.circular(20.r),
@@ -32,12 +32,12 @@ class MiniStreakWidget extends StatelessWidget {
           Icon(
             Icons.local_fire_department_rounded,
             color: activeColor,
-            size: 18.r,
+            size: 14.r,
           ),
           4.horizontalSpace,
           Text(
             '$currentStreak',
-            style: AppTextStyle.style14Bold.copyWith(
+            style: AppTextStyle.style10Bold.copyWith(
               color: activeColor,
               height: 1,
             ),

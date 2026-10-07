@@ -28,15 +28,19 @@ class BodyContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (state is TasksLoading) {
-      return SizedBox(
-        height: 450.h,
-        child: const Center(child: LoadingWidget()),
+      return SliverToBoxAdapter(
+        child: SizedBox(
+          height: 450.h,
+          child: const Center(child: LoadingWidget()),
+        ),
       );
     } else if (state is TasksLoaded) {
       if (currentTasks.isEmpty) {
-        return SizedBox(
-          height: SizeConfig.screenHeight / 2 + 100,
-          child: const EmptyTasksState(),
+        return SliverToBoxAdapter(
+          child: SizedBox(
+            height: SizeConfig.screenHeight / 2 + 100,
+            child: const EmptyTasksState(),
+          ),
         );
       }
 
@@ -46,45 +50,57 @@ class BodyContent extends StatelessWidget {
       final completedTasks = currentTasks.where((t) => t.isCompleted).toList();
 
       if (isCompletedFilter) {
-        return CompletedTasksSection(tasks: completedTasks);
+        return SliverToBoxAdapter(
+          child: CompletedTasksSection(tasks: completedTasks),
+        );
       }
 
-      return Column(
-        children: [
+      return SliverMainAxisGroup(
+        slivers: [
           if (activeTasks.isNotEmpty)
-            ReorderableListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+            SliverPadding(
               padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
-              itemCount: activeTasks.length,
-              onReorder: (oldIndex, newIndex) {
-                unawaited(
-                  context.read<TasksCubit>().reorderTasks(
-                    oldIndex,
-                    newIndex,
-                    List.from(
-                      activeTasks,
+              sliver: SliverReorderableList(
+                itemCount: activeTasks.length,
+                onReorder: (oldIndex, newIndex) {
+                  unawaited(
+                    context.read<TasksCubit>().reorderTasks(
+                      oldIndex,
+                      newIndex,
+                      List.from(activeTasks),
                     ),
-                  ),
-                );
-              },
-              itemBuilder: (context, index) {
-                return TaskItemWidget(
-                  key: ValueKey(activeTasks[index].id),
-                  task: activeTasks[index],
-                );
-              },
+                  );
+                },
+                itemBuilder: (context, index) {
+                  return ReorderableDelayedDragStartListener(
+                    key: ValueKey(
+                      activeTasks[index].id,
+                    ),
+                    index: index,
+                    child: TaskItemWidget(
+                      task: activeTasks[index],
+                    ),
+                  );
+                },
+              ),
             ),
 
           if (completedTasks.isNotEmpty)
-            CompletedTasksSection(
-              tasks: completedTasks,
-              compact: true,
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  CompletedTasksSection(
+                    tasks: completedTasks,
+                    compact: true,
+                  ),
+                  24.verticalSpace,
+                ],
+              ),
             ),
-          24.verticalSpace,
         ],
       );
     }
-    return const SizedBox.shrink();
+
+    return const SliverToBoxAdapter(child: SizedBox.shrink());
   }
 }

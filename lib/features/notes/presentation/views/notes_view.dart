@@ -28,28 +28,28 @@ class _NotesViewState extends State<NotesView> {
   Widget build(BuildContext context) {
     return BlocBuilder<WallpaperCubit, WallpaperState>(
       builder: (context, wallpaperState) {
-        return Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: wallpaperState.settings.hasWallpaper
-              ? AppColors.primaryColor.withAlpha(200)
-              : AppColors.primaryColor,
+        return AppWallpaper(
+          settings: wallpaperState.settings,
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            backgroundColor: wallpaperState.settings.hasWallpaper
+                ? AppColors.primaryColor.withAlpha(200)
+                : AppColors.primaryColor,
 
-          appBar: AppBar(
-            title: Text(
-              AppTexts.myNote,
-              style: AppTextStyle.style16W600.copyWith(),
+            appBar: AppBar(
+              title: Text(
+                AppTexts.myNote,
+                style: AppTextStyle.style16W600.copyWith(),
+              ),
+              backgroundColor: AppColors.primaryColor,
+              elevation: 0,
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new),
+                onPressed: () => context.pop(),
+              ),
             ),
-            backgroundColor: AppColors.primaryColor,
-            elevation: 0,
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new),
-              onPressed: () => context.pop(),
-            ),
-          ),
-          body: AppWallpaper(
-            settings: wallpaperState.settings,
-            child: Column(
+            body: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
@@ -145,7 +145,7 @@ class _NotesViewState extends State<NotesView> {
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.r),
+                                  borderRadius: BorderRadius.circular(2.r),
                                   color: AppColors.primaryColor.withAlpha(210),
                                 ),
                                 padding: EdgeInsets.symmetric(vertical: 8.h),
@@ -201,16 +201,17 @@ class _NotesViewState extends State<NotesView> {
                 ),
               ],
             ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(320.r),
+
+            floatingActionButton: FloatingActionButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(320.r),
+              ),
+              backgroundColor: AppColors.white,
+              onPressed: () async {
+                await context.pushNamed(AppRoutes.addEditNoteView);
+              },
+              child: const Icon(Icons.add, color: AppColors.primaryColor),
             ),
-            backgroundColor: AppColors.white,
-            onPressed: () async {
-              await context.pushNamed(AppRoutes.addEditNoteView);
-            },
-            child: const Icon(Icons.add, color: AppColors.primaryColor),
           ),
         );
       },

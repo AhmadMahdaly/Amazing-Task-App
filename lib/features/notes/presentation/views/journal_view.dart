@@ -226,137 +226,137 @@ class _JournalViewState extends State<JournalView> {
   Widget build(BuildContext context) {
     return BlocBuilder<WallpaperCubit, WallpaperState>(
       builder: (context, wallpaperState) {
-        return Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: wallpaperState.settings.hasWallpaper
-              ? AppColors.primaryColor.withAlpha(180)
-              : AppColors.primaryColor,
+        return AppWallpaper(
+          settings: wallpaperState.settings,
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            backgroundColor: wallpaperState.settings.hasWallpaper
+                ? AppColors.primaryColor.withAlpha(180)
+                : AppColors.primaryColor,
 
-          appBar: AppBar(
-            title: BlocBuilder<NotesCubit, NotesState>(
-              builder: (context, state) {
-                if (state is NotesLoaded) {
-                  final updatedNote = state.notes.firstWhere(
-                    (n) => n.id == _currentNote.id,
-                    orElse: () => _currentNote,
-                  );
+            appBar: AppBar(
+              title: BlocBuilder<NotesCubit, NotesState>(
+                builder: (context, state) {
+                  if (state is NotesLoaded) {
+                    final updatedNote = state.notes.firstWhere(
+                      (n) => n.id == _currentNote.id,
+                      orElse: () => _currentNote,
+                    );
+                    return SizedBox(
+                      width: double.infinity,
+                      child: Text(
+                        updatedNote.title,
+                        textAlign: _isArabic(updatedNote.title)
+                            ? TextAlign.right
+                            : TextAlign.left,
+                        textDirection: _isArabic(updatedNote.title)
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                        style: AppTextStyle.style20W900.copyWith(
+                          fontFamily: _isArabic(updatedNote.title)
+                              ? AppFonts.ar
+                              : AppFonts.en,
+                        ),
+                      ),
+                    );
+                  }
                   return SizedBox(
                     width: double.infinity,
                     child: Text(
-                      updatedNote.title,
-                      textAlign: _isArabic(updatedNote.title)
+                      _currentNote.title,
+                      textAlign: _isArabic(_currentNote.title)
                           ? TextAlign.right
                           : TextAlign.left,
-                      textDirection: _isArabic(updatedNote.title)
+                      textDirection: _isArabic(_currentNote.title)
                           ? TextDirection.rtl
                           : TextDirection.ltr,
-                      style: AppTextStyle.style20W900.copyWith(
-                        fontFamily: _isArabic(updatedNote.title)
+                      style: AppTextStyle.style16W600.copyWith(
+                        fontFamily: _isArabic(_currentNote.title)
                             ? AppFonts.ar
                             : AppFonts.en,
                       ),
                     ),
                   );
-                }
-                return SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    _currentNote.title,
-                    textAlign: _isArabic(_currentNote.title)
-                        ? TextAlign.right
-                        : TextAlign.left,
-                    textDirection: _isArabic(_currentNote.title)
-                        ? TextDirection.rtl
-                        : TextDirection.ltr,
-                    style: AppTextStyle.style16W600.copyWith(
-                      fontFamily: _isArabic(_currentNote.title)
-                          ? AppFonts.ar
-                          : AppFonts.en,
-                    ),
-                  ),
-                );
-              },
-            ),
-            backgroundColor: AppColors.primaryColor,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new),
-              onPressed: () => context.pop(),
-            ),
-            actions: [
-              PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    _editJournalTitle(context);
-                  } else if (value == 'delete') {
-                    _deleteJournal(context);
-                  } else if (value == 'sort') {
-                    _toggleSort();
-                  }
                 },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'sort',
-                    child: Row(
-                      children: [
-                        Icon(
-                          _isAscending
-                              ? Icons.arrow_upward
-                              : Icons.arrow_downward,
-                          color: AppColors.thirdColor,
-                          size: 20.r,
-                        ),
-                        8.horizontalSpace,
-                        Text(
-                          _isAscending ? 'Newest first' : 'Oldest first',
-                          style: const TextStyle(color: AppColors.thirdColor),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.edit,
-                          color: AppColors.activeColor,
-                          size: 20.r,
-                        ),
-                        8.horizontalSpace,
-
-                        const Text(
-                          'Edit journal name',
-                          style: TextStyle(color: AppColors.activeColor),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.delete_outline,
-                          color: AppColors.errorColor,
-                          size: 20.r,
-                        ),
-                        8.horizontalSpace,
-
-                        const Text(
-                          'Delete journal',
-                          style: TextStyle(color: AppColors.errorColor),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
-            ],
-          ),
-          body: AppWallpaper(
-            settings: wallpaperState.settings,
-            child: BlocBuilder<NotesCubit, NotesState>(
+              backgroundColor: AppColors.primaryColor,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new),
+                onPressed: () => context.pop(),
+              ),
+              actions: [
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      _editJournalTitle(context);
+                    } else if (value == 'delete') {
+                      _deleteJournal(context);
+                    } else if (value == 'sort') {
+                      _toggleSort();
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'sort',
+                      child: Row(
+                        children: [
+                          Icon(
+                            _isAscending
+                                ? Icons.arrow_upward
+                                : Icons.arrow_downward,
+                            color: AppColors.thirdColor,
+                            size: 20.r,
+                          ),
+                          8.horizontalSpace,
+                          Text(
+                            _isAscending ? 'Newest first' : 'Oldest first',
+                            style: const TextStyle(color: AppColors.thirdColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.edit,
+                            color: AppColors.activeColor,
+                            size: 20.r,
+                          ),
+                          8.horizontalSpace,
+
+                          const Text(
+                            'Edit journal name',
+                            style: TextStyle(color: AppColors.activeColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.delete_outline,
+                            color: AppColors.errorColor,
+                            size: 20.r,
+                          ),
+                          8.horizontalSpace,
+
+                          const Text(
+                            'Delete journal',
+                            style: TextStyle(color: AppColors.errorColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            body: BlocBuilder<NotesCubit, NotesState>(
               builder: (context, state) {
                 if (state is NotesLoaded) {
                   _currentNote = state.notes.firstWhere(
@@ -472,19 +472,20 @@ class _JournalViewState extends State<JournalView> {
                 );
               },
             ),
-          ),
-          floatingActionButton: BlocProvider.value(
-            value: getIt<NotesCubit>(),
-            child: FloatingActionButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(320.r),
+
+            floatingActionButton: BlocProvider.value(
+              value: getIt<NotesCubit>(),
+              child: FloatingActionButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(320.r),
+                ),
+                backgroundColor: AppColors.primaryColor,
+                onPressed: () => _showEntryBottomSheet(
+                  context,
+                  notesCubit: context.read<NotesCubit>(),
+                ),
+                child: const Icon(Icons.add, color: AppColors.white),
               ),
-              backgroundColor: AppColors.primaryColor,
-              onPressed: () => _showEntryBottomSheet(
-                context,
-                notesCubit: context.read<NotesCubit>(),
-              ),
-              child: const Icon(Icons.add, color: AppColors.white),
             ),
           ),
         );
@@ -668,12 +669,15 @@ class _JournalEntryEditorState extends State<_JournalEntryEditor> {
       builder: (context, wallpaperState) {
         return AppWallpaper(
           settings: wallpaperState.settings,
-          child: Padding(
+          child: Container(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
               left: 16.w,
               right: 16.w,
             ),
+            color: wallpaperState.settings.hasWallpaper
+                ? AppColors.primaryColor.withAlpha(200)
+                : AppColors.primaryColor,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -682,6 +686,13 @@ class _JournalEntryEditorState extends State<_JournalEntryEditor> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    IconButton(
+                      onPressed: () => context.pop(),
+                      icon: const Icon(
+                        Icons.close,
+                        color: AppColors.white,
+                      ),
+                    ),
                     IconButton(
                       onPressed: _save,
                       icon: const Icon(

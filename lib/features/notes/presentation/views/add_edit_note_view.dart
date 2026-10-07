@@ -129,69 +129,69 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
 
     return BlocBuilder<WallpaperCubit, WallpaperState>(
       builder: (context, wallpaperState) {
-        return Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: wallpaperState.settings.hasWallpaper
-              ? AppColors.primaryColor.withAlpha(200)
-              : AppColors.primaryColor,
+        return AppWallpaper(
+          settings: wallpaperState.settings,
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            backgroundColor: wallpaperState.settings.hasWallpaper
+                ? AppColors.primaryColor.withAlpha(200)
+                : AppColors.primaryColor,
 
-          appBar: AppBar(
-            title: Text(
-              isNew ? 'New note' : 'Edit note',
-              style: AppTextStyle.style20W900.copyWith(),
-            ),
-            backgroundColor: AppColors.primaryColor,
-            elevation: 0,
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new),
-              onPressed: () => context.pop(),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.check),
-                onPressed: () => _saveNote(goToJournal: false),
+            appBar: AppBar(
+              title: Text(
+                isNew ? 'New note' : 'Edit note',
+                style: AppTextStyle.style20W900.copyWith(),
               ),
-              if (!isNew)
-                PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert),
-                  onSelected: (value) async {
-                    if (value == 'delete') {
-                      await context.read<NotesCubit>().deleteNote(
-                        widget.note!.id,
-                      );
-                      context.pop();
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.delete_outline,
-                            color: Colors.redAccent,
-                            size: 20,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Delete note',
-                            style: TextStyle(color: Colors.redAccent),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+              backgroundColor: AppColors.primaryColor,
+              elevation: 0,
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new),
+                onPressed: () => context.pop(),
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.check),
+                  onPressed: () => _saveNote(goToJournal: false),
                 ),
-            ],
-          ),
-          body: AppWallpaper(
-            settings: wallpaperState.settings,
-            child: Column(
+                if (!isNew)
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert),
+                    onSelected: (value) async {
+                      if (value == 'delete') {
+                        await context.read<NotesCubit>().deleteNote(
+                          widget.note!.id,
+                        );
+                        context.pop();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.delete_outline,
+                              color: Colors.redAccent,
+                              size: 20,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Delete note',
+                              style: TextStyle(color: Colors.redAccent),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+            body: Column(
               children: [
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.all(16.r),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -266,8 +266,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                                 final isRtl = _isArabic(value.text);
                                 return TextField(
                                   controller: _contentController,
-                                  textAlign: TextAlign
-                                      .start, // الأفضل دائماً استخدام start
+                                  textAlign: TextAlign.start,
                                   textDirection: isRtl
                                       ? TextDirection.rtl
                                       : TextDirection.ltr,
