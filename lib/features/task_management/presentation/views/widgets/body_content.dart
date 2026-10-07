@@ -55,7 +55,7 @@ class BodyContent extends StatelessWidget {
             ReorderableListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
               itemCount: activeTasks.length,
               onReorder: (oldIndex, newIndex) {
                 unawaited(
