@@ -12,11 +12,13 @@ import 'package:s/core/routing/app_routes.dart';
 import 'package:s/core/shared_widgets/app_wallpaper.dart';
 import 'package:s/core/wallpaper/wallpaper_cubit.dart';
 import 'package:s/features/task_management/domain/entities/task_entity.dart';
+import 'package:s/features/task_management/domain/utils/task_analytics.dart';
 import 'package:s/features/task_management/domain/utils/task_format_utils.dart';
 import 'package:s/features/task_management/presentation/controllers/cubit/tasks_cubit.dart';
 import 'package:s/features/task_management/presentation/views/suggestions_bottom_sheet.dart';
 import 'package:s/features/task_management/presentation/views/widgets/add_task_bottom_sheet.dart';
 import 'package:s/features/task_management/presentation/views/widgets/body_content.dart';
+import 'package:s/features/task_management/presentation/views/widgets/mini_streak_widget.dart';
 import 'package:s/features/task_management/presentation/views/widgets/tasks_drawer.dart';
 
 class MainTasksScreen extends StatelessWidget {
@@ -158,24 +160,52 @@ class MainTasksScreen extends StatelessWidget {
                                 shadowColor: Colors.transparent,
                                 floating: true,
                                 pinned: true,
-                                // actions: [
-                                //   if (state is TasksLoaded &&
-                                //       state.currentFilter == TaskFilter.myDay)
-                                //     IconButton(
-                                //       tooltip: AppTexts.daySchedule,
-                                //       icon: Icon(
-                                //         Icons.mosque,
-                                //         color: AppColors.white,
-                                //         size: 24.r,
-                                //       ),
-                                //       onPressed: () async {
-                                //         await context.pushNamed(
-                                //           AppRoutes.islamicHomeView,
-                                //         );
-                                //       },
-                                //     ),
-                                //   12.horizontalSpace,
-                                // ],
+                                actions: [
+                                  BlocBuilder<TasksCubit, TasksState>(
+                                    builder: (context, state) {
+                                      if (state is TasksLoaded) {
+                                        final tasks = state.allTasks;
+
+                                        // لو مفيش مهام خالص، ممكن نخفي الويدجت أو نظهرها بصفر
+                                        if (tasks.isEmpty) {
+                                          return const MiniStreakWidget(
+                                            currentStreak: 0,
+                                            isActiveToday: false,
+                                          );
+                                        }
+
+                                        // بنستخدم نفس دالة الحساب اللي استخدمناها في صفحة الإحصائيات
+                                        final summary = computeSummary(tasks);
+
+                                        return MiniStreakWidget(
+                                          currentStreak: summary.currentStreak,
+                                          isActiveToday:
+                                              summary.todayCompleted >
+                                              0, // هيكون مضيء بالبرتقالي لو أنجز أي مهمة النهاردة
+                                        );
+                                      }
+
+                                      // أثناء التحميل (Loading) أو لو في خطأ بنعرض مساحة فارغة أو رقم 0 مبدئي
+                                      return const SizedBox.shrink();
+                                    },
+                                  ),
+                                  //   if (state is TasksLoaded &&
+                                  //       state.currentFilter == TaskFilter.myDay)
+                                  //     IconButton(
+                                  //       tooltip: AppTexts.daySchedule,
+                                  //       icon: Icon(
+                                  //         Icons.mosque,
+                                  //         color: AppColors.white,
+                                  //         size: 24.r,
+                                  //       ),
+                                  //       onPressed: () async {
+                                  //         await context.pushNamed(
+                                  //           AppRoutes.islamicHomeView,
+                                  //         );
+                                  //       },
+                                  //     ),
+                                  12.horizontalSpace,
+                                ],
                                 flexibleSpace: FlexibleSpaceBar(
                                   title:
                                       state is TasksLoaded &&

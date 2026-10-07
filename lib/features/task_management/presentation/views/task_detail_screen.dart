@@ -911,7 +911,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                               onFieldSubmitted: (_) => _addStep(task),
                             ),
                           ),
-                          SizedBox(width: 8.w),
+                          8.horizontalSpace,
                           IconButton.filled(
                             style: IconButton.styleFrom(
                               backgroundColor: AppColors.primaryColor,
@@ -924,10 +924,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       8.verticalSpace,
                       if (task.steps.isEmpty)
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.h),
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
                           child: Text(
                             AppTexts.noStepsYet,
-                            style: AppTextStyle.style12W300.copyWith(
+                            style: AppTextStyle.style10W300.copyWith(
                               color: AppColors.secondaryColor,
                             ),
                           ),
@@ -948,7 +948,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                               background: Container(
                                 alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.only(left: 16.w),
-                                color: Colors.redAccent,
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent,
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
                                 child: const Icon(
                                   Icons.delete,
                                   color: Colors.white,
@@ -957,7 +960,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                               secondaryBackground: Container(
                                 alignment: Alignment.centerRight,
                                 padding: EdgeInsets.only(right: 16.w),
-                                color: AppColors.primaryColor,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryColor,
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
                                 child: const Icon(
                                   Icons.call_split,
                                   color: Colors.white,
@@ -1024,6 +1030,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                         backgroundColor: AppColors.primaryColor,
                                         behavior: SnackBarBehavior.floating,
                                         duration: const Duration(seconds: 4),
+                                        dismissDirection:
+                                            DismissDirection.horizontal,
                                         content: Text(
                                           AppTexts.stepConvertedToTask,
                                           style: AppTextStyle.style12W300
@@ -1048,7 +1056,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                 }
                               },
                               child: Material(
-                                color: AppColors.transparent,
+                                color: AppColors.primaryColor.withAlpha(200),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
                                 child: ListTile(
                                   // contentPadding: EdgeInsets.zero,
                                   leading: InkWell(
@@ -1057,7 +1068,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                       step.isCompleted
                                           ? Icons.check_box
                                           : Icons.check_box_outline_blank,
-                                      color: AppColors.primaryColor,
+                                      color: AppColors.buttonColor,
                                     ),
                                   ),
                                   title: DirectionalText(
@@ -1066,17 +1077,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                       decoration: step.isCompleted
                                           ? TextDecoration.lineThrough
                                           : null,
+                                      decorationColor: AppColors.buttonColor,
                                       color: step.isCompleted
-                                          ? AppColors.secondaryColor
-                                          : AppColors.forthColor,
+                                          ? AppColors.buttonColor
+                                          : AppColors.white,
                                     ),
                                   ),
                                   onTap: () => _editStep(task, index),
                                   trailing: ReorderableDragStartListener(
                                     index: index,
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.drag_handle,
-                                      color: AppColors.secondaryColor,
+                                      color: AppColors.buttonColor.withAlpha(
+                                        160,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1185,8 +1199,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       SettingsTile(
                         icon: Icons.timer_outlined,
                         title: 'Pomodoro Timer',
-                        subtitle:
-                            'Start a focus session', 
+                        subtitle: 'Start a focus session',
                         onTap: () {
                           context.pushNamed(
                             AppRoutes.pomodoroView,
