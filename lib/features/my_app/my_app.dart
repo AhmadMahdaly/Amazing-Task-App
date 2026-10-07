@@ -41,11 +41,16 @@ class MyApp extends StatelessWidget {
           routerConfig: appRouter,
           theme: Appthemes.lightTheme(),
           builder: (context, child) {
-            return MediaQuery(
-              data: MediaQuery.of(
-                context,
-              ).copyWith(textScaler: TextScaler.noScaling),
-              child: child!,
+            final mediaQuery = MediaQuery.of(context);
+
+            return SafeArea(
+              top: false,
+              child: MediaQuery(
+                data: mediaQuery.copyWith(
+                  textScaler: TextScaler.noScaling,
+                ),
+                child: child!,
+              ),
             );
           },
         ),
