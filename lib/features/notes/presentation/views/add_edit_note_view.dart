@@ -15,7 +15,8 @@ import '../../domain/entities/note_type.dart';
 import '../cubit/notes_cubit.dart';
 
 bool _isArabic(String text) {
-  return RegExp(r'[\u0600-\u06FF]').hasMatch(text);
+  if (text.trim().isEmpty) return false;
+  return RegExp(r'^[\u0600-\u06FF]').hasMatch(text.trimLeft()[0]);
 }
 
 class AddEditNoteView extends StatefulWidget {
@@ -131,7 +132,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: wallpaperState.settings.hasWallpaper
-              ? AppColors.primaryColor.withAlpha(100)
+              ? AppColors.primaryColor.withAlpha(200)
               : AppColors.primaryColor,
 
           appBar: AppBar(
@@ -235,9 +236,8 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                             final isRtl = _isArabic(value.text);
                             return TextField(
                               controller: _titleController,
-                              textAlign: isRtl
-                                  ? TextAlign.right
-                                  : TextAlign.left,
+                              textAlign: TextAlign
+                                  .start, // الأفضل دائماً استخدام start
                               textDirection: isRtl
                                   ? TextDirection.rtl
                                   : TextDirection.ltr,
@@ -247,16 +247,14 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                                     : 'Journal title...',
                                 border: InputBorder.none,
                                 hintStyle: AppTextStyle.style16W600.copyWith(
-                                  color: AppColors.white.withAlpha(
-                                    150,
-                                  ),
+                                  color: AppColors.white.withAlpha(150),
                                 ),
                               ),
                               style: AppTextStyle.style16W600.copyWith(
                                 color: AppColors.white,
-                                fontFamily: _isArabic(_titleController.text)
-                                    ? AppFonts.ar
-                                    : AppFonts.en,
+                                // نصيحة: إذا استمرت مشكلة بسيطة في المؤشر، حاول توحيد الخط
+                                // لخط يدعم اللغتين مثل Cairo بدلاً من التبديل بين خطين
+                                fontFamily: isRtl ? AppFonts.ar : AppFonts.en,
                               ),
                             );
                           },
@@ -270,9 +268,8 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                                 final isRtl = _isArabic(value.text);
                                 return TextField(
                                   controller: _contentController,
-                                  textAlign: isRtl
-                                      ? TextAlign.right
-                                      : TextAlign.left,
+                                  textAlign: TextAlign
+                                      .start, // الأفضل دائماً استخدام start
                                   textDirection: isRtl
                                       ? TextDirection.rtl
                                       : TextDirection.ltr,
@@ -282,9 +279,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                                     hintText: "Write what you're thinking...",
                                     hintStyle: AppTextStyle.style12W500
                                         .copyWith(
-                                          color: AppColors.white.withAlpha(
-                                            150,
-                                          ),
+                                          color: AppColors.white.withAlpha(150),
                                         ),
                                     border: InputBorder.none,
                                   ),
@@ -294,8 +289,7 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
                                     fontWeight: _isBold
                                         ? FontWeight.bold
                                         : FontWeight.normal,
-                                    fontFamily:
-                                        _isArabic(_contentController.text)
+                                    fontFamily: isRtl
                                         ? AppFonts.ar
                                         : AppFonts.en,
                                     height: 1.5,
@@ -348,7 +342,11 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
 
                 if (_selectedType == NoteType.regular)
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
+                    padding: EdgeInsets.only(
+                      right: 8.w,
+                      left: 8.w,
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       boxShadow: [

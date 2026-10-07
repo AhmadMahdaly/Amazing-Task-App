@@ -31,7 +31,7 @@ class _NotesViewState extends State<NotesView> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: wallpaperState.settings.hasWallpaper
-              ? Colors.transparent
+              ? AppColors.primaryColor.withAlpha(200)
               : AppColors.primaryColor,
 
           appBar: AppBar(

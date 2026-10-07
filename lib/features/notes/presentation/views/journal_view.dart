@@ -53,7 +53,8 @@ class LineFormatController extends TextEditingController {
 }
 
 bool _isArabic(String text) {
-  return RegExp(r'[\u0600-\u06FF]').hasMatch(text);
+  if (text.trim().isEmpty) return false;
+  return RegExp(r'^[\u0600-\u06FF]').hasMatch(text.trimLeft()[0]);
 }
 
 class JournalView extends StatefulWidget {
@@ -93,15 +94,12 @@ class _JournalViewState extends State<JournalView> {
           valueListenable: titleController,
           builder: (context, value, child) {
             final isRtl = _isArabic(value.text);
-            return Directionality(
+            return TextField(
+              controller: titleController,
+              textAlign: TextAlign.start,
               textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-              child: TextField(
-                controller: titleController,
-                textAlign: isRtl ? TextAlign.right : TextAlign.left,
-                textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-                decoration: const InputDecoration(hintText: 'New name...'),
-                autofocus: true,
-              ),
+              decoration: const InputDecoration(hintText: 'New name...'),
+              autofocus: true,
             );
           },
         ),
@@ -231,7 +229,7 @@ class _JournalViewState extends State<JournalView> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: wallpaperState.settings.hasWallpaper
-              ? AppColors.primaryColor.withAlpha(90)
+              ? AppColors.primaryColor.withAlpha(180)
               : AppColors.primaryColor,
 
           appBar: AppBar(
@@ -666,9 +664,6 @@ class _JournalEntryEditorState extends State<_JournalEntryEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final isTitleRtl = _isArabic(_titleController.text);
-    final isTextRtl = _isArabic(_textController.text);
-
     return BlocBuilder<WallpaperCubit, WallpaperState>(
       builder: (context, wallpaperState) {
         return AppWallpaper(
@@ -739,59 +734,65 @@ class _JournalEntryEditorState extends State<_JournalEntryEditor> {
                 ),
                 12.verticalSpace,
 
-                Directionality(
-                  textDirection: isTitleRtl
-                      ? TextDirection.rtl
-                      : TextDirection.ltr,
-                  child: TextField(
-                    controller: _titleController,
-                    style: AppTextStyle.style12W600.copyWith(
-                      color: AppColors.white,
-                    ),
-                    onChanged: (p0) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: 'Day title (Optional)...',
-                      hintStyle: AppTextStyle.style14W600.copyWith(
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: _titleController,
+                  builder: (context, value, child) {
+                    final isTitleRtl = _isArabic(value.text);
+                    return TextField(
+                      controller: _titleController,
+                      textAlign: TextAlign.start,
+                      textDirection: isTitleRtl
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
+                      style: AppTextStyle.style12W600.copyWith(
                         color: AppColors.white,
                       ),
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                    ),
-                  ),
-                ),
-                const Divider(
-                  color: AppColors.white,
-                  thickness: 0.5,
-                ),
-                Expanded(
-                  child: Directionality(
-                    textDirection: isTextRtl
-                        ? TextDirection.rtl
-                        : TextDirection.ltr,
-                    child: TextField(
-                      controller: _textController,
-                      maxLines: 8,
-                      minLines: 4,
-                      style: AppTextStyle.style12W500.copyWith(
-                        color: AppColors.white,
-                        height: 1.5,
-                      ),
-                      onChanged: (p0) => setState(() {}),
-                      textAlign: isTextRtl ? TextAlign.right : TextAlign.left,
                       decoration: InputDecoration(
-                        hintText: 'Write your journal here...',
-                        hintStyle: AppTextStyle.style16W500.copyWith(
+                        hintText: 'Day title (Optional)...',
+                        hintStyle: AppTextStyle.style14W600.copyWith(
                           color: AppColors.white,
                         ),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
                       ),
-                    ),
+                    );
+                  },
+                ),
+                const Divider(
+                  color: AppColors.white,
+                  thickness: 0.5,
+                ),
+                Expanded(
+                  child: ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _textController,
+                    builder: (context, value, child) {
+                      final isTextRtl = _isArabic(value.text);
+                      return TextField(
+                        controller: _textController,
+                        maxLines: 8,
+                        minLines: 4,
+                        textAlign: TextAlign.start,
+                        textDirection: isTextRtl
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                        style: AppTextStyle.style12W500.copyWith(
+                          color: AppColors.white,
+                          height: 1.5,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Write your journal here...',
+                          hintStyle: AppTextStyle.style16W500.copyWith(
+                            color: AppColors.white,
+                          ),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
+                      );
+                    },
                   ),
                 ),
-
                 12.verticalSpace,
 
                 Row(
