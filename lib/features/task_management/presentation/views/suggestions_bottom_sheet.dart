@@ -1,5 +1,3 @@
-// ignore_for_file: cascade_invocations
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -207,19 +205,21 @@ class SuggestionsBottomSheet extends StatelessWidget {
             unawaited(
               context.read<TasksCubit>().addToMyDay(task),
             );
-            final messenger = ScaffoldMessenger.of(context);
-
-            messenger
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
                 SnackBar(
                   content: Text(
                     AppTexts.addedToMyDaySuccess,
+
                     style: AppTextStyle.style9W300.copyWith(
                       color: Colors.white,
                     ),
                   ),
                   backgroundColor: AppColors.successColor,
+                  behavior: SnackBarBehavior.floating,
+                  dismissDirection: DismissDirection.horizontal,
                   duration: const Duration(seconds: 1),
                 ),
               );

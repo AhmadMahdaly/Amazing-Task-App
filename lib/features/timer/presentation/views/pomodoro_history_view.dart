@@ -117,7 +117,7 @@ class _PomodoroHistoryViewState extends State<PomodoroHistoryView> {
                                   content: Text(
                                     'Are you sure you want to delete this session? This action cannot be undone.',
                                     style: AppTextStyle.style12W500.copyWith(
-                                      color: AppColors.secondaryColor,
+                                      color: AppColors.buttonColor,
                                     ),
                                   ),
                                   actions: [
@@ -149,13 +149,23 @@ class _PomodoroHistoryViewState extends State<PomodoroHistoryView> {
                             session.id,
                             currentTaskId: widget.taskId,
                           );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Session deleted successfully'),
-                              backgroundColor: AppColors.primaryColor,
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Session saved successfully!',
+                                  style: AppTextStyle.style9W300.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                backgroundColor: AppColors.successColor,
+                                behavior: SnackBarBehavior.floating,
+                                dismissDirection: DismissDirection.horizontal,
+                                duration: const Duration(seconds: 4),
+                              ),
+                            );
                         },
                         child: Container(
                           decoration: BoxDecoration(

@@ -256,13 +256,24 @@ class _PomodoroViewState extends State<PomodoroView> {
                                           : _descController.text.trim(),
                                     );
                                 _descController.clear();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Session saved successfully!',
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context)
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Session saved successfully!',
+                                        style: AppTextStyle.style9W300.copyWith(
+                                          color: AppColors.white,
+                                        ),
+                                      ),
+                                      backgroundColor: AppColors.successColor,
+                                      behavior: SnackBarBehavior.floating,
+                                      dismissDirection:
+                                          DismissDirection.horizontal,
+                                      duration: const Duration(seconds: 4),
                                     ),
-                                  ),
-                                );
+                                  );
                               }
                             : null,
                         child: Text(

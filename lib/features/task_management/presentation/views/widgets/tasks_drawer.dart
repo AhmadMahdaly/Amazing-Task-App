@@ -654,7 +654,6 @@ class TasksDrawer extends StatelessWidget {
 
     final tasksCubit = context.read<TasksCubit>();
     final listsCubit = context.read<ListsCubit>();
-    final messenger = ScaffoldMessenger.of(context);
 
     final stateBefore = tasksCubit.state;
     final viewingDeletedList =
@@ -675,16 +674,21 @@ class TasksDrawer extends StatelessWidget {
 
     await tasksCubit.deleteTasksForList(list.id);
     await listsCubit.deleteList(list.id);
-
-    messenger
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
           content: Text(
             AppTexts.listDeleted,
-            style: AppTextStyle.style12W300.copyWith(color: AppColors.white),
+
+            style: AppTextStyle.style9W300.copyWith(
+              color: Colors.white,
+            ),
           ),
           backgroundColor: AppColors.primaryColor,
+          behavior: SnackBarBehavior.floating,
+          dismissDirection: DismissDirection.horizontal,
           duration: const Duration(seconds: 2),
         ),
       );

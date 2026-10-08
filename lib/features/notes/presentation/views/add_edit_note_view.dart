@@ -81,12 +81,24 @@ class _AddEditNoteViewState extends State<AddEditNoteView> {
         : '';
 
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please write the title first.'),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              'Please write the title first.',
+              style: AppTextStyle.style9W300.copyWith(
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: AppColors.errorColor,
+            behavior: SnackBarBehavior.floating,
+            dismissDirection: DismissDirection.horizontal,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+
       return;
     }
 

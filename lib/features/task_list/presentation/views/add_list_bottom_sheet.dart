@@ -1,5 +1,3 @@
-// ignore_for_file: cascade_invocations
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/core/resources/app_colors.dart';
@@ -140,33 +138,42 @@ class _AddListBottomSheetState extends State<AddListBottomSheet> {
 
       final stateAfterSave = listsCubit.state;
       if (stateAfterSave is ListsError) {
-        final messenger = ScaffoldMessenger.of(context);
-
-        messenger
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
             SnackBar(
               content: Text(
                 stateAfterSave.message,
-                style: AppTextStyle.style9W300.copyWith(color: Colors.white),
+                style: AppTextStyle.style9W300.copyWith(
+                  color: Colors.white,
+                ),
               ),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: AppColors.errorColor,
+              behavior: SnackBarBehavior.floating,
+              dismissDirection: DismissDirection.horizontal,
+              duration: const Duration(seconds: 4),
             ),
           );
       }
     } catch (e) {
       if (mounted) {
-        final messenger = ScaffoldMessenger.of(context);
-
-        messenger
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
             SnackBar(
               content: Text(
                 e.toString(),
-                style: AppTextStyle.style9W300.copyWith(color: Colors.white),
+
+                style: AppTextStyle.style9W300.copyWith(
+                  color: Colors.white,
+                ),
               ),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: AppColors.errorColor,
+              behavior: SnackBarBehavior.floating,
+              dismissDirection: DismissDirection.horizontal,
+              duration: const Duration(seconds: 4),
             ),
           );
       }
