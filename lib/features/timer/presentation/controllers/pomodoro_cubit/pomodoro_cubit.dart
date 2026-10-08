@@ -57,11 +57,7 @@ class PomodoroCubit extends Cubit<PomodoroState> {
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.selectedMode == TimerMode.openEnded) {
-        emit(
-          state.copyWith(
-            currentSeconds: state.currentSeconds + 1,
-          ),
-        );
+        emit(state.copyWith(currentSeconds: state.currentSeconds + 1));
       } else {
         if (state.currentSeconds > 0) {
           emit(state.copyWith(currentSeconds: state.currentSeconds - 1));
@@ -91,22 +87,16 @@ class PomodoroCubit extends Cubit<PomodoroState> {
 
     if (state.startTime == null) return;
 
-    final now = DateTime.now();
-
-    final finalConsumedSeconds = state.selectedMode == TimerMode.openEnded
-        ? now.difference(state.startTime!).inSeconds
-        : state.actualSessionTime;
-
     final session = PomodoroSessionEntity(
       id: const Uuid().v4(),
       taskId: taskId,
       taskName: taskName,
       description: description,
       startTime: state.startTime!,
-      endTime: now,
+      endTime: DateTime.now(),
       mode: state.selectedMode,
       targetDurationInSeconds: state.targetSeconds,
-      consumedSeconds: finalConsumedSeconds,
+      consumedSeconds: state.actualSessionTime,
     );
 
     await repository.saveSession(session);
