@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:s/features/timer/domian/entities/pomodoro_session_entity.dart';
 import 'package:s/features/timer/domian/repository/pomodoro_repository.dart';
 import 'package:uuid/uuid.dart';
@@ -60,9 +59,7 @@ class PomodoroCubit extends Cubit<PomodoroState> {
       if (state.selectedMode == TimerMode.openEnded) {
         emit(
           state.copyWith(
-            currentSeconds: DateTime.now()
-                .difference(state.startTime!)
-                .inSeconds,
+            currentSeconds: state.currentSeconds + 1,
           ),
         );
       } else {
@@ -94,16 +91,22 @@ class PomodoroCubit extends Cubit<PomodoroState> {
 
     if (state.startTime == null) return;
 
+    final now = DateTime.now();
+
+    final finalConsumedSeconds = state.selectedMode == TimerMode.openEnded
+        ? now.difference(state.startTime!).inSeconds
+        : state.actualSessionTime;
+
     final session = PomodoroSessionEntity(
       id: const Uuid().v4(),
       taskId: taskId,
       taskName: taskName,
       description: description,
       startTime: state.startTime!,
-      endTime: DateTime.now(),
+      endTime: now,
       mode: state.selectedMode,
       targetDurationInSeconds: state.targetSeconds,
-      consumedSeconds: state.actualSessionTime,
+      consumedSeconds: finalConsumedSeconds,
     );
 
     await repository.saveSession(session);

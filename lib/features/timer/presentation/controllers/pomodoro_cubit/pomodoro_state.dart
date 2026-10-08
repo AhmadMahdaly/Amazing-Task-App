@@ -16,11 +16,11 @@ class PomodoroState {
   final int totalPreviousSeconds;
   final DateTime? startTime;
 
-int get actualSessionTime {
+  int get actualSessionTime {
     if (startTime == null) return 0;
 
     if (selectedMode == TimerMode.openEnded) {
-      return DateTime.now().difference(startTime!).inSeconds;
+      return currentSeconds;
     } else {
       return (targetSeconds ?? 0) - currentSeconds;
     }
