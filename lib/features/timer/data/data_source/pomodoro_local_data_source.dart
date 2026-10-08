@@ -7,6 +7,7 @@ abstract class PomodoroLocalDataSource {
   Future<void> saveSession(PomodoroSessionModel session);
   Future<List<PomodoroSessionModel>> getAllSessions();
   Future<List<PomodoroSessionModel>> getTaskSessions(String taskId);
+  Future<void> deleteSession(String sessionId);
 }
 
 class PomodoroLocalDataSourceImpl implements PomodoroLocalDataSource {
@@ -50,6 +51,16 @@ class PomodoroLocalDataSourceImpl implements PomodoroLocalDataSource {
 
     final stringList = sessions.map((s) => json.encode(s.toJson())).toList();
 
+    await CacheHelper.saveData(key: _sessionsKey, value: stringList);
+  }
+
+  @override
+  Future<void> deleteSession(String sessionId) async {
+    final sessions = await getAllSessions();
+
+    sessions.removeWhere((session) => session.id == sessionId);
+
+    final stringList = sessions.map((s) => json.encode(s.toJson())).toList();
     await CacheHelper.saveData(key: _sessionsKey, value: stringList);
   }
 }

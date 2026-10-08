@@ -33,4 +33,9 @@ class PomodoroRepositoryImpl implements PomodoroRepository {
 
     await localDataSource.saveSession(sessionModel);
   }
+
+  @override
+  Future<void> deleteSession(String sessionId) async {
+    await localDataSource.deleteSession(sessionId);
+  }
 }

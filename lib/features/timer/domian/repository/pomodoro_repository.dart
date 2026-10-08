@@ -4,4 +4,5 @@ abstract class PomodoroRepository {
   Future<void> saveSession(PomodoroSessionEntity session);
   Future<List<PomodoroSessionEntity>> getAllSessions();
   Future<List<PomodoroSessionEntity>> getTaskSessions(String taskId);
+  Future<void> deleteSession(String sessionId);
 }

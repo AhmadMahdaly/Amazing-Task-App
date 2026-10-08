@@ -83,94 +83,169 @@ class _PomodoroHistoryViewState extends State<PomodoroHistoryView> {
                         'dd MMM yyyy, hh:mm a',
                       ).format(session.startTime);
 
-                      return Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12.r),
-                          color: AppColors.primaryColor.withAlpha(100),
-                          border: Border.all(
-                            color: AppColors.buttonColor.withAlpha(50),
-                            width: 1,
+                      return Dismissible(
+                        key: ValueKey(session.id),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: EdgeInsets.only(right: 16.r),
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent.withAlpha(200),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline,
+                            color: Colors.white,
+                            size: 28.r,
                           ),
                         ),
-                        padding: EdgeInsets.all(12.r),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(12.r),
-                              decoration: BoxDecoration(
-                                color: AppColors.buttonColor.withAlpha(20),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.timer,
-                                    color: AppColors.buttonColor,
-                                    size: 24.r,
+                        // 👇 نافذة التأكيد قبل الحذف
+                        confirmDismiss: (direction) async {
+                          return await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  backgroundColor: AppColors.primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16.r),
                                   ),
-                                  4.verticalSpace,
-                                  Text(
-                                    _formatDuration(
-                                      session.actualDurationInSeconds,
-                                    ),
-                                    style: AppTextStyle.style9W400.copyWith(
-                                      color: AppColors.buttonColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            12.horizontalSpace,
-
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    session.taskName.isNotEmpty
-                                        ? session.taskName
-                                        : 'Focused Task',
+                                  title: Text(
+                                    'Delete Session',
                                     style: AppTextStyle.style14W600.copyWith(
                                       color: AppColors.white,
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  4.verticalSpace,
-                                  Text(
-                                    session.description,
+                                  content: Text(
+                                    'Are you sure you want to delete this session? This action cannot be undone.',
                                     style: AppTextStyle.style12W500.copyWith(
-                                      color: AppColors.white.withAlpha(200),
+                                      color: AppColors.secondaryColor,
                                     ),
                                   ),
-                                  8.verticalSpace,
-                                  Text(
-                                    dateFormatted,
-                                    style: AppTextStyle.style9W300.copyWith(
-                                      color: AppColors.buttonColor,
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(ctx, false),
+                                      child: Text(
+                                        'Cancel',
+                                        style: AppTextStyle.style12W500
+                                            .copyWith(color: AppColors.white),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(ctx, true),
+                                      child: Text(
+                                        'Delete',
+                                        style: AppTextStyle.style12W600
+                                            .copyWith(color: Colors.redAccent),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ) ??
+                              false;
+                        },
+                        // 👇 تنفيذ الحذف لو المستخدم وافق
+                        onDismissed: (direction) {
+                          context.read<PomodoroHistoryCubit>().deleteSession(
+                            session.id,
+                            currentTaskId: widget.taskId,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Session deleted successfully'),
+                              backgroundColor: AppColors.primaryColor,
+                              duration: Duration(seconds: 2),
                             ),
-
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 8.w,
-                                vertical: 4.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                              child: Text(
-                                session.mode.name.replaceAll('min', ''),
-                                style: AppTextStyle.style9W400.copyWith(
-                                  color: AppColors.primaryColor,
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12.r),
+                            color: AppColors.primaryColor.withAlpha(100),
+                            border: Border.all(
+                              color: AppColors.buttonColor.withAlpha(50),
+                              width: 1,
+                            ),
+                          ),
+                          padding: EdgeInsets.all(12.r),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(12.r),
+                                decoration: BoxDecoration(
+                                  color: AppColors.buttonColor.withAlpha(20),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.timer,
+                                      color: AppColors.buttonColor,
+                                      size: 24.r,
+                                    ),
+                                    4.verticalSpace,
+                                    Text(
+                                      _formatDuration(
+                                        session.actualDurationInSeconds,
+                                      ),
+                                      style: AppTextStyle.style9W400.copyWith(
+                                        color: AppColors.buttonColor,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                          ],
+                              12.horizontalSpace,
+
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      session.taskName.isNotEmpty
+                                          ? session.taskName
+                                          : 'Focused Task',
+                                      style: AppTextStyle.style14W600.copyWith(
+                                        color: AppColors.white,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    4.verticalSpace,
+                                    Text(
+                                      session.description,
+                                      style: AppTextStyle.style12W500.copyWith(
+                                        color: AppColors.white.withAlpha(200),
+                                      ),
+                                    ),
+                                    8.verticalSpace,
+                                    Text(
+                                      dateFormatted,
+                                      style: AppTextStyle.style9W300.copyWith(
+                                        color: AppColors.buttonColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 4.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.white,
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                child: Text(
+                                  session.mode.name.replaceAll('min', ''),
+                                  style: AppTextStyle.style9W400.copyWith(
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },

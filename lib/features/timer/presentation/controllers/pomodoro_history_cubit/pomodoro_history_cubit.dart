@@ -24,4 +24,13 @@ class PomodoroHistoryCubit extends Cubit<PomodoroHistoryState> {
       emit(PomodoroHistoryError(e.toString()));
     }
   }
+
+  Future<void> deleteSession(String sessionId, {String? currentTaskId}) async {
+    try {
+      await repository.deleteSession(sessionId);
+      await loadHistory(taskId: currentTaskId);
+    } catch (e) {
+      emit(PomodoroHistoryError(e.toString()));
+    }
+  }
 }
